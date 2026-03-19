@@ -1,0 +1,176 @@
+<!-- PANTALLA PREVIA -->
+<div *ngIf="!mostrarCheckout" class="card-premium p-5 text-center fade-in">
+  <h4 class="mb-3">Antes de continuar</h4>
+
+  <p class="text-muted">
+    Para finalizar tu compra deberás realizar una transferencia por el monto total del pedido.
+  </p>
+
+  <p class="text-muted">Luego deberás subir el comprobante de pago para validar tu pedido.</p>
+
+  <button class="btn-confirm mt-3 px-4" (click)="mostrarCheckout = true">
+    Entendido, continuar
+  </button>
+</div>
+
+<!-- CHECKOUT -->
+<div *ngIf="mostrarCheckout" class="checkout-container container-fluid py-5 px-lg-5">
+  <div class="row g-4">
+    <!-- IZQUIERDA -->
+    <div class="col-lg-7">
+      <!-- MÉTODOS DE PAGO -->
+      <div class="card-premium p-4 mb-4 fade-in">
+        <h5 class="fw-black mb-3">DATOS DE PAGO</h5>
+
+        <div class="payment-box">
+          <div><span>Alias:</span> HUMMEL.PAGOS</div>
+          <div><span>CBU:</span> 000000000</div>
+          <div><span>Titular:</span> Hummel</div>
+        </div>
+
+        <div class="mt-3 text-muted small instrucciones-box">
+          <p>1. Transferí el monto exacto.</p>
+          <p>2. Guardá el comprobante.</p>
+          <p>3. Subilo abajo para validar.</p>
+        </div>
+      </div>
+
+      <!-- PRODUCTOS -->
+      <div class="card-premium p-4 fade-in">
+        <h5 class="fw-black mb-3">TU PEDIDO</h5>
+
+        <div *ngFor="let p of carrito; let i = index" class="producto-checkout">
+          <img [src]="p.imagen" class="checkout-img" />
+
+          <div class="flex-grow-1 ms-3">
+            <strong>{{ p.nombre }}</strong>
+
+            <div class="text-muted small">Talle: {{ p.talle }} • Color: {{ p.color }}</div>
+
+            <div class="cantidad-control mt-2">
+              <button (click)="restarCantidad(i)">−</button>
+              <span>{{ p.cantidad }}</span>
+              <button (click)="sumarCantidad(i)">+</button>
+
+              <span class="eliminar" (click)="eliminarProducto(i)">Eliminar</span>
+            </div>
+          </div>
+
+          <div class="fw-bold">${{ p.precio * p.cantidad | number }}</div>
+        </div>
+
+        <div class="total-box mt-4">
+          <span>Total</span>
+          <span>${{ total | number }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DERECHA -->
+    <div class="col-lg-5">
+      <div class="card-premium p-4 position-sticky-custom fade-in">
+        <!-- CANCELAR -->
+        <div class="cancel-link-container">
+          <span class="cancel-link" (click)="cancelarCompra()">Cancelar compra</span>
+        </div>
+
+        <h5 class="fw-black mb-3">FINALIZAR COMPRA</h5>
+
+        <form (ngSubmit)="confirmarCompra()" #form="ngForm">
+          <!-- NOMBRE -->
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control input-premium"
+              name="nombre"
+              [(ngModel)]="formData.nombre"
+              required
+              #nombre="ngModel"
+            />
+            <label>Nombre completo</label>
+            <small class="text-danger" *ngIf="nombre.invalid && nombre.touched">
+              Campo obligatorio
+            </small>
+          </div>
+
+          <!-- DNI -->
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control input-premium"
+              name="dni"
+              [(ngModel)]="formData.dni"
+              required
+              #dni="ngModel"
+            />
+            <label>DNI</label>
+            <small class="text-danger" *ngIf="dni.invalid && dni.touched">
+              DNI inválido (8 números)
+            </small>
+          </div>
+
+          <!-- TELEFONO -->
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control input-premium"
+              name="telefono"
+              [(ngModel)]="formData.telefono"
+              required
+              #tel="ngModel"
+            />
+            <label>Teléfono</label>
+            <small class="text-danger" *ngIf="tel.invalid && tel.touched">
+              Teléfono inválido
+            </small>
+          </div>
+
+          <!-- EMAIL -->
+          <div class="form-floating mb-3">
+            <input
+              type="email"
+              class="form-control input-premium"
+              name="correo"
+              [(ngModel)]="formData.correo"
+              required
+              #mail="ngModel"
+            />
+            <label>Email</label>
+            <small class="text-danger" *ngIf="mail.invalid && mail.touched"> Email inválido </small>
+          </div>
+
+          <!-- ENVIO -->
+          <select
+            class="form-select input-premium mb-3"
+            name="envio"
+            [(ngModel)]="formData.envio"
+            required
+            #envio="ngModel"
+          >
+            <option value="">Tipo de entrega</option>
+            <option value="domicilio">Envío a domicilio</option>
+            <option value="local">Retiro en local</option>
+          </select>
+
+          <small class="text-danger" *ngIf="envio.invalid && envio.touched">
+            Seleccioná una opción
+          </small>
+
+          <!-- FILE -->
+          <label class="upload-box mb-3">
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+
+            <span *ngIf="!comprobante">Subir comprobante (solo imagen)</span>
+            <span *ngIf="comprobante">{{ comprobante.name }}</span>
+          </label>
+
+          <small class="text-danger" *ngIf="!comprobante"> Falta comprobante </small>
+
+          <button class="btn-confirm w-100 mt-2" [disabled]="!form.valid || !comprobante">
+            CONFIRMAR COMPRA
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

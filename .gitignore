@@ -1,0 +1,19 @@
+# Dependencias de ambos proyectos
+node_modules/
+hummel/node_modules/
+backend/node_modules/
+
+# Archivos de subida y variables sensibles
+backend/uploads/
+.env
+
+# Compilación de Angular
+dist/
+hummel/dist/
+.angular/
+hummel/.angular/
+
+# Varios
+.vscode/
+Thumbs.db
+.DS_Store

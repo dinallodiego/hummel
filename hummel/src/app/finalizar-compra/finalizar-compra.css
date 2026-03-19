@@ -1,0 +1,212 @@
+.checkout-container {
+  background: #f5f5f5;
+  padding-bottom: 80px;
+}
+
+/* CARDS */
+.card-premium {
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+  transition: 0.3s;
+}
+
+.card-premium:hover {
+  transform: translateY(-4px);
+}
+
+/* PRODUCTOS */
+.producto-checkout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #eee;
+}
+
+/* CANTIDAD */
+.cantidad-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cantidad-control button {
+  border: none;
+  background: #eee;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.cantidad-control button:hover {
+  background: #000;
+  color: white;
+}
+
+/* ELIMINAR */
+.eliminar {
+  margin-left: 10px;
+  font-size: 0.8rem;
+  color: #999;
+  cursor: pointer;
+}
+
+.eliminar:hover {
+  color: red;
+}
+
+/* IMAGEN */
+.checkout-img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #f5f5f5;
+  padding: 5px;
+}
+
+/* TOTAL */
+.total-box {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 900;
+  font-size: 1.3rem;
+}
+
+/* INPUT BASE */
+.input-premium {
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  transition: 0.2s;
+}
+
+/* 🔴 ERROR */
+.input-premium.ng-invalid.ng-touched {
+  border-color: #ff4d4f;
+  background: #fff5f5;
+}
+
+/* 🟢 OK */
+.input-premium.ng-valid.ng-touched {
+  border-color: #28a745;
+  background: #f6fff8;
+}
+
+/* FILE */
+.upload-box {
+  display: block;
+  padding: 15px;
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.upload-box:hover {
+  border-color: #000;
+  background: #fafafa;
+}
+
+/* BOTON */
+.btn-confirm {
+  background: black;
+  color: white;
+  padding: 14px;
+  border-radius: 50px;
+  font-weight: 800;
+  border: none;
+  transition: 0.2s;
+}
+
+.btn-confirm:hover {
+  background: #222;
+  transform: translateY(-2px);
+}
+
+/* CANCELAR (PRO) */
+.cancel-link-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.cancel-link {
+  font-size: 0.85rem;
+  color: #888;
+  cursor: pointer;
+  position: relative;
+}
+
+.cancel-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background: #000;
+  transition: 0.3s;
+}
+
+.cancel-link:hover {
+  color: #000;
+}
+
+.cancel-link:hover::after {
+  width: 100%;
+}
+
+/* 🔥 PAYMENT PREMIUM */
+.payment-box {
+  color: black;
+  border-radius: 14px;
+  padding: 18px;
+  font-size: 0.95rem;
+}
+
+.payment-box div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.payment-box span {
+  color: black;
+}
+
+/* INSTRUCCIONES */
+.instrucciones-box {
+  line-height: 1.6;
+  background: #fafafa;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+/* STICKY */
+@media (min-width: 992px) {
+  .position-sticky-custom {
+    position: sticky;
+    top: 120px;
+  }
+}
+
+/* ANIMACION */
+.fade-in {
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

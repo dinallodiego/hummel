@@ -1,0 +1,43 @@
+<div class="login-container">
+
+  <div class="login-left">
+
+    <div class="brand">HUMMEL</div>
+
+    <h1>Admin Dashboard</h1>
+
+    <p>
+      Gestiona productos, controla pedidos y monitorea
+      el rendimiento de tu marca deportiva.
+    </p>
+
+  </div>
+
+
+  <div class="login-right">
+
+    <div class="login-card">
+
+      <h2>Iniciar sesión</h2>
+
+      <input
+        type="email"
+        placeholder="Email"
+        [(ngModel)]="email"
+      />
+
+      <input
+        type="password"
+        placeholder="Contraseña"
+        [(ngModel)]="password"
+      />
+
+      <button (click)="login()">
+        Entrar al panel
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,27 @@
+/* Barra de filtros */
+.barra-filtro button {
+  min-width: 100px;
+  transition: all 0.3s;
+}
+
+.barra-filtro button:hover {
+  transform: scale(1.05);
+}
+
+/* Tabla más profesional */
+.table th,
+.table td {
+  vertical-align: middle;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(63, 81, 181, 0.1);
+}
+
+/* Botones */
+.table button {
+  transition: 0.3s;
+}
+.table button:hover:not(:disabled) {
+  transform: scale(1.05);
+}

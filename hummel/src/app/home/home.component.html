@@ -1,0 +1,84 @@
+<section class="hero-viewport">
+  @for (img of images; track $index) {
+    <div class="slide" [class.active]="$index === currentIndex">
+      <img [src]="img" alt="Banner Hummel" class="main-slide-img" />
+      <div class="overlay"></div>
+      <div class="slide-content">
+        <h1 class="display-1 fw-black">BIENVENIDOS A <br />ROXBEL</h1>
+        <p class="lead mb-4">
+          <br />
+          EQUIPATE PARA GANAR TU PASIÓN, NUEVA TEMPORADA DISPONIBLE
+        </p>
+        <button class="btn-modern" routerLink="/productos">VER CATALOGO</button>
+      </div>
+    </div>
+  }
+
+  <button class="nav-btn prev" (click)="prev()">&#10094;</button>
+  <button class="nav-btn next" (click)="next()">&#10095;</button>
+
+  <div class="indicators">
+    @for (img of images; track $index) {
+      <span [class.active]="$index === currentIndex" (click)="setSlide($index)"></span>
+    }
+  </div>
+</section>
+
+<section class="container my-5 py-5">
+  <h2 class="section-title">PRODUCTOS DESTACADOS</h2>
+  <div class="row g-4 justify-content-center">
+    @for (prod of destacados; track prod.id) {
+      <div class="col-10 col-sm-6 col-md-4">
+        <div class="product-card">
+          <div class="img-wrapper">
+            <img [src]="prod.imagen" [alt]="prod.nombre" />
+            <div class="quick-add">Añadir al carrito</div>
+          </div>
+          <div class="info text-center mt-3">
+            <span class="category">{{ prod.categoria }}</span>
+            <h6 class="name">{{ prod.nombre }}</h6>
+            <p class="price">${{ prod.precio }}</p>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+<h2 class="section-title">CATEGORÍAS</h2>
+<section class="container-fluid px-lg-5 mb-5 pb-5">
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="category-banner" routerLink="/productos">
+        <div class="banner-img-container">
+          <img src="../../assets/banners-categoria/hombres.jpg" alt="Hombre" />
+        </div>
+        <div class="banner-text">
+          <h3>HOMBRE</h3>
+          <span>COMPRAR AHORA</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="category-banner" routerLink="/productos">
+        <div class="banner-img-container">
+          <img src="../../assets/banners-categoria/mujer.jpg" alt="Mujer" />
+        </div>
+        <div class="banner-text">
+          <h3>MUJER</h3>
+          <span>COMPRAR AHORA</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="category-banner" routerLink="/productos">
+        <div class="banner-img-container">
+          <img src="../../assets/banners-categoria/nenes.png" alt="Niños" />
+        </div>
+        <div class="banner-text">
+          <h3>NIÑOS</h3>
+          <span>COMPRAR AHORA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

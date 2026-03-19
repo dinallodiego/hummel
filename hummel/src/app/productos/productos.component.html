@@ -1,0 +1,296 @@
+<section class="container-fluid px-lg-5 my-5">
+  <div class="row">
+    <!-- SIDEBAR -->
+    <aside class="col-lg-2 d-none d-lg-block">
+      <div class="sticky-top" style="top: 110px">
+        <h5 class="fw-black mb-4 pb-2 border-bottom border-dark border-2 d-inline-block">
+          FILTRAR
+        </h5>
+
+        <div class="mb-5">
+          <p class="filter-label">GÉNERO</p>
+
+          <div
+            class="filter-link"
+            [class.active]="filtroGenero === 'Todos'"
+            (click)="setFiltro('Todos')"
+          >
+            Todos
+          </div>
+          <div
+            class="filter-link"
+            [class.active]="filtroGenero === 'Hombre'"
+            (click)="setFiltro('Hombre')"
+          >
+            Hombre
+          </div>
+          <div
+            class="filter-link"
+            [class.active]="filtroGenero === 'Mujer'"
+            (click)="setFiltro('Mujer')"
+          >
+            Mujer
+          </div>
+          <div
+            class="filter-link"
+            [class.active]="filtroGenero === 'Niño'"
+            (click)="setFiltro('Niño')"
+          >
+            Niño
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <div class="col-lg-10">
+      <!-- HEADER -->
+      <div
+        class="d-flex justify-content-between align-items-center mb-5 border-bottom pb-3 px-2 bg-white sticky-top shadow-sm rounded-3 p-3"
+        style="top: 70px; z-index: 100"
+      >
+        <h1 class="catalogo-title m-0 fw-black text-dark">
+          {{ filtroGenero }} ({{ productosFiltrados.length }})
+        </h1>
+
+        <div class="d-flex align-items-center gap-3">
+          <!-- ORDEN -->
+          <div class="dropdown">
+            <button
+              class="btn btn-light rounded-pill fw-bold dropdown-toggle shadow-sm text-uppercase"
+              data-bs-toggle="dropdown"
+            >
+              Ordenar: {{ ordenActual }}
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 rounded-3">
+              <li>
+                <button class="dropdown-item" (click)="ordenActual = 'Relevancia'">
+                  Relevancia
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item" (click)="ordenActual = 'Menor Precio'">
+                  Menor Precio
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item" (click)="ordenActual = 'Mayor Precio'">
+                  Mayor Precio
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <!-- CARRITO BTN -->
+          <button
+            class="btn btn-dark rounded-pill px-4 shadow cart-btn-anim"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#cartSide"
+          >
+            Carrito ({{ carritoService.getCarrito().length }})
+          </button>
+        </div>
+      </div>
+
+      <!-- PRODUCTOS -->
+      <div class="row g-4" *ngIf="productosFiltrados.length > 0">
+        <div *ngFor="let item of productosPaginados" class="col-lg-4 col-md-6 col-6">
+          <div class="nike-card-premium" (click)="abrirDetalle(item)">
+            <div class="img-container-premium">
+              <img [src]="item.imagen" class="product-img-main" />
+            </div>
+
+            <div class="product-info-premium text-center">
+              <p class="p-category">{{ item.genero }}</p>
+              <h3 class="p-name">{{ item.nombre }}</h3>
+              <p class="p-descripcion">{{ item.descripcion }}</p>
+              <p class="p-price">${{ item.precio | number }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIN PRODUCTOS -->
+      <div *ngIf="productosFiltrados.length === 0" class="text-center py-5">
+        No hay productos disponibles
+      </div>
+
+      <!-- PAGINACION -->
+      <nav class="mt-5 d-flex justify-content-center">
+        <ul class="pagination-modern shadow-sm p-2 bg-white rounded-pill">
+          <li
+            *ngFor="let p of paginas"
+            [class.active]="paginaActual === p"
+            (click)="cambiarPagina(p)"
+          >
+            {{ p }}
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- 🛒 CARRITO -->
+<div
+  class="offcanvas offcanvas-end border-0 shadow-lg"
+  tabindex="-1"
+  id="cartSide"
+  style="width: 420px"
+>
+  <div class="offcanvas-header border-bottom p-4 bg-light">
+    <h5 class="fw-black m-0 fs-4">TU CARRITO ({{ carritoService.getCarrito().length }})</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+
+  <div class="offcanvas-body p-4 bg-white">
+    <div
+      *ngFor="let c of carritoService.getCarrito()"
+      class="d-flex gap-3 mb-4 align-items-center border-bottom pb-3"
+    >
+      <img [src]="c.imagen" width="90" class="bg-light p-2 rounded-3" />
+
+      <div class="flex-grow-1">
+        <h6 class="fw-bold mb-1 fs-6">{{ c.nombre }}</h6>
+
+        <p class="small text-muted mb-2">
+          Talle: {{ c.talle }} • Color: {{ c.color }} • ${{ c.precio | number }} c/u
+        </p>
+
+        <div class="quantity-control shadow-sm">
+          <button (click)="cambiarCantidad(c.uuid, 'restar')" class="btn-qty">-</button>
+          <span class="qty-num">{{ c.cantidad }}</span>
+          <button (click)="cambiarCantidad(c.uuid, 'sumar')" class="btn-qty">+</button>
+        </div>
+      </div>
+
+      <div class="text-end">
+        <p class="fw-black mb-1 fs-6">${{ c.precio * c.cantidad | number }}</p>
+
+        <button
+          class="btn btn-sm btn-link text-danger text-decoration-none p-0"
+          (click)="eliminarDelCarrito(c.uuid)"
+        >
+          Quitar
+        </button>
+      </div>
+    </div>
+
+    <div
+      *ngIf="carritoService.getCarrito().length === 0"
+      class="text-center py-5 text-muted bg-light rounded-3 mt-4"
+    >
+      Tu carrito está vacío
+    </div>
+  </div>
+
+  <div class="offcanvas-footer p-4 border-top bg-light mt-auto">
+    <div class="d-flex justify-content-between mb-4">
+      <span class="text-muted fw-bold"> SUBTOTAL </span>
+      <span class="fw-black fs-3 text-dark"> ${{ carritoService.getTotal() | number }} </span>
+    </div>
+
+    <button
+      class="btn btn-dark w-100 py-3 rounded-pill fw-bold fs-5 shadow"
+      [disabled]="carritoService.getCarrito().length === 0"
+      (click)="finalizarCompra()"
+    >
+      FINALIZAR COMPRA
+    </button>
+  </div>
+</div>
+
+<!-- 🔥 MODAL DETALLE PRO -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+      <div class="modal-body p-0" *ngIf="productoSeleccionado">
+        <div class="row g-0">
+          <!-- GALERIA -->
+          <div class="col-md-7 p-4 bg-light">
+            <div class="image-viewer">
+              <button class="arrow left" (click)="anteriorImagen()">‹</button>
+
+              <img
+                [src]="productoSeleccionado.imagenes[imagenIndex]"
+                class="main-modal-img"
+                [class.zoom]="zoomActivo"
+                (click)="toggleZoom()"
+              />
+
+              <button class="arrow right" (click)="siguienteImagen()">›</button>
+            </div>
+
+            <!-- MINIATURAS -->
+            <div class="thumbs mt-3">
+              <img
+                *ngFor="let img of productoSeleccionado.imagenes; let i = index"
+                [src]="img"
+                (click)="seleccionarImagen(i)"
+                [class.active]="imagenIndex === i"
+              />
+            </div>
+          </div>
+
+          <!-- INFO -->
+          <div class="col-md-5 p-5">
+            <button type="button" class="btn-close float-end" data-bs-dismiss="modal"></button>
+
+            <p class="text-muted small mb-1">{{ productoSeleccionado.genero }}</p>
+
+            <h2 class="fw-black mb-2">
+              {{ productoSeleccionado.nombre }}
+            </h2>
+
+            <p class="text-muted mb-3">
+              {{ productoSeleccionado.descripcion }}
+            </p>
+
+            <h3 class="fw-black mb-4">${{ productoSeleccionado.precio | number }}</h3>
+
+            <!-- TALLES -->
+            <div class="mb-4">
+              <p class="fw-bold mb-2">Talle</p>
+
+              <div class="talle-grid-premium">
+                <button
+                  *ngFor="let t of productoSeleccionado.talles"
+                  class="btn-talle-premium"
+                  [class.selected]="talleElegido === t"
+                  (click)="talleElegido = t"
+                >
+                  {{ t }}
+                </button>
+              </div>
+            </div>
+
+            <!-- COLORES -->
+            <div class="mb-4">
+              <p class="fw-bold mb-2">Color</p>
+
+              <div class="d-flex gap-2 flex-wrap">
+                <button
+                  *ngFor="let c of productoSeleccionado.colores"
+                  class="btn-talle-premium"
+                  [class.selected]="colorElegido === c"
+                  (click)="colorElegido = c"
+                >
+                  {{ c }}
+                </button>
+              </div>
+            </div>
+
+            <!-- BOTON -->
+            <button
+              class="btn-black-premium w-100 py-3 rounded-pill fw-bold"
+              (click)="agregarAlCarrito()"
+            >
+              AGREGAR AL CARRITO
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

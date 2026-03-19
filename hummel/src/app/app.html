@@ -1,0 +1,105 @@
+<div class="top-bar">
+  <div class="container d-flex justify-content-end">
+    <a (click)="mostrarLocales()" style="cursor: pointer">
+      <i class="bi bi-house me-2"></i>LOCALES
+    </a>
+
+    <!-- Navbar o Footer -->
+    <a (click)="misCompras()" style="cursor: pointer"><i class="bi bi-bag me-2"></i> MIS COMPRAS</a>
+    <a href="#"><i class="bi bi-cart me-2"></i> MI CARRITO</a>
+  </div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white main-navbar sticky-top">
+  <div class="container">
+    <a class="navbar-brand logo" routerLink="/home">
+      <img src="../assets/iconos/logo.png" width="80px" />
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="menu">
+      <ul class="navbar-nav nav-links">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/home" routerLinkActive="active">Home</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/productos" routerLinkActive="active">Productos</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/nosotros" routerLinkActive="active">Nosotros</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="simple-footer">
+  <div class="container">
+    <div class="row py-5">
+      <div class="col-lg-4 col-md-6 mb-4 mb-lg-0 text-center text-md-start">
+        <h4 class="footer-logo">HUMMEL</h4>
+
+        <div class="contact-info-footer mt-3">
+          <p><i class="bi bi-envelope-fill me-2"></i> info@hummel.com</p>
+          <p><i class="bi bi-telephone-fill me-2"></i> +54 9 11 2247-4072</p>
+        </div>
+
+        <div class="social-simple mt-3">
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-twitter-x"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6 mb-4 mb-lg-0 text-center">
+        <h6 class="footer-section-title">MENÚ</h6>
+
+        <div class="footer-nav-simple">
+          <a routerLink="/home">Home</a>
+          <a routerLink="/productos">Productos</a>
+          <a routerLink="/nosotros">Nosotros</a>
+          <a routerLink="/admin">Admin</a>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-12 text-center text-lg-end">
+        <h6 class="footer-section-title">Contactos</h6>
+
+        <ul class="footer-support-list">
+          <li><a href="mailto:info@hummel.com">info@hummel.com</a></li>
+          <li><a (click)="mostrarLocales()" style="cursor: pointer">Locales</a></li>
+          <li>
+            <!-- Navbar o Footer -->
+            <a (click)="misCompras()" style="cursor: pointer"
+              ><i class="bi bi-bag me-2"></i> MIS COMPRAS</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-copyright">
+      <p>© 2026 HUMMEL ARGENTINA — TODOS LOS DERECHOS RESERVADOS.</p>
+    </div>
+  </div>
+</footer>
+
+<a
+  href="https://wa.me/5491122474072"
+  class="whatsapp-float"
+  id="whatsappFloat"
+  aria-label="Enviar WhatsApp"
+  target="_blank"
+  rel="noopener"
+>
+  <img src="../assets/iconos/wpp.png" alt="WhatsApp" />
+</a>

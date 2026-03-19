@@ -1,0 +1,375 @@
+/* --- HEADER --- */
+
+body {
+  font-size: 16px;
+}
+
+.top-bar {
+  background: #111;
+  padding: 10px 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.top-bar a {
+  color: #888;
+  text-decoration: none;
+  margin-left: 20px;
+  transition: 0.3s;
+}
+
+.top-bar a:hover {
+  color: #fff;
+}
+
+.main-navbar {
+  border-bottom: 1px solid #eee;
+  padding: 15px 0;
+  background: white !important;
+}
+
+.logo {
+  font-weight: 900;
+  font-size: 26px;
+  color: #000 !important;
+  text-transform: uppercase;
+  text-decoration: none;
+  letter-spacing: -1.5px;
+}
+
+.nav-links .nav-link {
+  font-weight: 700;
+  color: #000 !important;
+  font-size: 15px;
+  text-transform: uppercase;
+  margin: 0 15px;
+}
+
+/* --- HOVER PROFESIONAL --- */
+
+.nav-links .nav-link {
+  font-weight: 700;
+  color: #000 !important;
+  text-transform: uppercase;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding: 8px 0;
+  transition: color 0.3s ease;
+}
+
+/* línea animada */
+
+.nav-links .nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -3px;
+  left: 50%;
+  background-color: #000;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%);
+}
+
+/* hover */
+
+.nav-links .nav-link:hover {
+  opacity: 0.7;
+}
+
+.nav-links .nav-link:hover::after {
+  width: 100%;
+}
+
+/* link activo */
+
+.nav-links .nav-link.active {
+  font-weight: 900;
+  border-bottom: 2px solid #000;
+}
+
+.main-content {
+  min-height: 75vh;
+}
+
+/* --- FOOTER --- */
+
+.footer-nav-simple a,
+.footer-support-list a {
+  font-size: 0.95rem;
+}
+
+.simple-footer {
+  background-color: #000;
+  color: #fff;
+  padding: 60px 0 20px;
+  border-top: 1px solid #111;
+}
+
+.footer-logo {
+  font-weight: 900;
+  font-size: 1.6rem;
+  margin-bottom: 5px;
+  letter-spacing: -1px;
+}
+
+.footer-tagline {
+  color: #444;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 20px;
+}
+
+.contact-info-footer p {
+  color: #888;
+  font-size: 0.85rem;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 991px) {
+  .contact-info-footer p {
+    justify-content: center;
+  }
+}
+
+.social-simple a {
+  color: #fff;
+  font-size: 1.4rem;
+  margin-right: 20px;
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-block;
+}
+
+.social-simple a:hover {
+  transform: translateY(-3px);
+  color: #aaa;
+}
+
+.footer-section-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #555;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+}
+
+.footer-nav-simple a,
+.footer-support-list a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 15px;
+  transition: 0.3s;
+}
+
+.footer-nav-simple a:hover,
+.footer-support-list a:hover {
+  color: #888;
+  padding-right: 5px;
+}
+
+.footer-support-list {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-copyright {
+  border-top: 1px solid #111;
+  padding-top: 25px;
+  margin-top: 40px;
+  text-align: center;
+}
+
+.footer-copyright p {
+  color: #333;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+/* BOTON WHATSAPP */
+
+.whatsapp-float {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  background-color: #1e7d41;
+  padding: 14px;
+  border-radius: 50%;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 190;
+  cursor: pointer;
+  transition:
+    transform 0.22s,
+    box-shadow 0.22s;
+}
+
+.whatsapp-float:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+}
+
+.whatsapp-float img {
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+}
+
+/* =========================
+   HAMBURGUESA PROFESIONAL
+========================= */
+
+.navbar-toggler {
+  border: none !important;
+  margin-left: 25px;
+  padding: 10px 12px;
+  position: relative;
+  transition: 0.3s ease;
+  z-index: 1001;
+}
+
+.navbar-toggler:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.navbar-toggler-icon {
+  background-image: none !important;
+  width: 28px;
+  height: 18px;
+  position: relative;
+}
+
+/* lineas */
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #000;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbar-toggler-icon::before {
+  top: 0;
+}
+
+.navbar-toggler-icon::after {
+  bottom: 0;
+}
+
+/* linea central */
+
+.navbar-toggler-icon {
+  border-top: 2px solid #000;
+  border-bottom: 2px solid #000;
+}
+
+/* animacion X */
+
+.navbar-toggler.active .navbar-toggler-icon {
+  border-color: transparent;
+}
+
+.navbar-toggler.active .navbar-toggler-icon::before {
+  transform: rotate(45deg);
+  top: 8px;
+}
+
+.navbar-toggler.active .navbar-toggler-icon::after {
+  transform: rotate(-45deg);
+  bottom: 8px;
+}
+
+/* =========================
+   MENU MOBILE FULLSCREEN
+========================= */
+
+@media (max-width: 991px) {
+  .navbar-collapse {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100vh;
+
+    background: white;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    transform: translateY(-100%);
+
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .navbar-collapse.show {
+    transform: translateY(0);
+  }
+
+  .nav-links {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .nav-links .nav-item {
+    margin: 18px 0;
+  }
+
+  .nav-links .nav-link {
+    font-size: 22px;
+  }
+}
+
+/* =========================
+   OVERLAY OSCURO
+========================= */
+
+body.menu-open::before {
+  content: '';
+
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.35);
+
+  z-index: 998;
+}
+
+/* RESPONSIVE FOOTER */
+
+@media (max-width: 991px) {
+  .footer-logo,
+  .footer-tagline {
+    text-align: center;
+  }
+
+  .text-lg-end {
+    text-align: center !important;
+    margin-top: 20px;
+  }
+}

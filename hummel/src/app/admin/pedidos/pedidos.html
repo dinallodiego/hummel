@@ -1,0 +1,94 @@
+<div class="mb-3 barra-filtro d-flex flex-wrap gap-2">
+  <button
+    *ngFor="let estado of estados"
+    (click)="filtrarPorEstado(estado)"
+    class="btn"
+    [ngClass]="estadoSeleccionado === estado ? 'btn-primary' : 'btn-outline-secondary'"
+  >
+    {{ estado | titlecase }}
+  </button>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-striped table-bordered align-middle">
+    <thead class="table-dark text-center">
+      <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>DNI</th>
+        <th>Teléfono</th>
+        <th>Total</th>
+        <th>Estado</th>
+        <th *ngIf="estadoSeleccionado === 'rechazado'">Motivo</th>
+        <th>Productos</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pedido of pedidosPaginados()">
+        <td>{{ pedido.id_pedido }}</td>
+        <td>{{ pedido.nombre }}</td>
+        <td>{{ pedido.dni }}</td>
+        <td>{{ pedido.telefono }}</td>
+        <td>{{ pedido.total | currency: 'ARS' }}</td>
+        <td>
+          <span
+            class="badge"
+            [ngClass]="{
+              'bg-warning text-dark': pedido.estado === 'pendiente',
+              'bg-success': pedido.estado === 'aceptado',
+              'bg-danger': pedido.estado === 'rechazado',
+            }"
+          >
+            {{ pedido.estado | titlecase }}
+          </span>
+        </td>
+        <td *ngIf="estadoSeleccionado === 'rechazado'">{{ pedido.mensaje }}</td>
+        <td>
+          <ul class="list-unstyled mb-0">
+            <li *ngFor="let p of pedido.productos">
+              {{ p.nombre }} - {{ p.cantidad }} x {{ p.precio | currency: 'ARS' }}
+            </li>
+          </ul>
+        </td>
+        <td class="text-center">
+          <button
+            class="btn btn-sm btn-success me-1"
+            (click)="aceptarPedido(pedido)"
+            [disabled]="pedido.estado !== 'pendiente'"
+          >
+            Aceptar
+          </button>
+          <button
+            class="btn btn-sm btn-danger"
+            (click)="rechazarPedido(pedido)"
+            [disabled]="pedido.estado !== 'pendiente'"
+          >
+            Rechazar
+          </button>
+        </td>
+      </tr>
+      <tr *ngIf="pedidosFiltrados.length === 0">
+        <td colspan="9" class="text-center py-3">No hay pedidos para mostrar</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="d-flex justify-content-center align-items-center mt-3 gap-2">
+  <button
+    class="btn btn-outline-primary"
+    (click)="cambiarPagina(-1)"
+    [disabled]="paginaActual === 1"
+  >
+    &laquo; Anterior
+  </button>
+  <span>Página {{ paginaActual }} de {{ totalPaginas }}</span>
+  <button
+    class="btn btn-outline-primary"
+    (click)="cambiarPagina(1)"
+    [disabled]="paginaActual === totalPaginas || totalPaginas === 0"
+  >
+    Siguiente &raquo;
+  </button>
+</div>

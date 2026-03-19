@@ -1,0 +1,210 @@
+import { Component, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../services/auth';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import Swal from 'sweetalert2';
+import { PedidosComponent } from './pedidos/pedidos';
+
+@Component({
+  selector: 'app-admin',
+  standalone: true,
+  imports: [CommonModule, FormsModule, PedidosComponent],
+  templateUrl: './admin.component.html',
+  styleUrls: ['./admin.component.css'],
+})
+export class AdminComponent implements OnInit {
+  vista: string = 'dashboard';
+  productos: any[] = [];
+  producto: any = {
+    id: null,
+    nombre: '',
+    precio: '',
+    descripcion: '',
+    genero_id: '',
+    categoria_id: '',
+  };
+  generos: any[] = [];
+  categorias: any[] = [];
+  talles: any[] = [];
+  colores: any[] = [];
+  tallesSeleccionados: number[] = [];
+  coloresSeleccionados: number[] = [];
+  imagenes: File[] = [];
+  pedidosPendientes: number = 0;
+  @ViewChild(PedidosComponent) pedidosComp!: PedidosComponent;
+
+  irAPedidos() {
+    this.vista = 'pedidos';
+    setTimeout(() => {
+      this.pedidosComp?.cargarPedidos();
+    });
+  }
+
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
+  ) {}
+
+  ngOnInit() {
+    this.cargarProductos();
+
+    this.http.get('http://localhost:3000/generos').subscribe((data: any) => (this.generos = data));
+    this.http
+      .get('http://localhost:3000/categorias')
+      .subscribe((data: any) => (this.categorias = data));
+    this.http.get('http://localhost:3000/talles').subscribe((data: any) => (this.talles = data));
+    this.http.get('http://localhost:3000/colores').subscribe((data: any) => (this.colores = data));
+
+    // Contar pedidos pendientes
+    this.http
+      .get<{ pendientes: number }>('http://localhost:3000/pedidos-pendientes/count')
+      .subscribe((res) => (this.pedidosPendientes = res.pendientes));
+  }
+
+  cargarProductos() {
+    this.http.get<any[]>('http://localhost:3000/productos').subscribe((productos) => {
+      const normalizados = productos.map((p: any) => {
+        const imagenPrincipal = p.imagen?.startsWith('/uploads')
+          ? 'http://localhost:3000' + p.imagen
+          : 'assets/no-image.png';
+        return {
+          ...p,
+          precio: Number(p.precio),
+          imagen: imagenPrincipal,
+          disponible: p.disponible ?? true,
+        };
+      });
+      this.productos = normalizados;
+      this.cdr.detectChanges();
+    });
+  }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/admin/login']);
+  }
+
+  onFilesSelected(event: any) {
+    this.imagenes = event.target.files;
+  }
+
+  toggleTalle(id: number, event: any) {
+    if (event.target.checked) {
+      if (!this.tallesSeleccionados.includes(id)) this.tallesSeleccionados.push(id);
+    } else {
+      this.tallesSeleccionados = this.tallesSeleccionados.filter((t) => t !== id);
+    }
+  }
+
+  toggleColor(id: number, event: any) {
+    if (event.target.checked) {
+      if (!this.coloresSeleccionados.includes(id)) this.coloresSeleccionados.push(id);
+    } else {
+      this.coloresSeleccionados = this.coloresSeleccionados.filter((c) => c !== id);
+    }
+  }
+
+  editarProducto(p: any) {
+    this.producto = {
+      id: p.id,
+      nombre: p.nombre,
+      precio: p.precio,
+      descripcion: p.descripcion,
+      genero_id: p.genero_id,
+      categoria_id: p.categoria_id,
+    };
+    this.tallesSeleccionados = [...p.talles_ids];
+    this.coloresSeleccionados = [...p.colores_ids];
+    this.imagenes = [];
+  }
+
+  crearProducto() {
+    const titulo = this.producto.id ? '¿Guardar cambios del producto?' : '¿Crear nuevo producto?';
+
+    Swal.fire({
+      title: titulo,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      const formData = new FormData();
+      formData.append('nombre', this.producto.nombre);
+      formData.append('descripcion', this.producto.descripcion);
+      formData.append('precio', this.producto.precio);
+      formData.append('categoria_id', this.producto.categoria_id);
+      formData.append('genero_id', this.producto.genero_id);
+      formData.append('talles', JSON.stringify(this.tallesSeleccionados));
+      formData.append('colores', JSON.stringify(this.coloresSeleccionados));
+
+      for (let i = 0; i < this.imagenes.length; i++) {
+        formData.append('imagenes', this.imagenes[i]);
+      }
+
+      if (this.producto.id) {
+        this.http
+          .put(`http://localhost:3000/productos/${this.producto.id}`, formData)
+          .subscribe(() => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Producto actualizado',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            this.cargarProductos();
+          });
+      } else {
+        this.http.post('http://localhost:3000/productos', formData).subscribe(() => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Producto creado',
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          this.cargarProductos();
+        });
+      }
+    });
+  }
+
+  eliminarProducto(p: any) {
+    Swal.fire({
+      title: '¿Eliminar producto?',
+      text: 'Podrás volver a activarlo',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.http.put(`http://localhost:3000/productos/${p.id}/desactivar`, {}).subscribe(() => {
+          Swal.fire('Producto desactivado', '', 'success');
+          this.cargarProductos();
+        });
+      }
+    });
+  }
+
+  activarProducto(p: any) {
+    Swal.fire({
+      title: '¿Activar producto?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Activar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.http.put(`http://localhost:3000/productos/${p.id}/activar`, {}).subscribe(() => {
+          Swal.fire('Producto activado', '', 'success');
+          this.cargarProductos();
+        });
+      }
+    });
+  }
+}

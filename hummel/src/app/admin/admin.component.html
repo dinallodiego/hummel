@@ -1,0 +1,225 @@
+<div class="admin-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="logo">HUMMEL</div>
+
+      <nav>
+        <a [class.active]="vista === 'dashboard'" (click)="vista = 'dashboard'"> Dashboard </a>
+        <a [class.active]="vista === 'productos'" (click)="vista = 'productos'"> Productos </a>
+        <a [class.active]="vista === 'pedidos'" (click)="vista = 'pedidos'"> Pedidos </a>
+        <a>Clientes</a>
+        <a>Estadísticas</a>
+      </nav>
+    </div>
+
+    <button class="btn btn-light mt-3" (click)="logout()">Cerrar sesión</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- DASHBOARD -->
+    <div *ngIf="vista === 'dashboard'">
+      <div class="welcome">
+        <h1>Bienvenido al panel de administración</h1>
+        <p>Gestiona todo el ecosistema de tu marca deportiva.</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <h3>Productos</h3>
+          <span>{{ productos.length }}</span>
+        </div>
+
+        <div class="stat-card">
+          <h3>Pedidos</h3>
+          <span>{{ pedidosPendientes }}</span>
+        </div>
+
+        <div class="stat-card">
+          <h3>Clientes</h3>
+          <span>0</span>
+        </div>
+
+        <div class="stat-card">
+          <h3>Ventas</h3>
+          <span>$0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCTOS -->
+    <div *ngIf="vista === 'productos'">
+      <div class="productos-header">
+        <h2>Productos</h2>
+
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalProducto">
+          + Agregar producto
+        </button>
+      </div>
+
+      <!-- GRID PRODUCTOS -->
+      <div class="productos-grid">
+        <div class="producto-card" *ngFor="let p of productos">
+          <img [src]="p.imagen || 'assets/no-image.png'" />
+
+          <div class="producto-info">
+            <h4>{{ p.nombre }}</h4>
+            <p>{{ p.genero }}</p>
+            <span>${{ p.precio }}</span>
+
+            <!-- ESTADO -->
+            <div class="mt-2">
+              <span *ngIf="p.disponible" class="badge bg-success"> Activo </span>
+              <span *ngIf="!p.disponible" class="badge bg-secondary"> Inactivo </span>
+            </div>
+
+            <!-- BOTONES ADMIN -->
+            <div class="mt-3 d-flex gap-2">
+              <button
+                class="btn btn-warning btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#modalProducto"
+                (click)="editarProducto(p)"
+              >
+                Editar
+              </button>
+
+              <button
+                *ngIf="p.disponible"
+                class="btn btn-danger btn-sm"
+                (click)="eliminarProducto(p)"
+              >
+                Eliminar
+              </button>
+
+              <button
+                *ngIf="!p.disponible"
+                class="btn btn-success btn-sm"
+                (click)="activarProducto(p)"
+              >
+                Dar de alta
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PEDIDOS -->
+    <div *ngIf="vista === 'pedidos'">
+      <app-pedidos></app-pedidos>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL CREAR / EDITAR PRODUCTO -->
+<div class="modal fade" id="modalProducto">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ producto.id ? 'Editar producto' : 'Crear producto' }}
+        </h5>
+
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form (ngSubmit)="crearProducto()" enctype="multipart/form-data">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label>Nombre</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="producto.nombre"
+                name="nombre"
+                required
+              />
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label>Precio</label>
+              <input
+                type="number"
+                class="form-control"
+                [(ngModel)]="producto.precio"
+                name="precio"
+                required
+              />
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label>Genero</label>
+              <select class="form-control" [(ngModel)]="producto.genero_id" name="genero_id">
+                <option value="">Seleccionar</option>
+                <option *ngFor="let g of generos" [value]="g.id">{{ g.nombre }}</option>
+              </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label>Categoria</label>
+              <select class="form-control" [(ngModel)]="producto.categoria_id" name="categoria_id">
+                <option value="">Seleccionar</option>
+                <option *ngFor="let c of categorias" [value]="c.id">{{ c.nombre }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- DESCRIPCION -->
+          <div class="mb-3">
+            <label>Descripcion</label>
+            <textarea
+              class="form-control"
+              rows="3"
+              [(ngModel)]="producto.descripcion"
+              name="descripcion"
+            ></textarea>
+          </div>
+
+          <!-- TALLES -->
+          <div class="mb-3">
+            <label>Talles</label>
+            <div class="checkbox-grid">
+              <label *ngFor="let t of talles">
+                <input
+                  type="checkbox"
+                  [checked]="tallesSeleccionados.includes(t.id)"
+                  (change)="toggleTalle(t.id, $event)"
+                />
+                {{ t.nombre }}
+              </label>
+            </div>
+          </div>
+
+          <!-- COLORES -->
+          <div class="mb-3">
+            <label>Colores</label>
+            <div class="checkbox-grid">
+              <label *ngFor="let c of colores">
+                <input
+                  type="checkbox"
+                  [checked]="coloresSeleccionados.includes(c.id)"
+                  (change)="toggleColor(c.id, $event)"
+                />
+                {{ c.nombre }}
+              </label>
+            </div>
+          </div>
+
+          <!-- IMAGENES -->
+          <div class="mb-3">
+            <label>Imagenes</label>
+            <input type="file" class="form-control" multiple (change)="onFilesSelected($event)" />
+          </div>
+
+          <!-- BOTON -->
+          <button class="btn btn-success w-100">
+            {{ producto.id ? 'Guardar cambios' : 'Crear producto' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
