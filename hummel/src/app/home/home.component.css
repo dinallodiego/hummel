@@ -128,11 +128,13 @@
   object-fit: cover;
   opacity: 0.8;
   transition: opacity 0.5s;
+  filter: brightness(0.6); /* 0 = negro, 1 = normal, >1 = más brillante */
 }
 
 /* Efecto de expansión al pasar el mouse */
 .category-banner:hover .banner-img-container {
   transform: scale(1.1);
+  filter: brightness(1); 
 }
 
 .category-banner:hover .banner-img-container img {

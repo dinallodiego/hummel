@@ -37,7 +37,7 @@ body {
   font-size: 12px; /* más chico en PC */
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #00b3a6;
+  color: gray;
   position: relative;
   max-width: 450px; 
   font-weight: 600;

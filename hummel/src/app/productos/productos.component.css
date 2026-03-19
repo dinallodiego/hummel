@@ -260,7 +260,6 @@
 }
 
 /* GALERIA DE IMAGENES */
-
 .image-viewer {
   position: relative;
   width: 100%;
@@ -304,7 +303,6 @@
 }
 
 /* MINIATURAS */
-
 .thumbs {
   display: flex;
   gap: 10px;

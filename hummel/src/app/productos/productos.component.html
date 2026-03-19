@@ -1,46 +1,38 @@
 <section class="container-fluid px-lg-5 my-5">
   <div class="row">
-    <!-- SIDEBAR -->
-    <aside class="col-lg-2 d-none d-lg-block">
-      <div class="sticky-top" style="top: 110px">
-        <h5 class="fw-black mb-4 pb-2 border-bottom border-dark border-2 d-inline-block">
-          FILTRAR
-        </h5>
+   <!-- SIDEBAR -->
+<aside class="col-lg-2 d-none d-lg-block">
+  <div class="sticky-top" style="top: 110px">
+    <h5 class="fw-black mb-4 pb-2 border-bottom border-dark border-2 d-inline-block">
+      FILTRAR
+    </h5>
 
-        <div class="mb-5">
-          <p class="filter-label">GÉNERO</p>
+    <!-- FILTRO POR GÉNERO -->
+    <div class="mb-5">
+      <p class="filter-label">GÉNERO</p>
 
-          <div
-            class="filter-link"
-            [class.active]="filtroGenero === 'Todos'"
-            (click)="setFiltro('Todos')"
-          >
-            Todos
-          </div>
-          <div
-            class="filter-link"
-            [class.active]="filtroGenero === 'Hombre'"
-            (click)="setFiltro('Hombre')"
-          >
-            Hombre
-          </div>
-          <div
-            class="filter-link"
-            [class.active]="filtroGenero === 'Mujer'"
-            (click)="setFiltro('Mujer')"
-          >
-            Mujer
-          </div>
-          <div
-            class="filter-link"
-            [class.active]="filtroGenero === 'Niño'"
-            (click)="setFiltro('Niño')"
-          >
-            Niño
-          </div>
-        </div>
+      <div class="filter-link" [class.active]="filtroGenero === 'Todos'" (click)="setFiltro('Todos')">Todos</div>
+      <div class="filter-link" [class.active]="filtroGenero === 'Hombre'" (click)="setFiltro('Hombre')">Hombre</div>
+      <div class="filter-link" [class.active]="filtroGenero === 'Mujer'" (click)="setFiltro('Mujer')">Mujer</div>
+      <div class="filter-link" [class.active]="filtroGenero === 'Niño'" (click)="setFiltro('Niño')">Niño</div>
+    </div>
+
+    <!-- FILTRO POR TIPO DE PRENDA (solo si no es "Todos") -->
+    <div class="mb-5" *ngIf="filtroGenero !== 'Todos'">
+      <p class="filter-label">TIPO DE PRENDA</p>
+
+      <div class="filter-link" [class.active]="filtroPrenda === 'Todos'" (click)="setFiltroPrenda('Todos')">Todos</div>
+      <div
+        class="filter-link"
+        *ngFor="let tipo of tiposDePrendaDisponibles()"
+        [class.active]="filtroPrenda === tipo"
+        (click)="setFiltroPrenda(tipo)"
+      >
+        {{ tipo }}
       </div>
-    </aside>
+    </div>
+  </div>
+</aside>
 
     <!-- CONTENIDO -->
     <div class="col-lg-10">

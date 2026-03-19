@@ -18,6 +18,7 @@ export class ProductosComponent implements OnInit {
   catalogoCompleto: any[] = [];
 
   filtroGenero: string = 'Todos';
+  filtroPrenda: string = 'Todos';
   ordenActual: string = 'Relevancia';
 
   paginaActual = 1;
@@ -72,6 +73,7 @@ export class ProductosComponent implements OnInit {
           id: p.id,
           nombre: p.nombre,
           genero: p.genero,
+          tipo: p.tipo || 'Otro', // <-- tipo de prenda agregado
           descripcion: p.descripcion,
           precio: Number(p.precio),
           imagen: imagenPrincipal,
@@ -82,23 +84,48 @@ export class ProductosComponent implements OnInit {
       });
 
       this.catalogoCompleto = nuevosProductos;
-
-      this.catalogoCompleto = nuevosProductos;
       this.paginaActual = 1;
 
       this.cdr.detectChanges();
     });
   }
 
+  // Retorna los tipos de prenda disponibles según el género seleccionado
+  tiposDePrendaDisponibles(): string[] {
+    const filtradoPorGenero = this.catalogoCompleto.filter(p =>
+      this.filtroGenero === 'Todos' ? true : p.genero?.toLowerCase() === this.filtroGenero.toLowerCase()
+    );
+    const tiposUnicos = Array.from(new Set(filtradoPorGenero.map(p => p.tipo))).sort();
+    return tiposUnicos;
+  }
+
+  setFiltro(genero: string) {
+    this.filtroGenero = genero;
+    this.filtroPrenda = 'Todos'; // Resetear filtro prenda al cambiar género
+    this.paginaActual = 1;
+  }
+
+  setFiltroPrenda(tipo: string) {
+    this.filtroPrenda = tipo;
+    this.paginaActual = 1;
+  }
+
   get productosFiltrados() {
     let resultado = [...this.catalogoCompleto];
 
+    // Filtro por género
     if (this.filtroGenero !== 'Todos') {
       resultado = resultado.filter(
-        (p) => p.genero?.toLowerCase() === this.filtroGenero.toLowerCase(),
+        p => p.genero?.toLowerCase() === this.filtroGenero.toLowerCase()
       );
     }
 
+    // Filtro por tipo de prenda
+    if (this.filtroPrenda !== 'Todos') {
+      resultado = resultado.filter(p => p.tipo === this.filtroPrenda);
+    }
+
+    // Orden
     if (this.ordenActual === 'Menor Precio') resultado.sort((a, b) => a.precio - b.precio);
     if (this.ordenActual === 'Mayor Precio') resultado.sort((a, b) => b.precio - a.precio);
 
@@ -118,32 +145,20 @@ export class ProductosComponent implements OnInit {
     return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
   }
 
-  setFiltro(genero: string) {
-    this.filtroGenero = genero;
-    this.paginaActual = 1;
-  }
-
   cambiarPagina(p: number) {
     this.paginaActual = p;
-
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   abrirDetalle(item: any) {
     this.productoSeleccionado = item;
-
     this.talleElegido = '';
     this.colorElegido = '';
-
     this.imagenIndex = 0;
     this.zoomActivo = false;
 
     setTimeout(() => {
       const modalElement = document.getElementById('detailModal');
-
       if (modalElement) {
         const modal = new bootstrap.Modal(modalElement);
         modal.show();
@@ -153,22 +168,14 @@ export class ProductosComponent implements OnInit {
 
   siguienteImagen() {
     if (!this.productoSeleccionado?.imagenes) return;
-
     this.imagenIndex++;
-
-    if (this.imagenIndex >= this.productoSeleccionado.imagenes.length) {
-      this.imagenIndex = 0;
-    }
+    if (this.imagenIndex >= this.productoSeleccionado.imagenes.length) this.imagenIndex = 0;
   }
 
   anteriorImagen() {
     if (!this.productoSeleccionado?.imagenes) return;
-
     this.imagenIndex--;
-
-    if (this.imagenIndex < 0) {
-      this.imagenIndex = this.productoSeleccionado.imagenes.length - 1;
-    }
+    if (this.imagenIndex < 0) this.imagenIndex = this.productoSeleccionado.imagenes.length - 1;
   }
 
   seleccionarImagen(i: number) {
@@ -181,39 +188,20 @@ export class ProductosComponent implements OnInit {
 
   agregarAlCarrito() {
     if (!this.talleElegido) {
-      Swal.fire({
-        title: 'Selecciona el talle',
-        icon: 'warning',
-        confirmButtonColor: '#000',
-      });
+      Swal.fire({ title: 'Selecciona el talle', icon: 'warning', confirmButtonColor: '#000' });
       return;
     }
-
     if (!this.colorElegido) {
-      Swal.fire({
-        title: 'Selecciona el color',
-        icon: 'warning',
-        confirmButtonColor: '#000',
-      });
+      Swal.fire({ title: 'Selecciona el color', icon: 'warning', confirmButtonColor: '#000' });
       return;
     }
-
-    // 👇 SOLO CAMBIAMOS ESTO
     this.carritoService.agregarProducto({
       ...this.productoSeleccionado,
       talle: this.talleElegido,
       color: this.colorElegido,
       cantidad: 1,
     });
-
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'success',
-      title: 'Producto añadido',
-      showConfirmButton: false,
-      timer: 1500,
-    });
+    Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Producto añadido', showConfirmButton: false, timer: 1500 });
   }
 
   cambiarCantidad(uuid: string, operacion: 'sumar' | 'restar') {
@@ -230,15 +218,9 @@ export class ProductosComponent implements OnInit {
 
   finalizarCompra() {
     if (this.carritoService.getCarrito().length === 0) {
-      Swal.fire({
-        title: 'Carrito vacío',
-        text: 'Agrega productos antes de finalizar',
-        icon: 'warning',
-        confirmButtonColor: '#000',
-      });
+      Swal.fire({ title: 'Carrito vacío', text: 'Agrega productos antes de finalizar', icon: 'warning', confirmButtonColor: '#000' });
       return;
     }
-
     this.router.navigate(['/finalizar-compra']);
   }
 }
