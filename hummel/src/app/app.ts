@@ -17,6 +17,20 @@ declare var bootstrap: any;
 export class AppComponent implements AfterViewInit {
   apiUrl = 'http://localhost:3000';
 
+  swalBase = {
+    customClass: {
+      popup: 'swal-popup',
+      title: 'swal-title',
+      confirmButton: 'swal-confirm',
+      cancelButton: 'swal-cancel',
+      input: 'swal-input',
+    },
+    buttonsStyling: false,
+    width: '100%',
+    padding: '1.2rem',
+    backdrop: 'rgba(0,0,0,0.5)',
+  };
+
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -53,41 +67,48 @@ export class AppComponent implements AfterViewInit {
 
   mostrarLocales() {
     Swal.fire({
+      ...this.swalBase,
       title: 'Nuestros Locales',
-
       html: `
-        <div style="text-align:left;font-size:16px">
+      <div style="display:flex; flex-direction:column; gap:12px">
 
-          <p><b>📍 Palermo</b><br>
-          Av. Santa Fe 3253</p>
+        <div style="
+          border:1px solid #eee;
+          border-radius:12px;
+          padding:14px;
+          background:#fafafa;
+        ">
+          <div style="font-weight:600; font-size:15px; margin-bottom:4px;">
+            📍 Ramos Mejía
+          </div>
 
-          <p><b>📍 Recoleta</b><br>
-          Av. Callao 1234</p>
-
-          <p><b>📍 Caballito</b><br>
-          Av. Rivadavia 5400</p>
-
+          <div style="font-size:13px; color:#555; line-height:1.5;">
+            Belgrano 69<br>
+            Local 26<br>
+            Galería Gran Rivadavia<br>
+            <strong>Horarios: Lunes a Sábado de 10 a 20hs</strong>
+          </div>
         </div>
-      `,
 
-      icon: 'info',
+        <a 
+          href="https://www.google.com/maps/search/?api=1&query=Belgrano+69+Ramos+Mejia"
+          target="_blank"
+          style="
+            text-decoration:none;
+            text-align:center;
+            padding:10px;
+            border-radius:999px;
+            background:#111;
+            color:white;
+            font-size:14px;
+          "
+        >
+          Ver en Google Maps
+        </a>
+
+      </div>
+    `,
       confirmButtonText: 'Cerrar',
-
-      showClass: {
-        popup: `
-          animate__animated
-          animate__fadeInUp
-          animate__faster
-        `,
-      },
-
-      hideClass: {
-        popup: `
-          animate__animated
-          animate__fadeOutDown
-          animate__faster
-        `,
-      },
     });
   }
 
@@ -108,5 +129,3 @@ export class AppComponent implements AfterViewInit {
     });
   }
 }
-
-/* ACTUALIZADO */

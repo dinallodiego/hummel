@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router'; // Importante para que funcione el routerLink
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -12,6 +13,8 @@ import { RouterModule } from '@angular/router'; // Importante para que funcione 
 export class HomeComponent implements OnInit, OnDestroy {
   currentIndex = 0;
   private intervalId: any;
+
+  constructor(private router: Router) {}
 
   images = ['/assets/slider1.png', '/assets/slider2.jpg', '/assets/slider3.jpg'];
 
@@ -73,5 +76,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     // Reiniciamos el autoplay cuando el usuario toca un indicador
     this.stopAutoPlay();
     this.startAutoPlay();
+  }
+
+  irCategoria(genero: string) {
+    this.router.navigate(['/productos'], {
+      queryParams: { genero },
+    });
   }
 }

@@ -1,1 +1,91 @@
-/* You can add global styles to this file, and also import other style files */
+/* 🔥 SWEET ALERT RESPONSIVE PRO */
+
+.swal2-container {
+  padding: 15px !important; /* 🔥 evita que se pegue a los bordes */
+}
+
+.swal-popup {
+  border-radius: 18px !important;
+  padding: 25px !important;
+  width: 100%;
+  max-width: 420px; /* 🔥 tamaño ideal */
+  box-sizing: border-box;
+}
+
+/* 📱 MOBILE */
+@media (max-width: 480px) {
+  .swal-popup {
+    max-width: 100% !important;
+    padding: 20px !important;
+    border-radius: 16px !important;
+  }
+}
+
+/* TITULO */
+.swal-title {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: #111 !important;
+  text-align: center;
+}
+
+/* TEXTO */
+.swal-text {
+  font-size: 14px !important;
+  color: #666 !important;
+  text-align: center;
+}
+
+/* INPUT */
+.swal-input {
+  width: 100% !important;
+  border-radius: 10px !important;
+  border: 1px solid #ddd !important;
+  padding: 10px !important;
+  font-size: 14px !important;
+  margin-top: 10px;
+}
+
+/* 🔥 BOTONES CONTENEDOR */
+.swal2-actions {
+  display: flex !important;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap; /* 🔥 clave para mobile */
+}
+
+/* BOTONES */
+.swal-confirm,
+.swal-cancel {
+  flex: 1;
+  min-width: 120px;
+  max-width: 180px;
+  border-radius: 999px !important;
+  padding: 10px 16px !important;
+  font-size: 14px !important;
+}
+
+/* CONFIRM */
+.swal-confirm {
+  background: #111 !important;
+  color: #fff !important;
+}
+
+.swal-confirm:hover {
+  background: #000 !important;
+}
+
+/* CANCEL */
+.swal-cancel {
+  background: #eee !important;
+  color: #333 !important;
+}
+
+/* 📱 BOTONES EN MOBILE */
+@media (max-width: 480px) {
+  .swal-confirm,
+  .swal-cancel {
+    width: 100% !important;
+    max-width: none;
+  }
+}

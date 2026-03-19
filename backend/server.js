@@ -682,10 +682,15 @@ app.get("/pedidos/buscar/:dato", (req, res) => {
     });
   });
 });
+
+app.get("/descargar/:file", (req, res) => {
+  const file = req.params.file;
+  const path = __dirname + "/uploads/" + file;
+
+  res.download(path); // 🔥 fuerza descarga SIEMPRE
+});
 /* SERVIDOR */
 
 app.listen(3000, () => {
   console.log("Servidor corriendo en puerto 3000");
 });
-
-/* ACTUALIZADO */

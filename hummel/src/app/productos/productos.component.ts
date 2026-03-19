@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { ProductosService } from '../services/productos';
 import { CarritoService } from '../services/carrito';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 declare var bootstrap: any;
 
@@ -36,9 +36,16 @@ export class ProductosComponent implements OnInit {
     private productosService: ProductosService,
     private cdr: ChangeDetectorRef,
     public carritoService: CarritoService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit() {
+    this.route.queryParams.subscribe((params: { genero?: string }) => {
+      if (params['genero']) {
+        this.filtroGenero = params['genero'];
+      }
+    });
+
     this.cargarProductos();
   }
 
@@ -76,7 +83,7 @@ export class ProductosComponent implements OnInit {
 
       this.catalogoCompleto = nuevosProductos;
 
-      this.filtroGenero = 'Todos';
+      this.catalogoCompleto = nuevosProductos;
       this.paginaActual = 1;
 
       this.cdr.detectChanges();

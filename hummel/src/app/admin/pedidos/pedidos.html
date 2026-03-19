@@ -1,94 +1,143 @@
-<div class="mb-3 barra-filtro d-flex flex-wrap gap-2">
-  <button
-    *ngFor="let estado of estados"
-    (click)="filtrarPorEstado(estado)"
-    class="btn"
-    [ngClass]="estadoSeleccionado === estado ? 'btn-primary' : 'btn-outline-secondary'"
-  >
-    {{ estado | titlecase }}
-  </button>
-</div>
+<div class="admin-container">
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <h3>Pedidos</h3>
+      <span>Gestión y control en tiempo real</span>
+    </div>
 
-<div class="table-responsive">
-  <table class="table table-striped table-bordered align-middle">
-    <thead class="table-dark text-center">
-      <tr>
-        <th>ID</th>
-        <th>Cliente</th>
-        <th>DNI</th>
-        <th>Teléfono</th>
-        <th>Total</th>
-        <th>Estado</th>
-        <th *ngIf="estadoSeleccionado === 'rechazado'">Motivo</th>
-        <th>Productos</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let pedido of pedidosPaginados()">
-        <td>{{ pedido.id_pedido }}</td>
-        <td>{{ pedido.nombre }}</td>
-        <td>{{ pedido.dni }}</td>
-        <td>{{ pedido.telefono }}</td>
-        <td>{{ pedido.total | currency: 'ARS' }}</td>
-        <td>
-          <span
-            class="badge"
-            [ngClass]="{
-              'bg-warning text-dark': pedido.estado === 'pendiente',
-              'bg-success': pedido.estado === 'aceptado',
-              'bg-danger': pedido.estado === 'rechazado',
-            }"
-          >
-            {{ pedido.estado | titlecase }}
-          </span>
-        </td>
-        <td *ngIf="estadoSeleccionado === 'rechazado'">{{ pedido.mensaje }}</td>
-        <td>
-          <ul class="list-unstyled mb-0">
-            <li *ngFor="let p of pedido.productos">
-              {{ p.nombre }} - {{ p.cantidad }} x {{ p.precio | currency: 'ARS' }}
-            </li>
-          </ul>
-        </td>
-        <td class="text-center">
-          <button
-            class="btn btn-sm btn-success me-1"
-            (click)="aceptarPedido(pedido)"
-            [disabled]="pedido.estado !== 'pendiente'"
-          >
-            Aceptar
-          </button>
-          <button
-            class="btn btn-sm btn-danger"
-            (click)="rechazarPedido(pedido)"
-            [disabled]="pedido.estado !== 'pendiente'"
-          >
-            Rechazar
-          </button>
-        </td>
-      </tr>
-      <tr *ngIf="pedidosFiltrados.length === 0">
-        <td colspan="9" class="text-center py-3">No hay pedidos para mostrar</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+    <!-- 🔍 BUSCADOR EN VIVO -->
+    <div class="buscador">
+      <input
+        type="text"
+        [(ngModel)]="busqueda"
+        (input)="aplicarFiltro()"
+        placeholder="Buscar por DNI o ID..."
+      />
+    </div>
+  </div>
 
-<div class="d-flex justify-content-center align-items-center mt-3 gap-2">
-  <button
-    class="btn btn-outline-primary"
-    (click)="cambiarPagina(-1)"
-    [disabled]="paginaActual === 1"
-  >
-    &laquo; Anterior
-  </button>
-  <span>Página {{ paginaActual }} de {{ totalPaginas }}</span>
-  <button
-    class="btn btn-outline-primary"
-    (click)="cambiarPagina(1)"
-    [disabled]="paginaActual === totalPaginas || totalPaginas === 0"
-  >
-    Siguiente &raquo;
-  </button>
+  <!-- FILTROS -->
+  <div class="filtros">
+    <button
+      *ngFor="let estado of estados"
+      (click)="filtrarPorEstado(estado)"
+      [ngClass]="estadoSeleccionado === estado ? 'activo' : ''"
+    >
+      {{ estado | titlecase }}
+    </button>
+  </div>
+
+  <!-- ================= DESKTOP ================= -->
+  <div class="card-tabla d-none d-md-block">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Productos</th>
+          <th>Comprobante</th>
+          <th *ngIf="estadoSeleccionado === 'pendiente'">Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let pedido of pedidosPaginados()">
+          <td class="id">{{ pedido.id_pedido }}</td>
+
+          <td>
+            <div class="cliente">
+              <strong>{{ pedido.nombre }}</strong>
+              <span>DNI: {{ pedido.dni }}</span>
+              <span>{{ pedido.telefono }}</span>
+            </div>
+          </td>
+
+          <td class="total">
+            {{ pedido.total | currency: 'ARS' }}
+          </td>
+
+          <td>
+            <span class="estado" [ngClass]="pedido.estado">
+              {{ pedido.estado }}
+            </span>
+          </td>
+
+          <!-- PRODUCTOS -->
+          <td>
+            <div class="productos">
+              <div *ngFor="let p of pedido.productos" class="producto">
+                <div>{{ p.nombre }}</div>
+                <small>{{ p.cantidad }} x {{ p.precio | currency: 'ARS' }}</small>
+              </div>
+            </div>
+          </td>
+
+          <!-- COMPROBANTE -->
+          <td>
+            <button class="btn-descarga" (click)="descargarComprobante(pedido.comprobante)">
+              Descargar
+            </button>
+          </td>
+
+          <!-- ACCIONES -->
+          <td *ngIf="pedido.estado === 'pendiente'">
+            <div class="acciones">
+              <button class="aceptar" (click)="aceptarPedido(pedido)">Aceptar</button>
+              <button class="rechazar" (click)="rechazarPedido(pedido)">Rechazar</button>
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="pedidosFiltrados.length === 0">
+          <td colspan="7" class="no-data">No hay pedidos</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================= MOBILE ================= -->
+  <div class="mobile-list d-md-none">
+    <div class="pedido-card" *ngFor="let pedido of pedidosPaginados()">
+      <div class="card-header">
+        <strong>#{{ pedido.id_pedido }}</strong>
+        <span class="estado" [ngClass]="pedido.estado">
+          {{ pedido.estado }}
+        </span>
+      </div>
+
+      <div class="card-body">
+        <p>
+          <b>{{ pedido.nombre }}</b>
+        </p>
+        <p>DNI: {{ pedido.dni }}</p>
+        <p>{{ pedido.telefono }}</p>
+        <p class="total">{{ pedido.total | currency: 'ARS' }}</p>
+      </div>
+
+      <div class="productos">
+        <div *ngFor="let p of pedido.productos" class="producto">
+          {{ p.nombre }} ({{ p.cantidad }})
+        </div>
+      </div>
+
+      <button class="btn-descarga" (click)="descargarComprobante(pedido.comprobante)">
+        Descargar comprobante
+      </button>
+
+      <div *ngIf="pedido.estado === 'pendiente'" class="acciones-mobile">
+        <button class="aceptar" (click)="aceptarPedido(pedido)">Aceptar</button>
+        <button class="rechazar" (click)="rechazarPedido(pedido)">Rechazar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGINACIÓN -->
+  <div class="paginacion">
+    <button (click)="cambiarPagina(-1)" [disabled]="paginaActual === 1">←</button>
+    <span>{{ paginaActual }} / {{ totalPaginas }}</span>
+    <button (click)="cambiarPagina(1)" [disabled]="paginaActual === totalPaginas">→</button>
+  </div>
 </div>

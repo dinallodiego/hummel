@@ -296,6 +296,79 @@ body {
   bottom: 8px;
 }
 
+/* 🔥 SWEET ALERT RESPONSIVE PRO */
+.swal-popup {
+  border-radius: 16px !important;
+  padding: 20px !important;
+  max-width: 500px;
+  width: 95% !important;
+}
+
+.swal-title {
+  font-weight: 800 !important;
+  font-size: 20px !important;
+}
+
+.swal-confirm {
+  background: #000 !important;
+  color: #fff !important;
+  border-radius: 999px !important;
+  padding: 10px 18px !important;
+  font-weight: 600 !important;
+}
+
+.swal-cancel {
+  background: #eee !important;
+  color: #000 !important;
+  border-radius: 999px !important;
+  padding: 10px 18px !important;
+}
+
+/* 🔥 INPUT FIX (ESTO TE SOLUCIONA TODO) */
+.swal-input {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  border-radius: 10px !important;
+  padding: 10px !important;
+  border: 1px solid #ddd !important;
+}
+
+/* 🔥 MOBILE */
+@media (max-width: 576px) {
+  .swal-popup {
+    padding: 15px !important;
+  }
+
+  .swal-title {
+    font-size: 18px !important;
+  }
+}
+
+.swal-popup {
+  max-width: 420px !important;
+  width: calc(100% - 20px) !important;
+  border-radius: 16px !important;
+  padding: 20px !important;
+}
+
+/* En celular */
+@media (max-width: 480px) {
+  .swal-popup {
+    width: calc(100% - 16px) !important;
+    padding: 16px !important;
+  }
+
+  .swal-title {
+    font-size: 18px !important;
+  }
+
+  .swal-confirm,
+  .swal-cancel {
+    width: 100% !important;
+    margin: 5px 0 !important;
+  }
+}
+
 /* =========================
    MENU MOBILE FULLSCREEN
 ========================= */
