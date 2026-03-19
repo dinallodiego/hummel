@@ -16,7 +16,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   constructor(private router: Router) {}
 
-  images = ['/assets/slider1.png', '/assets/slider2.jpg', '/assets/slider3.jpg'];
+  images = ['/assets/slider1.png', '/assets/slider2.png', '/assets/slider3.png'];
 
   destacados = [
     {

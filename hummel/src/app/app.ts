@@ -36,34 +36,46 @@ export class AppComponent implements AfterViewInit {
     private http: HttpClient,
   ) {}
   ngAfterViewInit() {
-    const toggler = document.querySelector('.navbar-toggler') as HTMLElement;
-    const menu = document.querySelector('#menu') as HTMLElement;
-    const links = document.querySelectorAll('.nav-link');
+  const toggler = document.querySelector('.navbar-toggler') as HTMLElement;
+  const menu = document.querySelector('#menu') as HTMLElement;
+  const links = document.querySelectorAll('.nav-link');
+  const closeMenu = document.querySelector('.close-menu') as HTMLElement;
 
-    const bsCollapse = new bootstrap.Collapse(menu, {
-      toggle: false,
-    });
+  const bsCollapse = new bootstrap.Collapse(menu, { toggle: false });
 
-    toggler.addEventListener('click', () => {
-      toggler.classList.toggle('active');
+  const toggleMenu = () => {
+    toggler.classList.toggle('active');
 
+    if (menu.classList.contains('show')) {
+      document.body.classList.remove('menu-open');
+    } else {
+      document.body.classList.add('menu-open');
+    }
+  };
+
+  toggler.addEventListener('click', toggleMenu);
+
+  links.forEach((link) => {
+    link.addEventListener('click', () => {
       if (menu.classList.contains('show')) {
+        bsCollapse.hide();
+        toggler.classList.remove('active');
         document.body.classList.remove('menu-open');
-      } else {
-        document.body.classList.add('menu-open');
       }
     });
+  });
 
-    links.forEach((link) => {
-      link.addEventListener('click', () => {
-        if (menu.classList.contains('show')) {
-          bsCollapse.hide();
-          toggler.classList.remove('active');
-          document.body.classList.remove('menu-open');
-        }
-      });
+  // cerrar con cruz
+  if (closeMenu) {
+    closeMenu.addEventListener('click', () => {
+      if (menu.classList.contains('show')) {
+        bsCollapse.hide();
+        toggler.classList.remove('active');
+        document.body.classList.remove('menu-open');
+      }
     });
   }
+}
 
   mostrarLocales() {
     Swal.fire({
@@ -127,5 +139,39 @@ export class AppComponent implements AfterViewInit {
         this.router.navigate(['/mis-pedidos', dato]);
       }
     });
+  }
+
+  mostrarPoliticasDeCompra(){
+
+    Swal.fire({
+      ...this.swalBase,
+      title: '¿Como comprar en nuestro sitio?',
+      html: `
+      <div style="display:flex; flex-direction:column; gap:12px">
+
+        <div style="
+          border:1px solid #eee;
+          border-radius:12px;
+          padding:14px;
+          background:#fafafa;
+        ">
+          <div style="font-size:13px; color:#555; line-height:1.5;">
+            1. Explora nuestro catálogo y elige tus productos favoritos.<br>
+            2. Agrega los productos a tu carrito de compras.<br>
+            3. Continua en finalizar compra donde mediante una transferencia inmediata pagas tu pedido.<br>
+            4. Completas nuestro formulario con algunos datos. <strong>Aqui deberas sumar el comprobante de la transferencia para validarlo.</strong>.<br><br>
+            5. Confirma el pago y tu pedido pasara a estar pendiente de compra.<br>
+            6. Podras acceder a tus compras mediante tu DNI o numero de pedido que se te proporcionará para ver el estado de tu compra.<br>
+            7. Una vez validada la transferencia, preparamos tu pedido para su envío o retiro en local.<br>
+            8. Recibe tu pedido en la comodidad de tu hogar o retíralo en nuestro local.<br><br>
+            Si tienes alguna pregunta, no dudes en contactarnos. ¡Gracias por elegirnos para tus compras!
+          </div>
+        </div>
+
+      </div>
+    `,
+      confirmButtonText: 'Cerrar',
+    });
+
   }
 }

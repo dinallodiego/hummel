@@ -1,0 +1,258 @@
+/* HERO */
+.nosotros-hero {
+  position: relative;
+  height: 80vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.hero-video {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  opacity: 0.6;
+}
+
+.hero-overlay {
+  position: absolute;
+  top:0; left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 2;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  animation: fadeInDown 1s ease forwards;
+}
+
+.hero-content p {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  animation: fadeInUp 1s ease forwards;
+}
+
+.hero-redes a {
+  color: #fff;
+  font-size: 1.7rem;
+  margin: 0 10px;
+  transition: transform 0.3s, color 0.3s;
+}
+
+.hero-redes a:hover {
+  transform: scale(1.2);
+  color: #1abc9c; /* turquesa hover */
+}
+
+/* SLIDER */
+.nosotros-slider {
+  padding: 50px 0;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+.slider-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 15px;
+}
+
+.slider-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  transition: opacity 1s ease, transform 0.5s ease;
+}
+
+.slider-image:hover {
+  transform: scale(1.03);
+}
+
+/* HISTORIA */
+.nosotros-historia {
+  padding: 80px 20px;
+  background: #fff8f0;
+  text-align: center;
+}
+
+.nosotros-historia h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  animation: fadeIn 1s ease forwards;
+}
+
+/* EQUIPO */
+.nosotros-equipo {
+  padding: 80px 20px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.equipo-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.card {
+  width: 220px;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* VALORES */
+.nosotros-valores {
+  padding: 80px 20px;
+  background: #111;
+  color: #fff;
+  text-align: center;
+}
+
+.valores-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 40px;
+}
+
+.valor {
+  width: 220px;
+  transition: transform 0.3s;
+}
+
+.valor:hover {
+  transform: translateY(-5px);
+}
+
+.valor i {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #1abc9c; /* iconos turquesa */
+}
+
+.valor h4 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.valor p {
+  font-size: 1rem;
+}
+
+/* LOCALES */
+.nosotros-locales {
+  padding: 60px 20px;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+/* BOTONES UNIFICADOS */
+.btn-principal {
+  background: #000000; /* naranja base */
+  color: #fff;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  margin: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+.btn-principal:hover {
+  background: #1abc9c; /* turquesa hover */
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* Contenedor para alinear ambos botones */
+.btns-locales-politicas {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* CONTACTO */
+.nosotros-contacto {
+  padding: 60px 20px;
+  text-align: center;
+  background: #fff;
+}
+
+.contact-redes a {
+  font-size: 2rem;
+  margin: 0 15px;
+  color: #111;
+  transition: transform 0.3s, color 0.3s;
+}
+
+.contact-redes a:hover {
+  transform: scale(1.3);
+  color: #1abc9c; /* turquesa hover */
+}
+
+/* ANIMACIONES */
+@keyframes fadeInDown {
+  0% {opacity: 0; transform: translateY(-20px);}
+  100% {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes fadeInUp {
+  0% {opacity: 0; transform: translateY(20px);}
+  100% {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes fadeIn {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+/* RESPONSIVE */
+@media(max-width: 900px) {
+  .hero-content h1 {
+    font-size: 2.2rem;
+  }
+  .hero-content p {
+    font-size: 1.1rem;
+  }
+  .slider-image {
+    height: 250px;
+  }
+  .equipo-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+}

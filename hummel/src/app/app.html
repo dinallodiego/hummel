@@ -1,12 +1,27 @@
 <div class="top-bar">
-  <div class="container d-flex justify-content-end">
-    <a (click)="mostrarLocales()" style="cursor: pointer">
-      <i class="bi bi-house me-2"></i>LOCALES
-    </a>
+  <div class="container d-flex justify-content-between align-items-center flex-wrap">
 
-    <!-- Navbar o Footer -->
-    <a (click)="misCompras()" style="cursor: pointer"><i class="bi bi-bag me-2"></i> MIS COMPRAS</a>
-    <a href="#"><i class="bi bi-cart me-2"></i> MI CARRITO</a>
+    <!-- Mensaje animado izquierda -->
+    <div class="top-bar-marquee">
+      <span>
+        🚚 Envío gratis a partir de $150.000 • Aprovecha nuestros productos destacados • Productos en promoción
+      </span>
+    </div>
+
+    <!-- Links derecha -->
+    <div class="d-flex flex-wrap justify-content-end top-bar-links">
+      <a (click)="mostrarLocales()" style="cursor: pointer">
+        <i class="bi bi-house me-2"></i>LOCALES
+      </a>
+      <a (click)="mostrarPoliticasDeCompra()" style="cursor: pointer">
+        <i class="bi bi-patch-question me-2"></i>POLÍTICAS DE COMPRA
+      </a>
+      <a (click)="misCompras()" style="cursor: pointer">
+        <i class="bi bi-bag me-2"></i> MIS COMPRAS
+      </a>
+      <a href="#"><i class="bi bi-cart me-2"></i> MI CARRITO</a>
+    </div>
+
   </div>
 </div>
 
@@ -21,20 +36,19 @@
     </button>
 
     <div class="collapse navbar-collapse justify-content-end" id="menu">
-      <ul class="navbar-nav nav-links">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/home" routerLinkActive="active">Home</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/productos" routerLinkActive="active">Productos</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/nosotros" routerLinkActive="active">Nosotros</a>
-        </li>
-      </ul>
-    </div>
+  <span class="close-menu"></span>
+  <ul class="navbar-nav nav-links">
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/home" routerLinkActive="active">Home</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/productos" routerLinkActive="active">Productos</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/nosotros" routerLinkActive="active">Nosotros</a>
+    </li>
+  </ul>
+</div>
   </div>
 </nav>
 
@@ -58,7 +72,7 @@
             ><i class="bi bi-instagram"></i
           ></a>
           <a href="#"><i class="bi bi-facebook"></i></a>
-          <a href="#"><i class="bi bi-twitter-x"></i></a>
+          <a href="mailto:info@hummel.com"><i class="bi bi-envelope-fill"></i></a>
         </div>
       </div>
 
@@ -81,9 +95,10 @@
           <li><a (click)="mostrarLocales()" style="cursor: pointer">Locales</a></li>
           <li>
             <!-- Navbar o Footer -->
-            <a (click)="misCompras()" style="cursor: pointer"
-              ><i class="bi bi-bag me-2"></i> MIS COMPRAS</a
-            >
+            <a (click)="misCompras()" style="cursor: pointer"> Mis compras</a>
+            <a (click)="mostrarPoliticasDeCompra()" style="cursor: pointer">
+              Políticas de compra
+            </a>
           </li>
         </ul>
       </div>

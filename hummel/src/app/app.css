@@ -6,10 +6,12 @@ body {
 
 .top-bar {
   background: #111;
-  padding: 10px 0;
-  font-size: 11px;
+  padding: 15px 0;
+  font-size: 12px; /* más chico en PC */
   text-transform: uppercase;
   letter-spacing: 1px;
+  display: flex;
+  justify-content: center;
 }
 
 .top-bar a {
@@ -17,11 +19,102 @@ body {
   text-decoration: none;
   margin-left: 20px;
   transition: 0.3s;
+  font-size: 12px; /* más chico en PC */
 }
 
 .top-bar a:hover {
-  color: #fff;
+  color: white;
 }
+
+/* =========================
+   TOP BAR MARQUEE MODERNO
+========================= */
+
+.top-bar-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  display: inline-block;
+  font-size: 12px; /* más chico en PC */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #00b3a6;
+  position: relative;
+  max-width: 450px; 
+  font-weight: 600;
+  flex: 1 1 100%;
+  margin-bottom: 10px;
+}
+
+.top-bar-marquee::after {
+  content: '';
+  position: absolute;
+  top: 0; 
+  right: 0;
+  width: 50px;
+  height: 100%;
+  background: linear-gradient(to left, #111, transparent);
+}
+
+.top-bar-marquee span {
+  display: inline-block;
+  padding-left: 100%;
+  animation: marquee 18s linear infinite;
+  white-space: nowrap;
+}
+
+.top-bar-marquee span:hover {
+  animation-play-state: paused;
+}
+
+.top-bar-marquee span::before {
+  content: '🚚';
+  margin-right: 6px;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* responsive tablets y móviles: letra más grande */
+@media (max-width: 992px) {
+  .top-bar {
+    font-size: 14px;
+  }
+
+  .top-bar a {
+    font-size: 14px;
+    margin-left: 12px;
+    margin-top: 5px;
+  }
+
+  .top-bar-marquee {
+    font-size: 14px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .top-bar {
+    padding: 10px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 15px; /* incluso más grande */
+  }
+
+  .top-bar-marquee {
+    font-size: 15px;
+  }
+
+  .top-bar a {
+    font-size: 15px;
+    margin-left: 0;
+    margin-right: 15px;
+    margin-top: 6px;
+  }
+}
+
+/* --- NAVBAR --- */
 
 .main-navbar {
   border-bottom: 1px solid #eee;
@@ -47,7 +140,6 @@ body {
 }
 
 /* --- HOVER PROFESIONAL --- */
-
 .nav-links .nav-link {
   font-weight: 700;
   color: #000 !important;
@@ -58,8 +150,6 @@ body {
   padding: 8px 0;
   transition: color 0.3s ease;
 }
-
-/* línea animada */
 
 .nav-links .nav-link::after {
   content: '';
@@ -73,8 +163,6 @@ body {
   transform: translateX(-50%);
 }
 
-/* hover */
-
 .nav-links .nav-link:hover {
   opacity: 0.7;
 }
@@ -82,8 +170,6 @@ body {
 .nav-links .nav-link:hover::after {
   width: 100%;
 }
-
-/* link activo */
 
 .nav-links .nav-link.active {
   font-weight: 900;
@@ -95,7 +181,6 @@ body {
 }
 
 /* --- FOOTER --- */
-
 .footer-nav-simple a,
 .footer-support-list a {
   font-size: 0.95rem;
@@ -197,7 +282,6 @@ body {
 }
 
 /* BOTON WHATSAPP */
-
 .whatsapp-float {
   position: fixed;
   right: 18px;
@@ -211,9 +295,7 @@ body {
   justify-content: center;
   z-index: 190;
   cursor: pointer;
-  transition:
-    transform 0.22s,
-    box-shadow 0.22s;
+  transition: transform 0.22s, box-shadow 0.22s;
 }
 
 .whatsapp-float:hover {
@@ -252,8 +334,6 @@ body {
   position: relative;
 }
 
-/* lineas */
-
 .navbar-toggler-icon::before,
 .navbar-toggler-icon::after {
   content: '';
@@ -265,22 +345,13 @@ body {
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.navbar-toggler-icon::before {
-  top: 0;
-}
-
-.navbar-toggler-icon::after {
-  bottom: 0;
-}
-
-/* linea central */
+.navbar-toggler-icon::before { top: 0; }
+.navbar-toggler-icon::after { bottom: 0; }
 
 .navbar-toggler-icon {
   border-top: 2px solid #000;
   border-bottom: 2px solid #000;
 }
-
-/* animacion X */
 
 .navbar-toggler.active .navbar-toggler-icon {
   border-color: transparent;
@@ -296,7 +367,85 @@ body {
   bottom: 8px;
 }
 
-/* 🔥 SWEET ALERT RESPONSIVE PRO */
+/* =========================
+   MENU MOBILE FULLSCREEN MEJORADO
+========================= */
+
+@media (max-width: 991px) {
+  .navbar-collapse {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100vh;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transform: translateY(-100%);
+    transition: transform 0.25s ease-in-out;
+    z-index: 1050;
+  }
+
+  .navbar-collapse.show {
+    transform: translateY(0);
+  }
+
+  /* Cruz de cierre funcional */
+  .navbar-collapse .close-menu {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #000;
+    z-index: 1100;
+    transition: color 0.3s;
+  }
+
+  .navbar-collapse .close-menu:hover {
+    color: #00d1c1;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .nav-links .nav-item {
+    margin: 20px 0;
+  }
+
+  .nav-links .nav-link {
+    font-size: 24px;
+    padding: 15px 20px;
+  }
+}
+
+/* =========================
+   OVERLAY OSCURO
+========================= */
+
+body.menu-open::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 998;
+}
+
+/* RESPONSIVE FOOTER */
+@media (max-width: 991px) {
+  .footer-logo,
+  .footer-tagline { text-align: center; }
+  .text-lg-end { text-align: center !important; margin-top: 20px; }
+}
+
+/* =========================
+   SWEET ALERT
+========================= */
 .swal-popup {
   border-radius: 16px !important;
   padding: 20px !important;
@@ -324,7 +473,6 @@ body {
   padding: 10px 18px !important;
 }
 
-/* 🔥 INPUT FIX (ESTO TE SOLUCIONA TODO) */
 .swal-input {
   width: 100% !important;
   box-sizing: border-box !important;
@@ -333,116 +481,9 @@ body {
   border: 1px solid #ddd !important;
 }
 
-/* 🔥 MOBILE */
 @media (max-width: 576px) {
-  .swal-popup {
-    padding: 15px !important;
-  }
-
-  .swal-title {
-    font-size: 18px !important;
-  }
-}
-
-.swal-popup {
-  max-width: 420px !important;
-  width: calc(100% - 20px) !important;
-  border-radius: 16px !important;
-  padding: 20px !important;
-}
-
-/* En celular */
-@media (max-width: 480px) {
-  .swal-popup {
-    width: calc(100% - 16px) !important;
-    padding: 16px !important;
-  }
-
-  .swal-title {
-    font-size: 18px !important;
-  }
-
+  .swal-popup { padding: 15px !important; }
+  .swal-title { font-size: 18px !important; }
   .swal-confirm,
-  .swal-cancel {
-    width: 100% !important;
-    margin: 5px 0 !important;
-  }
-}
-
-/* =========================
-   MENU MOBILE FULLSCREEN
-========================= */
-
-@media (max-width: 991px) {
-  .navbar-collapse {
-    position: fixed;
-
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 100vh;
-
-    background: white;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    transform: translateY(-100%);
-
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .navbar-collapse.show {
-    transform: translateY(0);
-  }
-
-  .nav-links {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .nav-links .nav-item {
-    margin: 18px 0;
-  }
-
-  .nav-links .nav-link {
-    font-size: 22px;
-  }
-}
-
-/* =========================
-   OVERLAY OSCURO
-========================= */
-
-body.menu-open::before {
-  content: '';
-
-  position: fixed;
-
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 100%;
-
-  background: rgba(0, 0, 0, 0.35);
-
-  z-index: 998;
-}
-
-/* RESPONSIVE FOOTER */
-
-@media (max-width: 991px) {
-  .footer-logo,
-  .footer-tagline {
-    text-align: center;
-  }
-
-  .text-lg-end {
-    text-align: center !important;
-    margin-top: 20px;
-  }
+  .swal-cancel { width: 100% !important; margin: 5px 0 !important; }
 }
