@@ -1,0 +1,313 @@
+/* 🔥 CONTENEDOR PRINCIPAL */
+.pedido-container {
+  max-width: 900px;
+  min-height: calc(100vh - 160px); /* evita que se pegue al footer */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* WRAPPER PARA CENTRAR Y EMPUJAR CONTENIDO */
+.pedido-wrapper {
+  flex: 1; /* 🔥 clave */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* 🔄 LOADING */
+.loading-container {
+  text-align: center;
+  margin-top: 80px;
+}
+
+.loading-text {
+  margin-top: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #eee;
+  border-top: 4px solid #111;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ✨ ANIMACIONES */
+.fade-in {
+  animation: fadeIn 0.5s ease;
+}
+
+.fade-in-up {
+  animation: fadeUp 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 👋 SALUDO */
+.saludo h3 {
+  font-weight: 600;
+}
+
+.saludo .sub {
+  color: #777;
+}
+
+/* 📦 CARD */
+.pedido-card {
+  width: 100%;
+  max-width: 750px;
+  min-height: 420px; /* mantiene tamaño */
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px;
+  margin-top: 25px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
+}
+
+.pedido-card:hover {
+  transform: translateY(-4px);
+}
+
+/* HEADER */
+.pedido-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fecha {
+  font-size: 12px;
+  color: #888;
+}
+
+/* ESTADOS */
+.estado {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.estado.pendiente {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.estado.aceptado {
+  background: #d4edda;
+  color: #155724;
+}
+
+.estado.rechazado {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* INFO */
+.pedido-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin: 25px 0;
+}
+
+.label {
+  font-size: 12px;
+  color: #888;
+}
+
+.value {
+  font-weight: 500;
+}
+
+/* PRODUCTOS */
+.producto-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  border-radius: 10px;
+  transition: 0.2s;
+}
+
+.producto-item:hover {
+  background: #f5f5f5;
+}
+
+.producto-info .nombre {
+  font-weight: 500;
+  display: block;
+}
+
+.producto-info .detalle {
+  font-size: 13px;
+  color: #666;
+}
+
+.chip {
+  background: #111;
+  color: #fff;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+/* TOTAL */
+.total-box {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  font-size: 18px;
+}
+
+/* 🚨 RECHAZO */
+.rechazo-box {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fff5f5, #ffecec);
+  border: 1px solid #f1b0b7;
+}
+
+.rechazo-header {
+  font-weight: bold;
+  color: #842029;
+  margin-bottom: 8px;
+}
+
+.rechazo-texto {
+  margin: 0;
+  color: #5a1a1a;
+  font-size: 14px;
+}
+
+.rechazo-footer {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+/* ❌ */
+.no-result {
+  text-align: center;
+  margin-top: 40px;
+  color: #777;
+}
+
+/* 🔥 PAGINADOR PREMIUM */
+.paginador {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  margin-top: 25px;
+}
+
+/* CONTADOR */
+.contador {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* BOTONES PRO */
+.paginador button {
+  border: none;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+  transition: all 0.25s ease;
+}
+
+/* HOVER */
+.paginador button:hover {
+  background: black;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* CLICK */
+.paginador button:active {
+  transform: scale(0.95);
+}
+
+/* DISABLED */
+.paginador button:disabled {
+  background: #ddd;
+  color: #999;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 📱 RESPONSIVE */
+@media (max-width: 768px) {
+  .pedido-container {
+    min-height: calc(100vh - 120px); /* 🔥 ajuste mobile */
+    padding-bottom: 30px;
+  }
+
+  .pedido-info {
+    grid-template-columns: 1fr;
+  }
+
+  .producto-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .total-box {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .paginador {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .paginador button {
+    width: 100%;
+    max-width: 220px;
+  }
+
+  .contador {
+    font-size: 12px;
+  }
+}

@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
 import { FinalizarCompraComponent } from './finalizar-compra/finalizar-compra';
 import { HomeComponent } from './home/home.component';
 import { ProductosComponent } from './productos/productos.component';
@@ -11,12 +10,15 @@ import { authGuard } from './guards/auth-guard';
 import { carritoGuard } from './guards/auth-guard';
 import { PedidoDetalleComponent } from './mis-pedidos/mis-pedidos';
 
-// **Exportamos la constante para que otros archivos puedan usarla**
 export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'productos', component: ProductosComponent },
   { path: 'nosotros', component: NosotrosComponent },
-  { path: 'pedido/:id', component: PedidoDetalleComponent },
+  {
+    path: 'mis-pedidos/:id',
+    component: PedidoDetalleComponent,
+    runGuardsAndResolvers: 'always',
+  },
   { path: 'admin/login', component: LoginComponent },
   {
     path: 'admin',
@@ -32,9 +34,12 @@ export const routes: Routes = [
   { path: '**', redirectTo: 'home' },
 ];
 
-// Opcional: si querés que este mismo archivo pueda ser usado como módulo de rutas
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(routes, {
+      onSameUrlNavigation: 'reload', // 🔥 ESTO ES LA CLAVE
+    }),
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

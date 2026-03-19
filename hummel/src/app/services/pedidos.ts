@@ -11,10 +11,6 @@ export class PedidoService {
   constructor(private http: HttpClient) {}
 
   getPedidoPorCodigo(dato: string): Observable<any> {
-    return this.http
-      .get<{ encontrado: boolean; pedido?: any }>(`${this.baseUrl}/buscar/${dato}`)
-      .pipe(
-        map((res) => (res.encontrado ? res.pedido : null)), // devolvemos directamente el pedido o null
-      );
+    return this.http.get(`${this.baseUrl}/buscar/${dato}`);
   }
 }

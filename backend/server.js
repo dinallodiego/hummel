@@ -632,38 +632,54 @@ app.get("/pedidos-pendientes/count", (req, res) => {
   });
 });
 
-// Buscar pedido por DNI o ID
+// Buscar pedidos por DNI o ID de pedido
 app.get("/pedidos/buscar/:dato", (req, res) => {
   const { dato } = req.params;
 
-  const sql = `
-    SELECT * FROM pedidos 
-    WHERE dni=? OR id_pedido=?
-  `;
+  const esDni = /^\d+$/.test(dato);
 
-  db.query(sql, [dato, dato], (err, pedidos) => {
+  let sql = "";
+  let params = [];
+
+  if (esDni) {
+    sql = `SELECT * FROM pedidos WHERE dni=? ORDER BY id DESC`;
+    params = [dato];
+  } else {
+    sql = `SELECT * FROM pedidos WHERE id_pedido=?`;
+    params = [dato];
+  }
+
+  db.query(sql, params, (err, pedidos) => {
     if (err) return res.status(500).json(err);
 
-    if (pedidos.length === 0) return res.json({ encontrado: false });
+    if (pedidos.length === 0) {
+      return res.json({ encontrado: false });
+    }
 
-    const pedido = pedidos[0];
+    let pedidosFinal = [];
+    let pendientes = pedidos.length;
 
-    // Traemos los productos del pedido
-    db.query(
-      `SELECT * FROM pedido_productos WHERE pedido_id = ?`,
-      [pedido.id],
-      (err, productos) => {
-        if (err) return res.status(500).json(err);
-
-        res.json({
-          encontrado: true,
-          pedido: {
+    pedidos.forEach((pedido) => {
+      db.query(
+        `SELECT * FROM pedido_productos WHERE pedido_id = ?`,
+        [pedido.id],
+        (err, productos) => {
+          pedidosFinal.push({
             ...pedido,
             productos,
-          },
-        });
-      },
-    );
+          });
+
+          pendientes--;
+
+          if (pendientes === 0) {
+            res.json({
+              encontrado: true,
+              pedidos: pedidosFinal,
+            });
+          }
+        },
+      );
+    });
   });
 });
 /* SERVIDOR */

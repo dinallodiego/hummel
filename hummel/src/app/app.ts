@@ -102,24 +102,8 @@ export class AppComponent implements AfterViewInit {
       if (result.isConfirmed && result.value) {
         const dato = result.value.trim();
 
-        this.http.get(`http://localhost:3000/pedidos/buscar/${dato}`).subscribe(
-          (res: any) => {
-            if (res.encontrado) {
-              // Redirige a la página de detalle de pedido
-              this.router.navigate(['/pedido', res.pedido.id_pedido]);
-            } else {
-              Swal.fire(
-                'No encontrado',
-                'No existe ningún pedido con ese DNI o número. Revisa lo que ingresaste.',
-                'error',
-              );
-            }
-          },
-          (err) => {
-            Swal.fire('Error', 'Ocurrió un error al buscar el pedido', 'error');
-            console.error(err);
-          },
-        );
+        // 🔥 SOLO NAVEGAR
+        this.router.navigate(['/mis-pedidos', dato]);
       }
     });
   }
