@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { RouterOutlet, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
+import { CarritoService } from '../app/services/carrito';
 
 declare var bootstrap: any;
 
@@ -34,48 +35,80 @@ export class AppComponent implements AfterViewInit {
   constructor(
     private router: Router,
     private http: HttpClient,
+    public carritoService: CarritoService,
   ) {}
   ngAfterViewInit() {
-  const toggler = document.querySelector('.navbar-toggler') as HTMLElement;
-  const menu = document.querySelector('#menu') as HTMLElement;
-  const links = document.querySelectorAll('.nav-link');
-  const closeMenu = document.querySelector('.close-menu') as HTMLElement;
+    const toggler = document.querySelector('.navbar-toggler') as HTMLElement;
+    const menu = document.querySelector('#menu') as HTMLElement;
+    const links = document.querySelectorAll('.nav-link');
+    const closeMenu = document.querySelector('.close-menu') as HTMLElement;
 
-  const bsCollapse = new bootstrap.Collapse(menu, { toggle: false });
+    const bsCollapse = new bootstrap.Collapse(menu, { toggle: false });
 
-  const toggleMenu = () => {
-    toggler.classList.toggle('active');
+    // 🔥 TOGGLE CORREGIDO
+    toggler.addEventListener('click', () => {
+      toggler.classList.toggle('active');
 
-    if (menu.classList.contains('show')) {
-      document.body.classList.remove('menu-open');
-    } else {
-      document.body.classList.add('menu-open');
+      if (menu.classList.contains('show')) {
+        document.body.classList.remove('menu-open');
+      } else {
+        document.body.classList.add('menu-open');
+      }
+    });
+
+    // 🔥 ESTO ES CLAVE: cerrar bien al tocar links
+    links.forEach((link) => {
+      link.addEventListener('click', () => {
+        if (menu.classList.contains('show')) {
+          bsCollapse.hide();
+          toggler.classList.remove('active');
+          document.body.classList.remove('menu-open');
+        }
+      });
+    });
+
+    // 🔥 FIX CRUZ (ANTES FALLABA)
+    if (closeMenu) {
+      closeMenu.innerHTML = '✕'; // ← ESTO TE FALTABA
+
+      closeMenu.addEventListener('click', () => {
+        bsCollapse.hide();
+        toggler.classList.remove('active');
+        document.body.classList.remove('menu-open');
+      });
     }
-  };
-
-  toggler.addEventListener('click', toggleMenu);
-
-  links.forEach((link) => {
-    link.addEventListener('click', () => {
-      if (menu.classList.contains('show')) {
-        bsCollapse.hide();
-        toggler.classList.remove('active');
-        document.body.classList.remove('menu-open');
-      }
-    });
-  });
-
-  // cerrar con cruz
-  if (closeMenu) {
-    closeMenu.addEventListener('click', () => {
-      if (menu.classList.contains('show')) {
-        bsCollapse.hide();
-        toggler.classList.remove('active');
-        document.body.classList.remove('menu-open');
-      }
-    });
   }
-}
+
+  // 🔥 FUNCIONES CARRITO
+  cambiarCantidad(uuid: string, operacion: 'sumar' | 'restar') {
+    this.carritoService.cambiarCantidad(uuid, operacion);
+  }
+
+  eliminarDelCarrito(uuid: string) {
+    this.carritoService.eliminarProducto(uuid);
+  }
+
+  finalizarCompra() {
+    if (this.carritoService.getCarrito().length === 0) {
+      Swal.fire({
+        title: 'Carrito vacío',
+        text: 'Agrega productos antes de finalizar',
+        icon: 'warning',
+        confirmButtonColor: '#000',
+      });
+      return;
+    }
+
+    const cartElement = document.getElementById('cartSide');
+    if (cartElement) {
+      const bsOffcanvas =
+        bootstrap.Offcanvas.getInstance(cartElement) || new bootstrap.Offcanvas(cartElement);
+
+      bsOffcanvas.hide();
+    }
+
+    this.router.navigate(['/finalizar-compra']);
+  }
 
   mostrarLocales() {
     Swal.fire({
@@ -141,8 +174,7 @@ export class AppComponent implements AfterViewInit {
     });
   }
 
-  mostrarPoliticasDeCompra(){
-
+  mostrarPoliticasDeCompra() {
     Swal.fire({
       ...this.swalBase,
       title: '¿Como comprar en nuestro sitio?',
@@ -172,6 +204,12 @@ export class AppComponent implements AfterViewInit {
     `,
       confirmButtonText: 'Cerrar',
     });
+  }
 
+  cerrarMenu() {
+    const menu = document.getElementById('menu');
+    if (menu?.classList.contains('show')) {
+      menu.classList.remove('show');
+    }
   }
 }

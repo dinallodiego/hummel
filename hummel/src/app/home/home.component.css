@@ -134,7 +134,7 @@
 /* Efecto de expansión al pasar el mouse */
 .category-banner:hover .banner-img-container {
   transform: scale(1.1);
-  filter: brightness(1); 
+  filter: brightness(1);
 }
 
 .category-banner:hover .banner-img-container img {
@@ -209,4 +209,223 @@
 }
 .next {
   right: 30px;
+}
+
+.product-card {
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: 0.3s;
+  border-radius: 12px;
+}
+
+/* 🔥 EFECTO DORADO */
+.product-card:hover {
+  border: 2px solid #d4af37;
+  box-shadow: 0 10px 40px rgba(212, 175, 55, 0.3);
+}
+
+/* 🔥 OPCIONAL: siempre dorado en destacados */
+.product-card {
+  border: 1.5px solid #d4af37;
+}
+
+.price {
+  font-weight: 800;
+  color: #000;
+}
+
+.category {
+  font-size: 0.7rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.section-title {
+  text-align: center;
+  font-weight: 900;
+  margin-bottom: 40px;
+  text-transform: uppercase;
+}
+
+/* Flechas bien posicionadas */
+.arrow {
+  position: absolute;
+  top: 55%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-size: 22px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.arrow.left {
+  left: -10px;
+}
+.arrow.right {
+  right: -10px;
+}
+
+/* Reutilizamos estilo PRO */
+.nike-card-premium {
+  cursor: pointer;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: 0.4s;
+}
+
+.nike-card-premium:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.img-container-premium {
+  background: #f7f7f7;
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.product-img-main {
+  max-height: 85%;
+  transition: 0.4s;
+}
+
+.nike-card-premium:hover .product-img-main {
+  transform: scale(1.05);
+}
+
+.product-info-premium {
+  padding: 15px;
+}
+
+.p-category {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.p-name {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.p-price {
+  font-weight: 800;
+}
+
+/* 🔥 SOLO DIFERENCIA: BORDE DORADO EN DESTACADOS */
+.destacado-card {
+  border: 1.5px solid #d4af37;
+}
+
+.destacado-card:hover {
+  border: 2px solid #d4af37;
+  box-shadow: 0 10px 40px rgba(212, 175, 55, 0.3);
+}
+/* --- MODAL DETALLE PREMIUM (IGUAL A PRODUCTOS) --- */
+.main-modal-img {
+  max-height: 480px;
+  mix-blend-mode: multiply;
+  transition: transform 0.5s ease;
+}
+.main-modal-img:hover {
+  transform: scale(1.05);
+}
+
+.talle-grid-premium {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 10px;
+}
+
+.btn-talle-premium {
+  border: 1px solid #e5e5e5;
+  background: white;
+  padding: 15px;
+  font-weight: 700;
+  border-radius: 8px;
+  transition: 0.2s;
+  font-size: 0.95rem;
+}
+
+.btn-talle-premium:hover,
+.btn-talle-premium.selected {
+  border-color: #000;
+  background: #f8f8f8;
+}
+
+.btn-talle-premium.selected {
+  box-shadow: inset 0 0 0 2px #000;
+}
+
+.btn-black-premium {
+  background: #000;
+  color: #fff;
+  border: none;
+  transition: 0.3s;
+}
+
+.btn-black-premium:hover {
+  background: #333;
+  transform: translateY(-3px);
+}
+
+/* GALERIA */
+.image-viewer {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-size: 22px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.arrow.left {
+  left: -10px;
+}
+
+.arrow.right {
+  right: -10px;
+}
+
+/* MINIATURAS */
+.thumbs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.thumbs img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.thumbs img.active {
+  border: 2px solid black;
 }

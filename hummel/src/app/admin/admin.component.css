@@ -212,6 +212,38 @@ nav a:hover {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
+.tabla-ventas {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  background: #111;
+  color: white;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.table td {
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.stats {
+  display: flex;
+  gap: 20px;
+}
+
+.stats .stat-card {
+  min-width: 250px;
+}
+
 /* -------------------------- RESPONSIVE -------------------------- */
 @media (max-width: 1000px) {
   .stats {

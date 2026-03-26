@@ -7,8 +7,7 @@
         <a [class.active]="vista === 'dashboard'" (click)="vista = 'dashboard'"> Dashboard </a>
         <a [class.active]="vista === 'productos'" (click)="vista = 'productos'"> Productos </a>
         <a [class.active]="vista === 'pedidos'" (click)="vista = 'pedidos'"> Pedidos </a>
-        <a>Clientes</a>
-        <a>Estadísticas</a>
+        <a [class.active]="vista === 'ventas'" (click)="vista = 'ventas'">Ventas</a>
       </nav>
     </div>
     <button class="btn btn-light mt-3" (click)="logout()">Cerrar sesión</button>
@@ -37,7 +36,7 @@
         </div>
         <div class="stat-card">
           <h3>Ventas</h3>
-          <span>$0</span>
+          <span>${{ totalVentas }}</span>
         </div>
       </div>
     </div>
@@ -111,6 +110,67 @@
     <!-- PEDIDOS -->
     <div *ngIf="vista === 'pedidos'">
       <app-pedidos></app-pedidos>
+    </div>
+
+    <!-- VENTAS -->
+
+    <div *ngIf="vista === 'ventas'">
+      <div class="productos-header">
+        <div class="d-flex gap-2 mb-3">
+          <input type="date" [(ngModel)]="fechaDesde" class="form-control" />
+          <input type="date" [(ngModel)]="fechaHasta" class="form-control" />
+
+          <button class="btn btn-dark" (click)="filtrarVentas()">Filtrar</button>
+
+          <button class="btn btn-secondary" (click)="resetFiltros()">Reset</button>
+        </div>
+        <h3>Total recaudado : ${{ totalVentas }}</h3>
+
+        <button class="btn btn-success" (click)="descargarExcel()">Descargar Excel</button>
+      </div>
+
+      <div class="tabla-ventas">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Email</th>
+              <th>Total</th>
+              <th>Fecha</th>
+              <th>Productos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of ventasPaginadas">
+              <td>{{ v.cliente_nombre }}</td>
+              <td>{{ v.cliente_email }}</td>
+              <td>${{ v.total }}</td>
+              <td>{{ v.fecha | date: 'shortDate' }}</td>
+              <td>{{ v.productos }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="d-flex justify-content-center mt-3 gap-2">
+          <button
+            class="btn btn-dark btn-sm"
+            (click)="paginaActual = paginaActual - 1"
+            [disabled]="paginaActual === 1"
+          >
+            ←
+          </button>
+
+          <span class="align-self-center"> Página {{ paginaActual }} de {{ totalPaginas }} </span>
+
+          <button
+            class="btn btn-dark btn-sm"
+            (click)="paginaActual = paginaActual + 1"
+            [disabled]="paginaActual === totalPaginas"
+          >
+            →
+          </button>
+        </div>
+      </div>
     </div>
   </main>
 </div>

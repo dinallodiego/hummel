@@ -1,27 +1,36 @@
 <div class="top-bar">
   <div class="container d-flex justify-content-between align-items-center flex-wrap">
-
-    <!-- Mensaje animado izquierda -->
     <div class="top-bar-marquee">
       <span>
-        🚚 Envío gratis a partir de $150.000 • Aprovecha nuestros productos destacados • Productos en promoción
+        🚚 Envío gratis a partir de $150.000 • Aprovecha nuestros productos destacados • Productos
+        en promoción
       </span>
     </div>
 
-    <!-- Links derecha -->
     <div class="d-flex flex-wrap justify-content-end top-bar-links">
       <a (click)="mostrarLocales()" style="cursor: pointer">
         <i class="bi bi-house me-2"></i>LOCALES
       </a>
+
       <a (click)="mostrarPoliticasDeCompra()" style="cursor: pointer">
         <i class="bi bi-patch-question me-2"></i>POLÍTICAS DE COMPRA
       </a>
+
       <a (click)="misCompras()" style="cursor: pointer">
         <i class="bi bi-bag me-2"></i> MIS COMPRAS
       </a>
-      <a href="#"><i class="bi bi-cart me-2"></i> MI CARRITO</a>
-    </div>
 
+      <a
+        class="cart-trigger"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#cartSide"
+        style="cursor: pointer"
+      >
+        <i class="bi bi-cart me-2"></i>
+        MI CARRITO
+        <span> ({{ carritoService.getCarrito().length }}) </span>
+      </a>
+    </div>
   </div>
 </div>
 
@@ -36,25 +45,100 @@
     </button>
 
     <div class="collapse navbar-collapse justify-content-end" id="menu">
-  <span class="close-menu"></span>
-  <ul class="navbar-nav nav-links">
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/home" routerLinkActive="active">Home</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/productos" routerLinkActive="active">Productos</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/nosotros" routerLinkActive="active">Nosotros</a>
-    </li>
-  </ul>
-</div>
+      <span class="close-menu" (click)="cerrarMenu()">×</span>
+
+      <ul class="navbar-nav nav-links">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/home" routerLinkActive="active" (click)="cerrarMenu()"
+            >Home</a
+          >
+        </li>
+
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/productos"
+            routerLinkActive="active"
+            (click)="cerrarMenu()"
+            >Productos</a
+          >
+        </li>
+
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/nosotros"
+            routerLinkActive="active"
+            (click)="cerrarMenu()"
+            >Nosotros</a
+          >
+        </li>
+      </ul>
+    </div>
   </div>
 </nav>
 
 <main class="main-content">
   <router-outlet></router-outlet>
 </main>
+
+<div
+  class="offcanvas offcanvas-end border-0 shadow-lg"
+  tabindex="-1"
+  id="cartSide"
+  style="width: 420px"
+>
+  <div class="offcanvas-header border-bottom p-4">
+    <h5 class="m-0">TU CARRITO ({{ carritoService.getCarrito().length }})</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+
+  <div class="offcanvas-body p-4">
+    <div *ngFor="let c of carritoService.getCarrito()" class="cart-item">
+      <img [src]="c.imagen" />
+
+      <div class="cart-info">
+        <h6>{{ c.nombre }}</h6>
+
+        <p>Talle: {{ c.talle }} • Color: {{ c.color }} • ${{ c.precio | number }} c/u</p>
+
+        <div class="quantity-control">
+          <button (click)="cambiarCantidad(c.uuid, 'restar')" class="btn-qty">-</button>
+          <span class="qty-num">{{ c.cantidad }}</span>
+          <button (click)="cambiarCantidad(c.uuid, 'sumar')" class="btn-qty">+</button>
+        </div>
+      </div>
+
+      <div class="text-end">
+        <p class="cart-price">${{ c.precio * c.cantidad | number }}</p>
+
+        <button class="cart-remove" (click)="eliminarDelCarrito(c.uuid)">Quitar</button>
+      </div>
+    </div>
+
+    <div
+      *ngIf="carritoService.getCarrito().length === 0"
+      class="text-center py-5 text-muted bg-light rounded-3 mt-4"
+    >
+      Tu carrito está vacío
+    </div>
+  </div>
+
+  <div class="offcanvas-footer p-4 mt-auto">
+    <div class="d-flex justify-content-between mb-4">
+      <span class="text-muted fw-bold">SUBTOTAL</span>
+      <span class="fw-bold fs-4"> ${{ carritoService.getTotal() | number }} </span>
+    </div>
+
+    <button
+      class="btn w-100 py-3 rounded-pill"
+      [disabled]="carritoService.getCarrito().length === 0"
+      (click)="finalizarCompra()"
+    >
+      FINALIZAR COMPRA
+    </button>
+  </div>
+</div>
 
 <footer class="simple-footer">
   <div class="container">
@@ -68,9 +152,9 @@
         </div>
 
         <div class="social-simple mt-3">
-          <a href="https://www.instagram.com/roxbel.oficial" target="_blank"
-            ><i class="bi bi-instagram"></i
-          ></a>
+          <a href="https://www.instagram.com/roxbel.oficial" target="_blank">
+            <i class="bi bi-instagram"></i>
+          </a>
           <a href="#"><i class="bi bi-facebook"></i></a>
           <a href="mailto:info@hummel.com"><i class="bi bi-envelope-fill"></i></a>
         </div>
@@ -94,7 +178,6 @@
           <li><a href="mailto:info@hummel.com">info@hummel.com</a></li>
           <li><a (click)="mostrarLocales()" style="cursor: pointer">Locales</a></li>
           <li>
-            <!-- Navbar o Footer -->
             <a (click)="misCompras()" style="cursor: pointer"> Mis compras</a>
             <a (click)="mostrarPoliticasDeCompra()" style="cursor: pointer">
               Políticas de compra

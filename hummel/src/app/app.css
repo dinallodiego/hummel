@@ -2,16 +2,25 @@
 
 body {
   font-size: 16px;
+  overflow-x: hidden;
+}
+
+/* 🔥 IMPORTANTE: evita bugs de capas */
+body.menu-open {
+  overflow: hidden;
 }
 
 .top-bar {
   background: #111;
   padding: 15px 0;
-  font-size: 12px; /* más chico en PC */
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1000; /* 🔥 debajo del carrito */
 }
 
 .top-bar a {
@@ -19,7 +28,7 @@ body {
   text-decoration: none;
   margin-left: 20px;
   transition: 0.3s;
-  font-size: 12px; /* más chico en PC */
+  font-size: 12px;
 }
 
 .top-bar a:hover {
@@ -27,19 +36,19 @@ body {
 }
 
 /* =========================
-   TOP BAR MARQUEE MODERNO
+   TOP BAR MARQUEE
 ========================= */
 
 .top-bar-marquee {
   overflow: hidden;
   white-space: nowrap;
   display: inline-block;
-  font-size: 12px; /* más chico en PC */
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: gray;
   position: relative;
-  max-width: 450px; 
+  max-width: 450px;
   font-weight: 600;
   flex: 1 1 100%;
   margin-bottom: 10px;
@@ -48,7 +57,7 @@ body {
 .top-bar-marquee::after {
   content: '';
   position: absolute;
-  top: 0; 
+  top: 0;
   right: 0;
   width: 50px;
   height: 100%;
@@ -58,60 +67,6 @@ body {
 .top-bar-marquee span {
   display: inline-block;
   padding-left: 100%;
-  animation: marquee 18s linear infinite;
-  white-space: nowrap;
-}
-
-.top-bar-marquee span:hover {
-  animation-play-state: paused;
-}
-
-.top-bar-marquee span::before {
-  content: '🚚';
-  margin-right: 6px;
-}
-
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
-}
-
-/* responsive tablets y móviles: letra más grande */
-@media (max-width: 992px) {
-  .top-bar {
-    font-size: 14px;
-  }
-
-  .top-bar a {
-    font-size: 14px;
-    margin-left: 12px;
-    margin-top: 5px;
-  }
-
-  .top-bar-marquee {
-    font-size: 14px;
-    max-width: 100%;
-  }
-}
-
-@media (max-width: 576px) {
-  .top-bar {
-    padding: 10px 0;
-    flex-direction: column;
-    align-items: flex-start;
-    font-size: 15px; /* incluso más grande */
-  }
-
-  .top-bar-marquee {
-    font-size: 15px;
-  }
-
-  .top-bar a {
-    font-size: 15px;
-    margin-left: 0;
-    margin-right: 15px;
-    margin-top: 6px;
-  }
 }
 
 /* --- NAVBAR --- */
@@ -120,6 +75,9 @@ body {
   border-bottom: 1px solid #eee;
   padding: 15px 0;
   background: white !important;
+  position: sticky;
+  top: 0;
+  z-index: 1200;
 }
 
 .logo {
@@ -127,8 +85,6 @@ body {
   font-size: 26px;
   color: #000 !important;
   text-transform: uppercase;
-  text-decoration: none;
-  letter-spacing: -1.5px;
 }
 
 .nav-links .nav-link {
@@ -137,18 +93,7 @@ body {
   font-size: 15px;
   text-transform: uppercase;
   margin: 0 15px;
-}
-
-/* --- HOVER PROFESIONAL --- */
-.nav-links .nav-link {
-  font-weight: 700;
-  color: #000 !important;
-  text-transform: uppercase;
-  font-size: 15px;
-  letter-spacing: 0.5px;
   position: relative;
-  padding: 8px 0;
-  transition: color 0.3s ease;
 }
 
 .nav-links .nav-link::after {
@@ -159,34 +104,228 @@ body {
   bottom: -3px;
   left: 50%;
   background-color: #000;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateX(-50%);
-}
-
-.nav-links .nav-link:hover {
-  opacity: 0.7;
 }
 
 .nav-links .nav-link:hover::after {
   width: 100%;
 }
 
-.nav-links .nav-link.active {
-  font-weight: 900;
-  border-bottom: 2px solid #000;
+/* =========================
+   MENU MOBILE
+========================= */
+
+@media (max-width: 991px) {
+  .navbar-collapse {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: white;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transform: translateY(-100%);
+    z-index: 1300;
+  }
+
+  .navbar-collapse.show {
+    transform: translateY(0);
+  }
+
+  .close-menu {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1400;
+    color: #000;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .nav-links .nav-link {
+    font-size: 26px;
+    margin: 15px 0;
+  }
+}
+
+/* =========================
+   OVERLAY
+========================= */
+
+body.menu-open::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1100;
+}
+
+/* =========================
+   CARRITO GLOBAL
+========================= */
+
+.offcanvas {
+  background: #ffffff !important;
+  opacity: 1 !important;
+  z-index: 3000 !important; /* 🔥 MÁS ALTO QUE TODO */
+  border-left: 1px solid #eee;
+}
+
+/* HEADER */
+.offcanvas-header {
+  background: #ffffff !important;
+  border-bottom: 1px solid #eee;
+}
+
+.offcanvas-header h5 {
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+/* BODY */
+.offcanvas-body {
+  background: #ffffff !important;
+}
+
+/* ITEM */
+.cart-item {
+  display: flex;
+  gap: 12px;
+  background: #fff;
+  padding: 12px;
+  border-radius: 12px;
+  align-items: center;
+}
+
+.cart-item img {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+  background: #f4f4f4;
+  border-radius: 10px;
+}
+
+/* INFO */
+.cart-info {
+  flex: 1;
+}
+
+.cart-info h6 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.cart-info p {
+  font-size: 0.75rem;
+  color: #777;
+}
+
+/* PRECIO */
+.cart-price {
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+/* CONTADOR */
+.quantity-control {
+  display: inline-flex;
+  align-items: center;
+  background: #f8f8f8;
+  border-radius: 50px;
+  border: 1px solid #eee;
+  overflow: hidden;
+}
+
+.btn-qty {
+  background: none;
+  border: none;
+  padding: 5px 15px;
+  font-weight: 800;
+  color: #555;
+  font-size: 1.1rem;
+}
+
+.qty-num {
+  padding: 0 5px;
+  font-weight: 800;
+  color: #000;
+  min-width: 25px;
+  text-align: center;
+}
+
+/* BOTON QUITAR */
+.cart-remove {
+  font-size: 0.75rem;
+  color: #999;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.cart-remove:hover {
+  color: red;
+}
+
+/* FOOTER */
+.offcanvas-footer {
+  background: #ffffff !important;
+  border-top: 1px solid #eee;
+}
+
+/* 🔥 BOTON FINALIZAR COMPRA FIX */
+.offcanvas-footer .btn {
+  background: #000 !important;
+  color: #fff !important;
+  border: none;
+  font-weight: 700;
+  border-radius: 50px;
+}
+
+.offcanvas-footer .btn:disabled {
+  background: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed;
+}
+
+/* 🔥 SWEET ALERT POR ENCIMA DE TODO */
+.swal2-container {
+  z-index: 9999 !important;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+html,
+body {
+  height: 100%;
+}
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .main-content {
-  min-height: 75vh;
-}
-
-/* --- FOOTER --- */
-.footer-nav-simple a,
-.footer-support-list a {
-  font-size: 0.95rem;
+  flex: 1;
 }
 
 .simple-footer {
+  margin-top: auto;
   background-color: #000;
   color: #fff;
   padding: 60px 0 20px;
@@ -200,14 +339,6 @@ body {
   letter-spacing: -1px;
 }
 
-.footer-tagline {
-  color: #444;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 20px;
-}
-
 .contact-info-footer p {
   color: #888;
   font-size: 0.85rem;
@@ -216,23 +347,10 @@ body {
   align-items: center;
 }
 
-@media (max-width: 991px) {
-  .contact-info-footer p {
-    justify-content: center;
-  }
-}
-
 .social-simple a {
   color: #fff;
   font-size: 1.4rem;
   margin-right: 20px;
-  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: inline-block;
-}
-
-.social-simple a:hover {
-  transform: translateY(-3px);
-  color: #aaa;
 }
 
 .footer-section-title {
@@ -252,13 +370,6 @@ body {
   font-weight: 600;
   display: block;
   margin-bottom: 15px;
-  transition: 0.3s;
-}
-
-.footer-nav-simple a:hover,
-.footer-support-list a:hover {
-  color: #888;
-  padding-right: 5px;
 }
 
 .footer-support-list {
@@ -295,12 +406,6 @@ body {
   justify-content: center;
   z-index: 190;
   cursor: pointer;
-  transition: transform 0.22s, box-shadow 0.22s;
-}
-
-.whatsapp-float:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
 }
 
 .whatsapp-float img {
@@ -310,180 +415,45 @@ body {
 }
 
 /* =========================
-   HAMBURGUESA PROFESIONAL
+   MOBILE
 ========================= */
 
-.navbar-toggler {
-  border: none !important;
-  margin-left: 25px;
-  padding: 10px 12px;
-  position: relative;
-  transition: 0.3s ease;
-  z-index: 1001;
-}
+@media (max-width: 576px) {
+  body {
+    font-size: 15px;
+  }
 
-.navbar-toggler:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-.navbar-toggler-icon {
-  background-image: none !important;
-  width: 28px;
-  height: 18px;
-  position: relative;
-}
-
-.navbar-toggler-icon::before,
-.navbar-toggler-icon::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: #000;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.navbar-toggler-icon::before { top: 0; }
-.navbar-toggler-icon::after { bottom: 0; }
-
-.navbar-toggler-icon {
-  border-top: 2px solid #000;
-  border-bottom: 2px solid #000;
-}
-
-.navbar-toggler.active .navbar-toggler-icon {
-  border-color: transparent;
-}
-
-.navbar-toggler.active .navbar-toggler-icon::before {
-  transform: rotate(45deg);
-  top: 8px;
-}
-
-.navbar-toggler.active .navbar-toggler-icon::after {
-  transform: rotate(-45deg);
-  bottom: 8px;
-}
-
-/* =========================
-   MENU MOBILE FULLSCREEN MEJORADO
-========================= */
-
-@media (max-width: 991px) {
-  .navbar-collapse {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100vh;
-    background: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .top-bar {
     flex-direction: column;
-    transform: translateY(-100%);
-    transition: transform 0.25s ease-in-out;
-    z-index: 1050;
+    align-items: flex-start;
+    padding: 10px;
   }
 
-  .navbar-collapse.show {
-    transform: translateY(0);
-  }
-
-  /* Cruz de cierre funcional */
-  .navbar-collapse .close-menu {
-    position: absolute;
-    top: 25px;
-    right: 25px;
-    font-size: 28px;
-    cursor: pointer;
-    color: #000;
-    z-index: 1100;
-    transition: color 0.3s;
-  }
-
-  .navbar-collapse .close-menu:hover {
-    color: #00d1c1;
-  }
-
-  .nav-links {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .nav-links .nav-item {
-    margin: 20px 0;
+  .logo {
+    font-size: 22px;
   }
 
   .nav-links .nav-link {
-    font-size: 24px;
-    padding: 15px 20px;
+    font-size: 22px;
   }
 }
 
-/* =========================
-   OVERLAY OSCURO
-========================= */
-
-body.menu-open::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.35);
-  z-index: 998;
+/* OCULTA SIEMPRE POR DEFECTO */
+.close-menu {
+  display: none;
 }
 
-/* RESPONSIVE FOOTER */
+/* SOLO MOBILE */
 @media (max-width: 991px) {
-  .footer-logo,
-  .footer-tagline { text-align: center; }
-  .text-lg-end { text-align: center !important; margin-top: 20px; }
-}
-
-/* =========================
-   SWEET ALERT
-========================= */
-.swal-popup {
-  border-radius: 16px !important;
-  padding: 20px !important;
-  max-width: 500px;
-  width: 95% !important;
-}
-
-.swal-title {
-  font-weight: 800 !important;
-  font-size: 20px !important;
-}
-
-.swal-confirm {
-  background: #000 !important;
-  color: #fff !important;
-  border-radius: 999px !important;
-  padding: 10px 18px !important;
-  font-weight: 600 !important;
-}
-
-.swal-cancel {
-  background: #eee !important;
-  color: #000 !important;
-  border-radius: 999px !important;
-  padding: 10px 18px !important;
-}
-
-.swal-input {
-  width: 100% !important;
-  box-sizing: border-box !important;
-  border-radius: 10px !important;
-  padding: 10px !important;
-  border: 1px solid #ddd !important;
-}
-
-@media (max-width: 576px) {
-  .swal-popup { padding: 15px !important; }
-  .swal-title { font-size: 18px !important; }
-  .swal-confirm,
-  .swal-cancel { width: 100% !important; margin: 5px 0 !important; }
+  .close-menu {
+    display: block;
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1400;
+    color: #000;
+  }
 }

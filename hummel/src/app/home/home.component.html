@@ -1,14 +1,11 @@
 <section class="hero-viewport">
   @for (img of images; track $index) {
     <div class="slide" [class.active]="$index === currentIndex">
-      <img [src]="img" alt="Banner Hummel" class="main-slide-img" />
+      <img [src]="img" class="main-slide-img" />
       <div class="overlay"></div>
       <div class="slide-content">
         <h1 class="display-1 fw-black">BIENVENIDOS A <br />ROXBEL</h1>
-        <p class="lead mb-4">
-          <br />
-          EQUIPATE PARA GANAR TU PASIÓN, NUEVA TEMPORADA DISPONIBLE
-        </p>
+        <p class="lead mb-4">EQUIPATE PARA GANAR TU PASIÓN</p>
         <button class="btn-modern" routerLink="/productos">VER CATALOGO</button>
       </div>
     </div>
@@ -24,26 +21,31 @@
   </div>
 </section>
 
-<section class="container my-5 py-5">
+<section class="container my-5 py-5 position-relative">
   <h2 class="section-title">PRODUCTOS DESTACADOS</h2>
+
+  <button class="arrow left" (click)="prevDestacados()">‹</button>
+  <button class="arrow right" (click)="nextDestacados()">›</button>
+
   <div class="row g-4 justify-content-center">
-    @for (prod of destacados; track prod.id) {
-      <div class="col-10 col-sm-6 col-md-4">
-        <div class="product-card">
-          <div class="img-wrapper">
-            <img [src]="prod.imagen" [alt]="prod.nombre" />
-            <div class="quick-add">Añadir al carrito</div>
+    @for (prod of destacadosPaginados; track prod.id) {
+      <div class="col-lg-4 col-md-6 col-10">
+        <div class="nike-card-premium destacado-card" (click)="abrirDetalle(prod)">
+          <div class="img-container-premium">
+            <img [src]="prod.imagen" class="product-img-main" />
           </div>
-          <div class="info text-center mt-3">
-            <span class="category">{{ prod.categoria }}</span>
-            <h6 class="name">{{ prod.nombre }}</h6>
-            <p class="price">${{ prod.precio }}</p>
+
+          <div class="product-info-premium text-center">
+            <p class="p-category">{{ prod.genero }}</p>
+            <h3 class="p-name">{{ prod.nombre }}</h3>
+            <p class="p-price">${{ prod.precio | number }}</p>
           </div>
         </div>
       </div>
     }
   </div>
 </section>
+
 <h2 class="section-title">CATEGORÍAS</h2>
 <section class="container-fluid px-lg-5 mb-5 pb-5">
   <div class="row g-3">
@@ -79,3 +81,89 @@
     </div>
   </div>
 </section>
+
+<!-- MODAL EXACTO AL DE PRODUCTOS -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+      <div class="modal-body p-0" *ngIf="productoSeleccionado">
+        <div class="row g-0">
+          <div class="col-md-7 p-4 bg-light">
+            <div class="image-viewer">
+              <button class="arrow left" (click)="anteriorImagen()">‹</button>
+
+              <img
+                [src]="productoSeleccionado.imagenes[imagenIndex]"
+                class="main-modal-img"
+                [class.zoom]="zoomActivo"
+                (click)="toggleZoom()"
+              />
+
+              <button class="arrow right" (click)="siguienteImagen()">›</button>
+            </div>
+
+            <div class="thumbs mt-3">
+              <img
+                *ngFor="let img of productoSeleccionado.imagenes; let i = index"
+                [src]="img"
+                (click)="seleccionarImagen(i)"
+                [class.active]="imagenIndex === i"
+              />
+            </div>
+          </div>
+
+          <div class="col-md-5 p-4">
+            <button type="button" class="btn-close float-end" data-bs-dismiss="modal"></button>
+
+            <p class="text-muted small mb-1">{{ productoSeleccionado.genero }}</p>
+
+            <h2 class="fw-black mb-2">
+              {{ productoSeleccionado.nombre }}
+            </h2>
+
+            <p class="text-muted mb-3">
+              {{ productoSeleccionado.descripcion }}
+            </p>
+
+            <h3 class="fw-black mb-4">${{ productoSeleccionado.precio | number }}</h3>
+
+            <div class="mb-4">
+              <p class="fw-bold mb-2">Talle</p>
+              <div class="talle-grid-premium">
+                <button
+                  *ngFor="let t of productoSeleccionado.talles"
+                  class="btn-talle-premium"
+                  [class.selected]="talleElegido === t"
+                  (click)="talleElegido = t"
+                >
+                  {{ t }}
+                </button>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <p class="fw-bold mb-2">Color</p>
+              <div class="d-flex gap-2 flex-wrap">
+                <button
+                  *ngFor="let c of productoSeleccionado.colores"
+                  class="btn-talle-premium"
+                  [class.selected]="colorElegido === c"
+                  (click)="colorElegido = c"
+                >
+                  {{ c }}
+                </button>
+              </div>
+            </div>
+
+            <button
+              class="btn-black-premium w-100 py-3 rounded-pill fw-bold"
+              (click)="agregarAlCarrito()"
+            >
+              AGREGAR AL CARRITO
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

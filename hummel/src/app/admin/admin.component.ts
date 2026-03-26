@@ -6,6 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { PedidosComponent } from './pedidos/pedidos';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-admin',
@@ -26,6 +28,12 @@ export class AdminComponent implements OnInit {
   coloresSeleccionados: number[] = [];
   imagenes: File[] = [];
   pedidosPendientes: number = 0;
+  ventas: any[] = [];
+  paginaActual: number = 1;
+  itemsPorPagina: number = 5;
+  fechaDesde: string = '';
+  fechaHasta: string = '';
+  ventasOriginal: any[] = [];
 
   @ViewChild(PedidosComponent) pedidosComp!: PedidosComponent;
 
@@ -38,6 +46,7 @@ export class AdminComponent implements OnInit {
 
   ngOnInit() {
     this.cargarProductos();
+    this.cargarVentas();
     this.http.get('http://localhost:3000/generos').subscribe((data: any) => (this.generos = data));
     this.http
       .get('http://localhost:3000/categorias')
@@ -51,6 +60,9 @@ export class AdminComponent implements OnInit {
 
   getProductoVacio() {
     return { id: null, nombre: '', precio: '', descripcion: '', genero_id: '', categoria_id: '' };
+  }
+  get totalVentas(): number {
+    return this.ventas.reduce((acc, v) => acc + Number(v.total), 0);
   }
 
   cargarProductos() {
@@ -204,5 +216,107 @@ export class AdminComponent implements OnInit {
           });
         });
     });
+  }
+
+  cargarVentas() {
+    this.http.get<any[]>('http://localhost:3000/ventas').subscribe((data) => {
+      this.ventas = data;
+      this.ventasOriginal = data;
+    });
+  }
+
+  filtrarVentas() {
+    this.ventas = this.ventasOriginal.filter((v) => {
+      const fecha = new Date(v.fecha).getTime();
+
+      const desde = this.fechaDesde ? new Date(this.fechaDesde).getTime() : null;
+      const hasta = this.fechaHasta ? new Date(this.fechaHasta).getTime() : null;
+
+      return (!desde || fecha >= desde) && (!hasta || fecha <= hasta);
+    });
+  }
+
+  resetFiltros() {
+    this.ventas = [...this.ventasOriginal];
+  }
+
+  descargarExcel() {
+    let data: any[] = [];
+
+    this.ventas.forEach((v) => {
+      if (v.productos_detalle && v.productos_detalle.length) {
+        v.productos_detalle.forEach((p: any) => {
+          data.push({
+            Cliente: v.cliente_nombre,
+            Email: v.cliente_email,
+            Producto: p.nombre,
+            Cantidad: p.cantidad,
+            PrecioUnitario: p.precio,
+            TotalProducto: p.precio * p.cantidad,
+            TotalVenta: v.total,
+            Fecha: new Date(v.fecha).toLocaleDateString(),
+          });
+        });
+      } else {
+        data.push({
+          Cliente: v.cliente_nombre,
+          Email: v.cliente_email,
+          Producto: '',
+          Cantidad: '',
+          PrecioUnitario: '',
+          TotalProducto: '',
+          TotalVenta: v.total,
+          Fecha: new Date(v.fecha).toLocaleDateString(),
+        });
+      }
+    });
+
+    // TOTAL FINAL
+    data.push({
+      Cliente: '',
+      Email: '',
+      Producto: '',
+      Cantidad: '',
+      PrecioUnitario: '',
+      TotalProducto: '',
+      TotalVenta: this.totalVentas,
+      Fecha: 'TOTAL',
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+
+    worksheet['!cols'] = [
+      { wch: 20 },
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 10 },
+      { wch: 15 },
+      { wch: 18 },
+      { wch: 15 },
+      { wch: 15 },
+    ];
+
+    const workbook = {
+      Sheets: { Ventas: worksheet },
+      SheetNames: ['Ventas'],
+    };
+
+    const buffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([buffer], { type: 'application/octet-stream' });
+
+    saveAs(blob, `ventas-${new Date().toISOString().split('T')[0]}.xlsx`);
+  }
+
+  get ventasPaginadas() {
+    const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
+    return this.ventas.slice(inicio, inicio + this.itemsPorPagina);
+  }
+
+  get totalPaginas() {
+    return Math.ceil(this.ventas.length / this.itemsPorPagina);
   }
 }

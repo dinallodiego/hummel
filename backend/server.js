@@ -689,6 +689,53 @@ app.get("/descargar/:file", (req, res) => {
 
   res.download(path); // 🔥 fuerza descarga SIEMPRE
 });
+
+app.get("/ventas", (req, res) => {
+  const sql = `
+    SELECT 
+      p.id,
+      p.nombre AS cliente_nombre,
+      p.correo AS cliente_email,
+      p.total,
+      p.fecha
+    FROM pedidos p
+    WHERE p.estado = 'aceptado'
+    ORDER BY p.id DESC
+  `;
+
+  db.query(sql, (err, ventas) => {
+    if (err) return res.status(500).json(err);
+
+    if (ventas.length === 0) return res.json([]);
+
+    let ventasFinal = [];
+    let pendientes = ventas.length;
+
+    ventas.forEach((venta) => {
+      db.query(
+        `SELECT nombre, cantidad FROM pedido_productos WHERE pedido_id = ?`,
+        [venta.id],
+        (err, productos) => {
+          const productosTexto = productos
+            .map((p) => `${p.nombre} x${p.cantidad}`)
+            .join(", ");
+
+          ventasFinal.push({
+            ...venta,
+            productos: productosTexto,
+            productos_detalle: productos,
+          });
+
+          pendientes--;
+
+          if (pendientes === 0) {
+            res.json(ventasFinal);
+          }
+        },
+      );
+    });
+  });
+});
 /* SERVIDOR */
 
 app.listen(3000, () => {

@@ -1,38 +1,68 @@
 <section class="container-fluid px-lg-5 my-5">
   <div class="row">
-   <!-- SIDEBAR -->
-<aside class="col-lg-2 d-none d-lg-block">
-  <div class="sticky-top" style="top: 110px">
-    <h5 class="fw-black mb-4 pb-2 border-bottom border-dark border-2 d-inline-block">
-      FILTRAR
-    </h5>
+    <!-- SIDEBAR -->
+    <aside class="col-lg-2 d-none d-lg-block">
+      <div class="sticky-top" style="top: 110px">
+        <h5 class="fw-black mb-4 pb-2 border-bottom border-dark border-2 d-inline-block">
+          FILTRAR
+        </h5>
 
-    <!-- FILTRO POR GÉNERO -->
-    <div class="mb-5">
-      <p class="filter-label">GÉNERO</p>
+        <!-- FILTRO POR GÉNERO -->
+        <div class="mb-5">
+          <p class="filter-label">GÉNERO</p>
 
-      <div class="filter-link" [class.active]="filtroGenero === 'Todos'" (click)="setFiltro('Todos')">Todos</div>
-      <div class="filter-link" [class.active]="filtroGenero === 'Hombre'" (click)="setFiltro('Hombre')">Hombre</div>
-      <div class="filter-link" [class.active]="filtroGenero === 'Mujer'" (click)="setFiltro('Mujer')">Mujer</div>
-      <div class="filter-link" [class.active]="filtroGenero === 'Niño'" (click)="setFiltro('Niño')">Niño</div>
-    </div>
+          <div
+            class="filter-link"
+            [class.active]="filtroGenero === 'Todos'"
+            (click)="setFiltro('Todos')"
+          >
+            Todos
+          </div>
+          <div
+            class="filter-link"
+            [class.active]="filtroGenero === 'Hombre'"
+            (click)="setFiltro('Hombre')"
+          >
+            Hombre
+          </div>
+          <div
+            class="filter-link"
+            [class.active]="filtroGenero === 'Mujer'"
+            (click)="setFiltro('Mujer')"
+          >
+            Mujer
+          </div>
+          <div
+            class="filter-link"
+            [class.active]="filtroGenero === 'Niño'"
+            (click)="setFiltro('Niño')"
+          >
+            Niño
+          </div>
+        </div>
 
-    <!-- FILTRO POR TIPO DE PRENDA (solo si no es "Todos") -->
-    <div class="mb-5" *ngIf="filtroGenero !== 'Todos'">
-      <p class="filter-label">TIPO DE PRENDA</p>
+        <!-- FILTRO POR TIPO DE PRENDA -->
+        <div class="mb-5" *ngIf="filtroGenero !== 'Todos'">
+          <p class="filter-label">TIPO DE PRENDA</p>
 
-      <div class="filter-link" [class.active]="filtroPrenda === 'Todos'" (click)="setFiltroPrenda('Todos')">Todos</div>
-      <div
-        class="filter-link"
-        *ngFor="let tipo of tiposDePrendaDisponibles()"
-        [class.active]="filtroPrenda === tipo"
-        (click)="setFiltroPrenda(tipo)"
-      >
-        {{ tipo }}
+          <div
+            class="filter-link"
+            [class.active]="filtroPrenda === 'Todos'"
+            (click)="setFiltroPrenda('Todos')"
+          >
+            Todos
+          </div>
+          <div
+            class="filter-link"
+            *ngFor="let tipo of tiposDePrendaDisponibles()"
+            [class.active]="filtroPrenda === tipo"
+            (click)="setFiltroPrenda(tipo)"
+          >
+            {{ tipo }}
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</aside>
+    </aside>
 
     <!-- CONTENIDO -->
     <div class="col-lg-10">
@@ -74,13 +104,13 @@
             </ul>
           </div>
 
-          <!-- CARRITO BTN -->
+          <!-- CARRITO BTN (SIGUE FUNCIONANDO) -->
           <button
             class="btn btn-dark rounded-pill px-4 shadow cart-btn-anim"
             data-bs-toggle="offcanvas"
             data-bs-target="#cartSide"
           >
-            Carrito ({{ carritoService.getCarrito().length }})
+            <span> Carrito ({{ carritoService.getCarrito().length }}) </span>
           </button>
         </div>
       </div>
@@ -124,76 +154,7 @@
   </div>
 </section>
 
-<!-- 🛒 CARRITO -->
-<div
-  class="offcanvas offcanvas-end border-0 shadow-lg"
-  tabindex="-1"
-  id="cartSide"
-  style="width: 420px"
->
-  <div class="offcanvas-header border-bottom p-4 bg-light">
-    <h5 class="fw-black m-0 fs-4">TU CARRITO ({{ carritoService.getCarrito().length }})</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-  </div>
-
-  <div class="offcanvas-body p-4 bg-white">
-    <div
-      *ngFor="let c of carritoService.getCarrito()"
-      class="d-flex gap-3 mb-4 align-items-center border-bottom pb-3"
-    >
-      <img [src]="c.imagen" width="90" class="bg-light p-2 rounded-3" />
-
-      <div class="flex-grow-1">
-        <h6 class="fw-bold mb-1 fs-6">{{ c.nombre }}</h6>
-
-        <p class="small text-muted mb-2">
-          Talle: {{ c.talle }} • Color: {{ c.color }} • ${{ c.precio | number }} c/u
-        </p>
-
-        <div class="quantity-control shadow-sm">
-          <button (click)="cambiarCantidad(c.uuid, 'restar')" class="btn-qty">-</button>
-          <span class="qty-num">{{ c.cantidad }}</span>
-          <button (click)="cambiarCantidad(c.uuid, 'sumar')" class="btn-qty">+</button>
-        </div>
-      </div>
-
-      <div class="text-end">
-        <p class="fw-black mb-1 fs-6">${{ c.precio * c.cantidad | number }}</p>
-
-        <button
-          class="btn btn-sm btn-link text-danger text-decoration-none p-0"
-          (click)="eliminarDelCarrito(c.uuid)"
-        >
-          Quitar
-        </button>
-      </div>
-    </div>
-
-    <div
-      *ngIf="carritoService.getCarrito().length === 0"
-      class="text-center py-5 text-muted bg-light rounded-3 mt-4"
-    >
-      Tu carrito está vacío
-    </div>
-  </div>
-
-  <div class="offcanvas-footer p-4 border-top bg-light mt-auto">
-    <div class="d-flex justify-content-between mb-4">
-      <span class="text-muted fw-bold"> SUBTOTAL </span>
-      <span class="fw-black fs-3 text-dark"> ${{ carritoService.getTotal() | number }} </span>
-    </div>
-
-    <button
-      class="btn btn-dark w-100 py-3 rounded-pill fw-bold fs-5 shadow"
-      [disabled]="carritoService.getCarrito().length === 0"
-      (click)="finalizarCompra()"
-    >
-      FINALIZAR COMPRA
-    </button>
-  </div>
-</div>
-
-<!-- 🔥 MODAL DETALLE PRO -->
+<!-- 🔥 MODAL DETALLE PRO (SIN CAMBIOS) -->
 <div class="modal fade" id="detailModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
@@ -214,7 +175,6 @@
               <button class="arrow right" (click)="siguienteImagen()">›</button>
             </div>
 
-            <!-- MINIATURAS -->
             <div class="thumbs mt-3">
               <img
                 *ngFor="let img of productoSeleccionado.imagenes; let i = index"
@@ -241,7 +201,6 @@
 
             <h3 class="fw-black mb-4">${{ productoSeleccionado.precio | number }}</h3>
 
-            <!-- TALLES -->
             <div class="mb-4">
               <p class="fw-bold mb-2">Talle</p>
 
@@ -257,7 +216,6 @@
               </div>
             </div>
 
-            <!-- COLORES -->
             <div class="mb-4">
               <p class="fw-bold mb-2">Color</p>
 
@@ -273,7 +231,6 @@
               </div>
             </div>
 
-            <!-- BOTON -->
             <button
               class="btn-black-premium w-100 py-3 rounded-pill fw-bold"
               (click)="agregarAlCarrito()"
