@@ -156,6 +156,23 @@
             Seleccioná una opción
           </small>
 
+          <!-- DIRECCIÓN (solo domicilio) -->
+          <div *ngIf="formData.envio === 'domicilio'" class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control input-premium"
+              name="direccion"
+              [(ngModel)]="formData.direccion"
+              required
+              #direccion="ngModel"
+            />
+            <label>Dirección completa</label>
+
+            <small class="text-danger" *ngIf="direccion.invalid && direccion.touched">
+              Dirección obligatoria
+            </small>
+          </div>
+
           <!-- FILE -->
           <label class="upload-box mb-3">
             <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />

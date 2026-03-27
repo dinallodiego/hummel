@@ -24,6 +24,7 @@ export class FinalizarCompraComponent {
     telefono: '',
     correo: '',
     envio: '',
+    direccion: '',
   };
 
   comprobante: File | null = null;
@@ -43,6 +44,12 @@ export class FinalizarCompraComponent {
     if (this.carrito.length === 0) {
       Swal.fire('Carrito vacío', 'Agregá productos antes de continuar', 'warning');
       this.router.navigate(['/productos']);
+    }
+  }
+
+  onEnvioChange() {
+    if (this.formData.envio === 'local') {
+      this.formData.direccion = '';
     }
   }
 
@@ -93,6 +100,11 @@ export class FinalizarCompraComponent {
       return;
     }
 
+    if (this.formData.envio === 'domicilio' && !this.formData.direccion.trim()) {
+      Swal.fire('Falta dirección', 'Ingresá la dirección de entrega', 'error');
+      return;
+    }
+
     if (!this.comprobante) {
       Swal.fire('Falta comprobante', 'Subí el comprobante de pago', 'error');
       return;
@@ -114,6 +126,7 @@ export class FinalizarCompraComponent {
         formDataToSend.append('telefono', this.formData.telefono);
         formDataToSend.append('correo', this.formData.correo);
         formDataToSend.append('envio', this.formData.envio);
+        formDataToSend.append('direccion', this.formData.direccion || '');
         formDataToSend.append('total', this.total.toString());
         formDataToSend.append('productos', JSON.stringify(this.carrito));
         if (this.comprobante) {

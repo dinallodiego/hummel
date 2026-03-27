@@ -1,6 +1,7 @@
 /* HERO */
 .nosotros-hero {
   position: relative;
+  background: #000;
   height: 80vh;
   overflow: hidden;
   display: flex;
@@ -9,28 +10,65 @@
   color: #fff;
 }
 
-.hero-video {
+/* CONTENEDOR */
+.video-wrapper {
   position: absolute;
-  top: 0; left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  z-index: 1;
-  opacity: 0.6;
+  overflow: hidden;
 }
 
-.hero-overlay {
+/* TODOS LOS VIDEOS */
+.video {
   position: absolute;
-  top:0; left:0;
-  width:100%;
-  height:100%;
-  background: rgba(0,0,0,0.4);
+  top: 50%;
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+}
+
+/* VIDEO CENTRAL */
+.video.center {
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 2;
 }
 
+/* VIDEO IZQUIERDA */
+.video.left {
+  left: 0;
+  transform: translateY(-50%) scale(1.2);
+  z-index: 1;
+}
+
+/* VIDEO DERECHA */
+.video.right {
+  right: 0;
+  transform: translateY(-50%) scale(1.2);
+  z-index: 1;
+}
+
+/* EFECTO LADOS */
+.video.side {
+  opacity: 0.3;
+  filter: blur(6px);
+}
+
+/* OVERLAY */
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.8));
+  z-index: 3;
+}
+
+/* CONTENIDO */
 .hero-content {
   position: relative;
-  z-index: 3;
+  z-index: 4;
   text-align: center;
 }
 
@@ -50,12 +88,14 @@
   color: #fff;
   font-size: 1.7rem;
   margin: 0 10px;
-  transition: transform 0.3s, color 0.3s;
+  transition:
+    transform 0.3s,
+    color 0.3s;
 }
 
 .hero-redes a:hover {
   transform: scale(1.2);
-  color: #1abc9c; /* turquesa hover */
+  color: #1abc9c;
 }
 
 /* SLIDER */
@@ -76,7 +116,9 @@
   width: 100%;
   height: 400px;
   object-fit: cover;
-  transition: opacity 1s ease, transform 0.5s ease;
+  transition:
+    opacity 1s ease,
+    transform 0.5s ease;
 }
 
 .slider-image:hover {
@@ -114,7 +156,9 @@
 .card {
   width: 220px;
   text-align: center;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
   cursor: pointer;
 }
 
@@ -125,7 +169,7 @@
 
 .card:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* VALORES */
@@ -156,7 +200,7 @@
 .valor i {
   font-size: 2.5rem;
   margin-bottom: 10px;
-  color: #1abc9c; /* iconos turquesa */
+  color: #1abc9c;
 }
 
 .valor h4 {
@@ -175,9 +219,9 @@
   text-align: center;
 }
 
-/* BOTONES UNIFICADOS */
+/* BOTONES */
 .btn-principal {
-  background: #000000; /* naranja base */
+  background: #000000;
   color: #fff;
   border: none;
   padding: 14px 30px;
@@ -186,17 +230,19 @@
   font-size: 1rem;
   cursor: pointer;
   margin: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition:
+    background 0.3s,
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 .btn-principal:hover {
-  background: #1abc9c; /* turquesa hover */
+  background: #1abc9c;
   transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Contenedor para alinear ambos botones */
 .btns-locales-politicas {
   display: flex;
   justify-content: center;
@@ -216,43 +262,76 @@
   font-size: 2rem;
   margin: 0 15px;
   color: #111;
-  transition: transform 0.3s, color 0.3s;
+  transition:
+    transform 0.3s,
+    color 0.3s;
 }
 
 .contact-redes a:hover {
   transform: scale(1.3);
-  color: #1abc9c; /* turquesa hover */
+  color: #1abc9c;
 }
 
 /* ANIMACIONES */
 @keyframes fadeInDown {
-  0% {opacity: 0; transform: translateY(-20px);}
-  100% {opacity: 1; transform: translateY(0);}
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeInUp {
-  0% {opacity: 0; transform: translateY(20px);}
-  100% {opacity: 1; transform: translateY(0);}
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeIn {
-  0% {opacity: 0;}
-  100% {opacity: 1;}
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 /* RESPONSIVE */
-@media(max-width: 900px) {
+@media (max-width: 900px) {
   .hero-content h1 {
     font-size: 2.2rem;
   }
+
   .hero-content p {
     font-size: 1.1rem;
   }
+
   .slider-image {
     height: 250px;
   }
+
   .equipo-cards {
     flex-direction: column;
     align-items: center;
+  }
+
+  /* 🔥 en mobile ocultamos los laterales */
+  .video.left,
+  .video.right {
+    display: none;
+  }
+
+  .video.center {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }

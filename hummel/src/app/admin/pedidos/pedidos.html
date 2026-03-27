@@ -40,6 +40,9 @@
           <th>Productos</th>
           <th>Comprobante</th>
           <th *ngIf="estadoSeleccionado === 'pendiente'">Acciones</th>
+          <th>Entrega</th>
+          <th *ngIf="estadoSeleccionado === 'aceptado'">Entrega Final</th>
+          <th *ngIf="estadoSeleccionado === 'rechazado'">Revisión</th>
         </tr>
       </thead>
 
@@ -89,6 +92,39 @@
               <button class="rechazar" (click)="rechazarPedido(pedido)">Rechazar</button>
             </div>
           </td>
+
+          <td>
+            <span class="envio-badge" [ngClass]="pedido.envio">
+              {{
+                pedido.envio?.toLowerCase() === 'domicilio'
+                  ? '🚚 Envío a domicilio - ' + pedido.direccion
+                  : '🏬 Retiro en local'
+              }}
+            </span>
+          </td>
+
+          <td *ngIf="pedido.estado === 'rechazado'">
+            <div class="rechazo-box">
+              <small class="text-danger"> Motivo: {{ pedido.mensaje || 'Sin especificar' }} </small>
+
+              <button class="btn-recuperar" (click)="aceptarPedido(pedido)">
+                Recuperar pedido
+              </button>
+            </div>
+          </td>
+
+          <td *ngIf="pedido.estado === 'aceptado'">
+            <div class="entregado-box">
+              <span [ngClass]="pedido.entregado ? 'ok' : 'pendiente'">
+                {{ pedido.entregado ? '✔ Entregado' : '⏳ Pendiente' }}
+              </span>
+
+              <!-- SOLO SI NO ESTÁ ENTREGADO -->
+              <div *ngIf="!pedido.entregado" class="acciones-entrega">
+                <button class="btn-ok" (click)="marcarEntregado(pedido)">✔</button>
+              </div>
+            </div>
+          </td>
         </tr>
 
         <tr *ngIf="pedidosFiltrados.length === 0">
@@ -126,6 +162,32 @@
       <button class="btn-descarga" (click)="descargarComprobante(pedido.comprobante)">
         Descargar comprobante
       </button>
+
+      <p class="envio-badge" [ngClass]="pedido.envio">
+        {{
+          pedido.envio?.toLowerCase() === 'domicilio'
+            ? '🚚 Envío a domicilio - ' + pedido.direccion
+            : '🏬 Retiro en local'
+        }}
+      </p>
+
+      <div *ngIf="pedido.estado === 'rechazado'" class="rechazo-box-mobile">
+        <p class="motivo">❌ Motivo: {{ pedido.mensaje || 'Sin especificar' }}</p>
+
+        <button class="btn-recuperar-mobile" (click)="aceptarPedido(pedido)">
+          Recuperar pedido
+        </button>
+      </div>
+
+      <div *ngIf="pedido.estado === 'aceptado'" class="entregado-box-mobile">
+        <span [ngClass]="pedido.entregado ? 'ok' : 'pendiente'">
+          {{ pedido.entregado ? '✔ Entregado' : '⏳ Pendiente' }}
+        </span>
+
+        <div *ngIf="!pedido.entregado" class="acciones-mobile">
+          <button class="aceptar" (click)="marcarEntregado(pedido)">✔</button>
+        </div>
+      </div>
 
       <div *ngIf="pedido.estado === 'pendiente'" class="acciones-mobile">
         <button class="aceptar" (click)="aceptarPedido(pedido)">Aceptar</button>

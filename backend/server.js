@@ -485,7 +485,8 @@ app.put("/productos/:id/activar", (req, res) => {
 /* CREAR PEDIDO */
 
 app.post("/pedidos", upload.single("comprobante"), (req, res) => {
-  const { nombre, dni, telefono, correo, envio, total, productos } = req.body;
+  const { nombre, dni, telefono, correo, envio, direccion, total, productos } =
+    req.body;
 
   const idPedido = generarIdPedido();
 
@@ -493,13 +494,23 @@ app.post("/pedidos", upload.single("comprobante"), (req, res) => {
 
   const sqlPedido = `
     INSERT INTO pedidos 
-    (id_pedido, nombre, dni, telefono, correo, envio, total, estado, comprobante)
-    VALUES (?, ?, ?, ?, ?, ?, ?, 'pendiente', ?)
+    (id_pedido, nombre, dni, telefono, correo, envio, direccion, total, estado, comprobante)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', ?)
   `;
 
   db.query(
     sqlPedido,
-    [idPedido, nombre, dni, telefono, correo, envio, total, comprobantePath],
+    [
+      idPedido,
+      nombre,
+      dni,
+      telefono,
+      correo,
+      envio,
+      direccion,
+      total,
+      comprobantePath,
+    ],
     (err, result) => {
       if (err) {
         console.log(err);
@@ -735,6 +746,35 @@ app.get("/ventas", (req, res) => {
       );
     });
   });
+});
+
+// marcar como entregado
+app.put("/pedidos/:id/entregado", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    console.log("ID recibido:", id);
+
+    await db
+      .promise()
+      .query("UPDATE pedidos SET entregado = true WHERE id_pedido = ?", [id]);
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("ERROR BACKEND:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// marcar como NO entregado (por si te equivocás)
+app.put("/pedidos/:id/no-entregado", async (req, res) => {
+  const { id } = req.params;
+
+  await db.query("UPDATE pedidos SET entregado = false WHERE  id_pedido = ?", [
+    id,
+  ]);
+
+  res.json({ ok: true });
 });
 /* SERVIDOR */
 

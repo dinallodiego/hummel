@@ -22,27 +22,38 @@
 </section>
 
 <section class="container my-5 py-5 position-relative">
-  <h2 class="section-title">PRODUCTOS DESTACADOS</h2>
+  <!-- 🔥 SIN PRODUCTOS -->
+  <div *ngIf="destacados.length === 0" class="text-center py-5">
+    <h2 class="section-title">PRODUCTOS DESTACADOS</h2>
+    <p class="lead mt-3">No hay productos destacados disponibles.</p>
+  </div>
 
-  <button class="arrow left" (click)="prevDestacados()">‹</button>
-  <button class="arrow right" (click)="nextDestacados()">›</button>
+  <!-- 🔥 CON PRODUCTOS -->
+  <div *ngIf="destacados.length > 0" class="position-relative">
+    <h2 class="section-title text-center mb-4">PRODUCTOS DESTACADOS</h2>
 
-  <div class="row g-4 justify-content-center">
-    @for (prod of destacadosPaginados; track prod.id) {
-      <div class="col-lg-4 col-md-6 col-10">
-        <div class="nike-card-premium destacado-card" (click)="abrirDetalle(prod)">
-          <div class="img-container-premium">
-            <img [src]="prod.imagen" class="product-img-main" />
-          </div>
+    <!-- 🔥 FLECHAS SOLO SI HAY MÁS DE 3 -->
+    <button *ngIf="destacados.length > 3" class="arrow left" (click)="prevDestacados()">‹</button>
 
-          <div class="product-info-premium text-center">
-            <p class="p-category">{{ prod.genero }}</p>
-            <h3 class="p-name">{{ prod.nombre }}</h3>
-            <p class="p-price">${{ prod.precio | number }}</p>
+    <button *ngIf="destacados.length > 3" class="arrow right" (click)="nextDestacados()">›</button>
+
+    <div class="row g-4 justify-content-center">
+      @for (prod of destacadosPaginados; track prod.id) {
+        <div class="col-lg-4 col-md-6 col-10">
+          <div class="nike-card-premium destacado-card" (click)="abrirDetalle(prod)">
+            <div class="img-container-premium">
+              <img [src]="prod.imagen" class="product-img-main" />
+            </div>
+
+            <div class="product-info-premium text-center">
+              <p class="p-category">{{ prod.genero }}</p>
+              <h3 class="p-name">{{ prod.nombre }}</h3>
+              <p class="p-price">${{ prod.precio | number }}</p>
+            </div>
           </div>
         </div>
-      </div>
-    }
+      }
+    </div>
   </div>
 </section>
 

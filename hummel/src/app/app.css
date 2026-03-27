@@ -12,15 +12,15 @@ body.menu-open {
 
 .top-bar {
   background: #111;
-  padding: 15px 0;
-  font-size: 12px;
+  padding: 8px 0; /* 🔥 antes 15 */
+  font-size: 11px; /* 🔥 antes 12 */
   text-transform: uppercase;
   letter-spacing: 1px;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   position: relative;
-  z-index: 1000; /* 🔥 debajo del carrito */
+  z-index: 900; /* 🔥 antes 1000 */
 }
 
 .top-bar a {
@@ -73,11 +73,12 @@ body.menu-open {
 
 .main-navbar {
   border-bottom: 1px solid #eee;
-  padding: 15px 0;
-  background: white !important;
+  padding: 10px 0; /* 🔥 antes 15 */
+  background: rgba(255, 255, 255, 0.9) !important; /* 🔥 mejor visual */
+  backdrop-filter: blur(8px); /* 🔥 efecto premium */
   position: sticky;
   top: 0;
-  z-index: 1200;
+  z-index: 1000; /* 🔥 antes 1200 */
 }
 
 .logo {
@@ -179,7 +180,7 @@ body.menu-open::before {
 .offcanvas {
   background: #ffffff !important;
   opacity: 1 !important;
-  z-index: 3000 !important; /* 🔥 MÁS ALTO QUE TODO */
+  z-index: 3000 !important;
   border-left: 1px solid #eee;
 }
 
@@ -303,6 +304,15 @@ body.menu-open::before {
 /* 🔥 SWEET ALERT POR ENCIMA DE TODO */
 .swal2-container {
   z-index: 9999 !important;
+}
+
+/* 🔥 FIX MODALES (MUY IMPORTANTE) */
+.modal {
+  z-index: 2000 !important;
+}
+
+.modal-backdrop {
+  z-index: 1900 !important;
 }
 
 /* =========================

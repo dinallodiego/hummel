@@ -23,7 +23,7 @@ export class PedidosComponent implements OnInit {
   estadoSeleccionado = 'pendiente';
 
   paginaActual = 1;
-  itemsPorPagina = 5;
+  itemsPorPagina = 3;
   totalPaginas = 1;
 
   @Output() cambios = new EventEmitter<void>();
@@ -236,6 +236,44 @@ export class PedidosComponent implements OnInit {
       a.click();
 
       window.URL.revokeObjectURL(blobUrl);
+    });
+  }
+
+  marcarEntregado(pedido: any) {
+    this.http.put(`${this.apiUrl}/pedidos/${pedido.id_pedido}/entregado`, {}).subscribe({
+      next: () => {
+        Swal.fire({
+          ...this.swalBase,
+          icon: 'success',
+          title: 'Pedido entregado',
+          timer: 1200,
+          showConfirmButton: false,
+        });
+
+        this.cargarPedidos();
+      },
+      error: () => {
+        Swal.fire('Error', 'No se pudo actualizar', 'error');
+      },
+    });
+  }
+
+  marcarNoEntregado(pedido: any) {
+    this.http.put(`${this.apiUrl}/pedidos/${pedido.id}/no-entregado`, {}).subscribe({
+      next: () => {
+        Swal.fire({
+          ...this.swalBase,
+          icon: 'info',
+          title: 'Marcado como no entregado',
+          timer: 1200,
+          showConfirmButton: false,
+        });
+
+        this.cargarPedidos();
+      },
+      error: () => {
+        Swal.fire('Error', 'No se pudo actualizar', 'error');
+      },
     });
   }
 }

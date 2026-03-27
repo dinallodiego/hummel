@@ -131,7 +131,10 @@ export class AppComponent implements AfterViewInit {
             Belgrano 69<br>
             Local 26<br>
             Galería Gran Rivadavia<br>
-            <strong>Horarios: Lunes a Sábado de 10 a 20hs</strong>
+            <strong>Horarios:</strong><br><br> 
+            <strong>Martes a Viernes</strong> de 10:30 hs a 19:30 hs <br> <br> 
+            <strong>Sabados</strong> de 10:30 hs a 15 hs <br><br> 
+            <strong>Lunes y feriados cerrado</strong>
           </div>
         </div>
 
