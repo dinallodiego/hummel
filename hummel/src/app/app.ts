@@ -1,8 +1,7 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterOutlet, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { RouterOutlet, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 import { CarritoService } from '../app/services/carrito';
 
@@ -17,7 +16,7 @@ declare var bootstrap: any;
 })
 export class AppComponent implements AfterViewInit {
   apiUrl = 'http://localhost:3000';
-
+  menuAbierto = false;
   swalBase = {
     customClass: {
       popup: 'swal-popup',
@@ -37,49 +36,35 @@ export class AppComponent implements AfterViewInit {
     private http: HttpClient,
     public carritoService: CarritoService,
   ) {}
+
   ngAfterViewInit() {
-    const toggler = document.querySelector('.navbar-toggler') as HTMLElement;
-    const menu = document.querySelector('#menu') as HTMLElement;
-    const links = document.querySelectorAll('.nav-link');
-    const closeMenu = document.querySelector('.close-menu') as HTMLElement;
+    document.addEventListener('click', (e: any) => {
+      const menu = document.getElementById('menu');
+      const toggler = document.querySelector('.navbar-toggler');
+      if (this.menuAbierto && !menu?.contains(e.target) && !toggler?.contains(e.target)) {
+        this.cerrarMenu();
+      }
 
-    const bsCollapse = new bootstrap.Collapse(menu, { toggle: false });
-
-    // 🔥 TOGGLE CORREGIDO
-    toggler.addEventListener('click', () => {
-      toggler.classList.toggle('active');
-
-      if (menu.classList.contains('show')) {
-        document.body.classList.remove('menu-open');
-      } else {
-        document.body.classList.add('menu-open');
+      if (
+        menu?.classList.contains('show') &&
+        !menu.contains(e.target) &&
+        !toggler?.contains(e.target)
+      ) {
+        this.toggleMenu();
       }
     });
-
-    // 🔥 ESTO ES CLAVE: cerrar bien al tocar links
-    links.forEach((link) => {
-      link.addEventListener('click', () => {
-        if (menu.classList.contains('show')) {
-          bsCollapse.hide();
-          toggler.classList.remove('active');
-          document.body.classList.remove('menu-open');
-        }
-      });
-    });
-
-    // 🔥 FIX CRUZ (ANTES FALLABA)
-    if (closeMenu) {
-      closeMenu.innerHTML = '✕'; // ← ESTO TE FALTABA
-
-      closeMenu.addEventListener('click', () => {
-        bsCollapse.hide();
-        toggler.classList.remove('active');
-        document.body.classList.remove('menu-open');
-      });
-    }
   }
 
-  // 🔥 FUNCIONES CARRITO
+  toggleMenu() {
+    this.menuAbierto = !this.menuAbierto;
+    document.body.classList.toggle('menu-open', this.menuAbierto);
+  }
+
+  cerrarMenu() {
+    this.menuAbierto = false;
+    document.body.classList.remove('menu-open');
+  }
+
   cambiarCantidad(uuid: string, operacion: 'sumar' | 'restar') {
     this.carritoService.cambiarCantidad(uuid, operacion);
   }
@@ -103,7 +88,6 @@ export class AppComponent implements AfterViewInit {
     if (cartElement) {
       const bsOffcanvas =
         bootstrap.Offcanvas.getInstance(cartElement) || new bootstrap.Offcanvas(cartElement);
-
       bsOffcanvas.hide();
     }
 
@@ -116,46 +100,20 @@ export class AppComponent implements AfterViewInit {
       title: 'Nuestros Locales',
       html: `
       <div style="display:flex; flex-direction:column; gap:12px">
-
-        <div style="
-          border:1px solid #eee;
-          border-radius:12px;
-          padding:14px;
-          background:#fafafa;
-        ">
-          <div style="font-weight:600; font-size:15px; margin-bottom:4px;">
-            📍 Ramos Mejía
-          </div>
-
+        <div style="border:1px solid #eee; border-radius:12px; padding:14px; background:#fafafa;">
+          <div style="font-weight:600; font-size:15px; margin-bottom:4px;">📍 Ramos Mejía</div>
           <div style="font-size:13px; color:#555; line-height:1.5;">
-            Belgrano 69<br>
-            Local 26<br>
-            Galería Gran Rivadavia<br>
+            Belgrano 69<br>Local 26<br>Galería Gran Rivadavia<br>
             <strong>Horarios:</strong><br><br> 
             <strong>Martes a Viernes</strong> de 10:30 hs a 19:30 hs <br> <br> 
             <strong>Sabados</strong> de 10:30 hs a 15 hs <br><br> 
             <strong>Lunes y feriados cerrado</strong>
           </div>
         </div>
-
-        <a 
-          href="https://www.google.com/maps/search/?api=1&query=Belgrano+69+Ramos+Mejia"
-          target="_blank"
-          style="
-            text-decoration:none;
-            text-align:center;
-            padding:10px;
-            border-radius:999px;
-            background:#111;
-            color:white;
-            font-size:14px;
-          "
-        >
+        <a href="https://www.google.com/maps/search/?api=1&query=Belgrano+69+Ramos+Mejia" target="_blank" style="text-decoration:none; text-align:center; padding:10px; border-radius:999px; background:#111; color:white; font-size:14px;">
           Ver en Google Maps
         </a>
-
-      </div>
-    `,
+      </div>`,
       confirmButtonText: 'Cerrar',
     });
   }
@@ -170,8 +128,6 @@ export class AppComponent implements AfterViewInit {
     }).then((result) => {
       if (result.isConfirmed && result.value) {
         const dato = result.value.trim();
-
-        // 🔥 SOLO NAVEGAR
         this.router.navigate(['/mis-pedidos', dato]);
       }
     });
@@ -183,13 +139,7 @@ export class AppComponent implements AfterViewInit {
       title: '¿Como comprar en nuestro sitio?',
       html: `
       <div style="display:flex; flex-direction:column; gap:12px">
-
-        <div style="
-          border:1px solid #eee;
-          border-radius:12px;
-          padding:14px;
-          background:#fafafa;
-        ">
+        <div style="border:1px solid #eee; border-radius:12px; padding:14px; background:#fafafa;">
           <div style="font-size:13px; color:#555; line-height:1.5;">
             1. Explora nuestro catálogo y elige tus productos favoritos.<br>
             2. Agrega los productos a tu carrito de compras.<br>
@@ -202,17 +152,8 @@ export class AppComponent implements AfterViewInit {
             Si tienes alguna pregunta, no dudes en contactarnos. ¡Gracias por elegirnos para tus compras!
           </div>
         </div>
-
-      </div>
-    `,
+      </div>`,
       confirmButtonText: 'Cerrar',
     });
-  }
-
-  cerrarMenu() {
-    const menu = document.getElementById('menu');
-    if (menu?.classList.contains('show')) {
-      menu.classList.remove('show');
-    }
   }
 }

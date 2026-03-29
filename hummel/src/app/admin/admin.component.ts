@@ -34,6 +34,9 @@ export class AdminComponent implements OnInit {
   fechaDesde: string = '';
   fechaHasta: string = '';
   ventasOriginal: any[] = [];
+  mostrarTalles = true;
+  tallesFiltrados: any[] = [];
+  dropdownTalles = true;
 
   @ViewChild(PedidosComponent) pedidosComp!: PedidosComponent;
 
@@ -65,6 +68,45 @@ export class AdminComponent implements OnInit {
     return this.ventas.reduce((acc, v) => acc + Number(v.total), 0);
   }
 
+  onCategoriaChange() {
+    this.tallesSeleccionados = [];
+
+    if (this.producto.categoria_id == 1) {
+      this.mostrarTalles = true;
+      this.tallesFiltrados = [
+        { id: 1, nombre: 'XS' },
+        { id: 2, nombre: 'S' },
+        { id: 3, nombre: 'M' },
+        { id: 4, nombre: 'L' },
+        { id: 5, nombre: 'XL' },
+        { id: 6, nombre: 'XXL' },
+      ];
+    }
+
+    if (this.producto.categoria_id == 2) {
+      this.mostrarTalles = true;
+      this.tallesFiltrados = Array.from({ length: 11 }, (_, i) => ({
+        id: i + 35,
+        nombre: (i + 35).toString(),
+      }));
+    }
+
+    if (this.producto.categoria_id == 3) {
+      this.mostrarTalles = false;
+      this.tallesFiltrados = [];
+    }
+  }
+
+  // 👇 CLAVE PARA EDITAR
+  editarProducto(p: any) {
+    this.producto = { ...p };
+    this.tallesSeleccionados = [...p.talles_ids];
+    this.coloresSeleccionados = [...p.colores_ids];
+    this.imagenes = [];
+
+    this.onCategoriaChange(); // 🔥 IMPORTANTE
+  }
+
   cargarProductos() {
     this.http.get<any[]>('http://localhost:3000/productos').subscribe((productos) => {
       this.productos = productos.map((p: any) => ({
@@ -80,8 +122,21 @@ export class AdminComponent implements OnInit {
   }
 
   logout() {
-    this.auth.logout();
-    this.router.navigate(['/admin/login']);
+    Swal.fire({
+      title: '¿Cerrar sesión?',
+      text: 'Vas a salir del panel de administración',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, salir',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#000',
+      cancelButtonColor: '#aaa',
+    }).then((res) => {
+      if (res.isConfirmed) {
+        this.auth.logout();
+        this.router.navigate(['/admin/login']);
+      }
+    });
   }
 
   abrirCrearProducto() {
@@ -105,13 +160,6 @@ export class AdminComponent implements OnInit {
     event.target.checked
       ? this.coloresSeleccionados.push(id)
       : (this.coloresSeleccionados = this.coloresSeleccionados.filter((c) => c !== id));
-  }
-
-  editarProducto(p: any) {
-    this.producto = { ...p };
-    this.tallesSeleccionados = [...p.talles_ids];
-    this.coloresSeleccionados = [...p.colores_ids];
-    this.imagenes = [];
   }
 
   crearProducto() {

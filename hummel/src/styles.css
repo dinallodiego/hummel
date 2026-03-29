@@ -1,18 +1,30 @@
-/* 🔥 SWEET ALERT RESPONSIVE PRO */
+/* =========================================
+   REGLAS MAESTRAS ANTI-SCROLL LATERAL
+   ========================================= */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden; /* 🔥 Corta cualquier cosa que quiera salir por la derecha */
+  position: relative;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
 
+/* 🔥 SWEET ALERT RESPONSIVE PRO */
 .swal2-container {
-  padding: 15px !important; /* 🔥 evita que se pegue a los bordes */
+  padding: 15px !important;
+  z-index: 9999 !important;
 }
 
 .swal-popup {
   border-radius: 18px !important;
   padding: 25px !important;
   width: 100%;
-  max-width: 420px; /* 🔥 tamaño ideal */
+  max-width: 420px;
   box-sizing: border-box;
 }
 
-/* 📱 MOBILE */
 @media (max-width: 480px) {
   .swal-popup {
     max-width: 100% !important;
@@ -21,7 +33,6 @@
   }
 }
 
-/* TITULO */
 .swal-title {
   font-size: 20px !important;
   font-weight: 600 !important;
@@ -29,14 +40,12 @@
   text-align: center;
 }
 
-/* TEXTO */
 .swal-text {
   font-size: 14px !important;
   color: #666 !important;
   text-align: center;
 }
 
-/* INPUT */
 .swal-input {
   width: 100% !important;
   border-radius: 10px !important;
@@ -46,15 +55,13 @@
   margin-top: 10px;
 }
 
-/* 🔥 BOTONES CONTENEDOR */
 .swal2-actions {
   display: flex !important;
   gap: 10px;
   justify-content: center;
-  flex-wrap: wrap; /* 🔥 clave para mobile */
+  flex-wrap: wrap;
 }
 
-/* BOTONES */
 .swal-confirm,
 .swal-cancel {
   flex: 1;
@@ -65,7 +72,6 @@
   font-size: 14px !important;
 }
 
-/* CONFIRM */
 .swal-confirm {
   background: #111 !important;
   color: #fff !important;
@@ -75,13 +81,11 @@
   background: #000 !important;
 }
 
-/* CANCEL */
 .swal-cancel {
   background: #eee !important;
   color: #333 !important;
 }
 
-/* 📱 BOTONES EN MOBILE */
 @media (max-width: 480px) {
   .swal-confirm,
   .swal-cancel {

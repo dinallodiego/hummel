@@ -1,93 +1,159 @@
-/* --- HEADER --- */
-
-body {
-  font-size: 16px;
-  overflow-x: hidden;
-}
-
-/* 🔥 IMPORTANTE: evita bugs de capas */
 body.menu-open {
   overflow: hidden;
+}
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.main-content {
+  flex: 1;
+}
+
+/* ANIMACIONES DESKTOP (Recuperadas) */
+.nav-links .nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 50%;
+  background-color: #000;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%);
+}
+.nav-links .nav-link:hover::after,
+.nav-links .nav-link.active::after {
+  width: 80%;
+}
+
+.hover-underline {
+  position: relative;
+  padding-bottom: 2px;
+}
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background-color: #fff;
+  transition: 0.3s ease;
+}
+.hover-underline:hover::after {
+  width: 100%;
+}
+
+/* REDISEÑO MOBILE MENU */
+@media (max-width: 991px) {
+  .menu-mobile {
+    padding: 2rem;
+    justify-content: flex-start !important; /* Empieza desde arriba */
+    padding-top: 80px;
+  }
+
+  .nav-links .nav-link {
+    font-size: 32px;
+    margin: 10px 0;
+    text-align: left;
+    width: 100%;
+  }
+
+  /* La Grilla de Tarjetas */
+  .mobile-extra-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    width: 100%;
+    margin-top: 40px;
+  }
+
+  .mobile-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.2s;
+    border: 1px solid #eee;
+  }
+
+  .mobile-card i {
+    font-size: 22px;
+    color: #000;
+  }
+  .mobile-card span {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #555;
+  }
+
+  .mobile-card.highlight {
+    background: #000;
+    border-color: #000;
+  }
+  .mobile-card.highlight i,
+  .mobile-card.highlight span {
+    color: #fff;
+  }
+
+  .mobile-card:active {
+    transform: scale(0.95);
+    background: #eee;
+  }
 }
 
 .top-bar {
   background: #111;
-  padding: 8px 0; /* 🔥 antes 15 */
-  font-size: 11px; /* 🔥 antes 12 */
+  padding: 15px 10px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+  letter-spacing: 1.5px;
   position: relative;
-  z-index: 900; /* 🔥 antes 1000 */
+  z-index: 900;
+  width: 100%;
 }
-
-.top-bar a {
+.top-bar-links {
+  gap: 50px;
+}
+.top-link {
   color: #888;
   text-decoration: none;
-  margin-left: 20px;
-  transition: 0.3s;
-  font-size: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
-.top-bar a:hover {
-  color: white;
+/* Efecto al acercarse en PC */
+.top-link:hover {
+  color: #fff;
+  transform: translateY(-1px);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
-/* =========================
-   TOP BAR MARQUEE
-========================= */
-
-.top-bar-marquee {
-  overflow: hidden;
-  white-space: nowrap;
-  display: inline-block;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: gray;
-  position: relative;
-  max-width: 450px;
-  font-weight: 600;
-  flex: 1 1 100%;
-  margin-bottom: 10px;
-}
-
-.top-bar-marquee::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 50px;
-  height: 100%;
-  background: linear-gradient(to left, #111, transparent);
-}
-
-.top-bar-marquee span {
-  display: inline-block;
-  padding-left: 100%;
-}
-
-/* --- NAVBAR --- */
-
+/* NAVBAR */
 .main-navbar {
   border-bottom: 1px solid #eee;
-  padding: 10px 0; /* 🔥 antes 15 */
-  background: rgba(255, 255, 255, 0.9) !important; /* 🔥 mejor visual */
-  backdrop-filter: blur(8px); /* 🔥 efecto premium */
+  padding: 10px 0;
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(8px);
   position: sticky;
   top: 0;
-  z-index: 1000; /* 🔥 antes 1200 */
+  z-index: 1000;
 }
-
 .logo {
   font-weight: 900;
   font-size: 26px;
   color: #000 !important;
   text-transform: uppercase;
+  text-decoration: none;
 }
-
 .nav-links .nav-link {
   font-weight: 700;
   color: #000 !important;
@@ -97,110 +163,68 @@ body.menu-open {
   position: relative;
 }
 
-.nav-links .nav-link::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: -3px;
-  left: 50%;
-  background-color: #000;
-  transform: translateX(-50%);
-}
-
-.nav-links .nav-link:hover::after {
-  width: 100%;
-}
-
-/* =========================
-   MENU MOBILE
-========================= */
-
+/* MENU MOBILE SIDEBAR */
 @media (max-width: 991px) {
-  .navbar-collapse {
+  .menu-mobile {
     position: fixed;
     top: 0;
-    left: 0;
-    width: 100%;
+    right: 0;
+    width: 85%;
     height: 100vh;
-    background: white;
-    display: flex !important;
+    background: #fff;
+    z-index: 1400;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    transform: translateX(101%);
+    transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+    visibility: hidden;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+  }
+  .menu-mobile.show {
+    transform: translateX(0);
+    visibility: visible;
+  }
+  .nav-links {
     flex-direction: column;
-    transform: translateY(-100%);
-    z-index: 1300;
+    text-align: center;
+    width: 100%;
   }
-
-  .navbar-collapse.show {
-    transform: translateY(0);
+  .nav-links .nav-link {
+    font-size: 28px;
+    margin: 18px 0;
+    font-weight: 800;
   }
-
   .close-menu {
+    display: block !important;
     position: absolute;
-    top: 20px;
+    top: 25px;
     right: 25px;
     font-size: 32px;
     font-weight: bold;
     cursor: pointer;
-    z-index: 1400;
     color: #000;
   }
-
-  .nav-links {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .nav-links .nav-link {
-    font-size: 26px;
-    margin: 15px 0;
-  }
 }
 
-/* =========================
-   OVERLAY
-========================= */
-
-body.menu-open::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 1100;
-}
-
-/* =========================
-   CARRITO GLOBAL
-========================= */
-
+/* CARRITO (OFFCANVAS) */
 .offcanvas {
   background: #ffffff !important;
-  opacity: 1 !important;
   z-index: 3000 !important;
   border-left: 1px solid #eee;
 }
-
-/* HEADER */
 .offcanvas-header {
   background: #ffffff !important;
   border-bottom: 1px solid #eee;
 }
-
 .offcanvas-header h5 {
   font-weight: 800;
   font-size: 1.2rem;
 }
-
-/* BODY */
 .offcanvas-body {
   background: #ffffff !important;
 }
-
-/* ITEM */
 .cart-item {
   display: flex;
   gap: 12px;
@@ -208,8 +232,8 @@ body.menu-open::before {
   padding: 12px;
   border-radius: 12px;
   align-items: center;
+  margin-bottom: 15px;
 }
-
 .cart-item img {
   width: 75px;
   height: 75px;
@@ -217,30 +241,22 @@ body.menu-open::before {
   background: #f4f4f4;
   border-radius: 10px;
 }
-
-/* INFO */
 .cart-info {
   flex: 1;
 }
-
 .cart-info h6 {
   font-size: 0.9rem;
   font-weight: 700;
   margin-bottom: 3px;
 }
-
 .cart-info p {
   font-size: 0.75rem;
   color: #777;
 }
-
-/* PRECIO */
 .cart-price {
   font-weight: 800;
   font-size: 0.9rem;
 }
-
-/* CONTADOR */
 .quantity-control {
   display: inline-flex;
   align-items: center;
@@ -249,7 +265,6 @@ body.menu-open::before {
   border: 1px solid #eee;
   overflow: hidden;
 }
-
 .btn-qty {
   background: none;
   border: none;
@@ -258,7 +273,6 @@ body.menu-open::before {
   color: #555;
   font-size: 1.1rem;
 }
-
 .qty-num {
   padding: 0 5px;
   font-weight: 800;
@@ -266,8 +280,6 @@ body.menu-open::before {
   min-width: 25px;
   text-align: center;
 }
-
-/* BOTON QUITAR */
 .cart-remove {
   font-size: 0.75rem;
   color: #999;
@@ -275,65 +287,16 @@ body.menu-open::before {
   background: none;
   cursor: pointer;
 }
-
 .cart-remove:hover {
   color: red;
 }
-
-/* FOOTER */
 .offcanvas-footer {
+  padding: 20px;
   background: #ffffff !important;
   border-top: 1px solid #eee;
 }
 
-/* 🔥 BOTON FINALIZAR COMPRA FIX */
-.offcanvas-footer .btn {
-  background: #000 !important;
-  color: #fff !important;
-  border: none;
-  font-weight: 700;
-  border-radius: 50px;
-}
-
-.offcanvas-footer .btn:disabled {
-  background: #ccc !important;
-  color: #666 !important;
-  cursor: not-allowed;
-}
-
-/* 🔥 SWEET ALERT POR ENCIMA DE TODO */
-.swal2-container {
-  z-index: 9999 !important;
-}
-
-/* 🔥 FIX MODALES (MUY IMPORTANTE) */
-.modal {
-  z-index: 2000 !important;
-}
-
-.modal-backdrop {
-  z-index: 1900 !important;
-}
-
-/* =========================
-   FOOTER
-========================= */
-
-html,
-body {
-  height: 100%;
-}
-
-app-root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.main-content {
-  flex: 1;
-}
-
+/* FOOTER (Original completo) */
 .simple-footer {
   margin-top: auto;
   background-color: #000;
@@ -341,28 +304,29 @@ app-root {
   padding: 60px 0 20px;
   border-top: 1px solid #111;
 }
-
 .footer-logo {
   font-weight: 900;
   font-size: 1.6rem;
-  margin-bottom: 5px;
+  margin-bottom: 15px;
   letter-spacing: -1px;
 }
-
 .contact-info-footer p {
   color: #888;
   font-size: 0.85rem;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
 }
-
 .social-simple a {
   color: #fff;
   font-size: 1.4rem;
   margin-right: 20px;
+  transition: 0.3s ease;
+  display: inline-block;
 }
-
+.social-simple a:hover {
+  transform: translateY(-5px);
+}
 .footer-section-title {
   font-size: 0.8rem;
   font-weight: 800;
@@ -371,7 +335,6 @@ app-root {
   margin-bottom: 25px;
   text-transform: uppercase;
 }
-
 .footer-nav-simple a,
 .footer-support-list a {
   color: #fff;
@@ -380,20 +343,45 @@ app-root {
   font-weight: 600;
   display: block;
   margin-bottom: 15px;
+  transition: 0.3s;
+}
+.footer-nav-simple a:hover,
+.footer-support-list a:hover {
+  opacity: 0.7;
+  padding-left: 5px;
 }
 
-.footer-support-list {
-  list-style: none;
-  padding: 0;
+@media (max-width: 767px) {
+  .simple-footer {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .simple-footer [class*='col-'] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .contact-info-footer p {
+    justify-content: center;
+  }
+  .social-simple {
+    justify-content: center;
+    margin-right: 0;
+    margin-bottom: 30px;
+  }
+  .footer-support-list {
+    padding-left: 0;
+  }
+  .footer-section-title {
+    margin-top: 30px;
+  }
 }
-
 .footer-copyright {
   border-top: 1px solid #111;
   padding-top: 25px;
   margin-top: 40px;
   text-align: center;
 }
-
 .footer-copyright p {
   color: #333;
   font-size: 9px;
@@ -402,7 +390,7 @@ app-root {
   margin: 0;
 }
 
-/* BOTON WHATSAPP */
+/* WHATSAPP */
 .whatsapp-float {
   position: fixed;
   right: 18px;
@@ -411,59 +399,17 @@ app-root {
   padding: 14px;
   border-radius: 50%;
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 190;
-  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
-
 .whatsapp-float img {
   width: 40px;
   height: 40px;
-  pointer-events: none;
 }
 
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 576px) {
-  body {
-    font-size: 15px;
-  }
-
-  .top-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px;
-  }
-
-  .logo {
-    font-size: 22px;
-  }
-
-  .nav-links .nav-link {
-    font-size: 22px;
-  }
-}
-
-/* OCULTA SIEMPRE POR DEFECTO */
-.close-menu {
-  display: none;
-}
-
-/* SOLO MOBILE */
-@media (max-width: 991px) {
-  .close-menu {
-    display: block;
-    position: absolute;
-    top: 20px;
-    right: 25px;
-    font-size: 32px;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 1400;
-    color: #000;
-  }
+.whatsapp-float:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
 }

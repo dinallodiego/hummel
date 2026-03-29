@@ -93,12 +93,13 @@
   </div>
 </section>
 
-<!-- MODAL EXACTO AL DE PRODUCTOS -->
+<!-- 🔥 MODAL DETALLE PRO (SIN CAMBIOS) -->
 <div class="modal fade" id="detailModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
       <div class="modal-body p-0" *ngIf="productoSeleccionado">
         <div class="row g-0">
+          <!-- GALERIA -->
           <div class="col-md-7 p-4 bg-light">
             <div class="image-viewer">
               <button class="arrow left" (click)="anteriorImagen()">‹</button>
@@ -123,7 +124,8 @@
             </div>
           </div>
 
-          <div class="col-md-5 p-4">
+          <!-- INFO -->
+          <div class="col-md-5 p-5">
             <button type="button" class="btn-close float-end" data-bs-dismiss="modal"></button>
 
             <p class="text-muted small mb-1">{{ productoSeleccionado.genero }}</p>
@@ -140,6 +142,7 @@
 
             <div class="mb-4">
               <p class="fw-bold mb-2">Talle</p>
+
               <div class="talle-grid-premium">
                 <button
                   *ngFor="let t of productoSeleccionado.talles"
@@ -154,6 +157,7 @@
 
             <div class="mb-4">
               <p class="fw-bold mb-2">Color</p>
+
               <div class="d-flex gap-2 flex-wrap">
                 <button
                   *ngFor="let c of productoSeleccionado.colores"

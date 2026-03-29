@@ -1,64 +1,172 @@
 <section class="container-fluid px-lg-5 my-5">
   <div class="row">
     <!-- SIDEBAR -->
-    <aside class="col-lg-2 d-none d-lg-block">
-      <div class="sticky-top" style="top: 110px">
-        <h5 class="fw-black mb-4 pb-2 border-bottom border-dark border-2 d-inline-block">
+    <!-- 🔥 SIDEBAR / FILTROS PRO -->
+    <aside class="col-lg-2">
+      <!-- BOTON MOBILE -->
+      <div class="d-lg-none mb-3">
+        <button
+          class="btn btn-dark w-100 rounded-pill fw-bold"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#filtrosMobile"
+        >
           FILTRAR
-        </h5>
+        </button>
+      </div>
 
-        <!-- FILTRO POR GÉNERO -->
-        <div class="mb-5">
-          <p class="filter-label">GÉNERO</p>
+      <!-- DESKTOP -->
+      <div class="sticky-top d-none d-lg-block filtros-pro" style="top: 110px">
+        <h5 class="fw-black mb-4 border-bottom pb-2">FILTRAR</h5>
 
-          <div
-            class="filter-link"
-            [class.active]="filtroGenero === 'Todos'"
-            (click)="setFiltro('Todos')"
-          >
-            Todos
+        <div class="accordion" id="filtrosAccordion">
+          <!-- GENERO -->
+          <div class="accordion-item border-0">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                data-bs-toggle="collapse"
+                data-bs-target="#genero"
+              >
+                GÉNERO
+              </button>
+            </h2>
+            <div id="genero" class="accordion-collapse collapse show">
+              <div class="accordion-body">
+                <div
+                  class="filter-pill"
+                  [class.active]="filtroGenero === 'Todos'"
+                  (click)="setFiltro('Todos')"
+                >
+                  Todos
+                </div>
+                <div
+                  class="filter-pill"
+                  [class.active]="filtroGenero === 'Hombre'"
+                  (click)="setFiltro('Hombre')"
+                >
+                  Hombre
+                </div>
+                <div
+                  class="filter-pill"
+                  [class.active]="filtroGenero === 'Mujer'"
+                  (click)="setFiltro('Mujer')"
+                >
+                  Mujer
+                </div>
+                <div
+                  class="filter-pill"
+                  [class.active]="filtroGenero === 'Niño'"
+                  (click)="setFiltro('Niño')"
+                >
+                  Niño
+                </div>
+              </div>
+            </div>
           </div>
-          <div
-            class="filter-link"
-            [class.active]="filtroGenero === 'Hombre'"
-            (click)="setFiltro('Hombre')"
-          >
-            Hombre
-          </div>
-          <div
-            class="filter-link"
-            [class.active]="filtroGenero === 'Mujer'"
-            (click)="setFiltro('Mujer')"
-          >
-            Mujer
-          </div>
-          <div
-            class="filter-link"
-            [class.active]="filtroGenero === 'Niño'"
-            (click)="setFiltro('Niño')"
-          >
-            Niño
-          </div>
-        </div>
 
-        <!-- FILTRO POR TIPO DE PRENDA -->
-        <div class="mb-5" *ngIf="filtroGenero !== 'Todos'">
-          <p class="filter-label">TIPO DE PRENDA</p>
+          <!-- CATEGORIA -->
+          <div class="accordion-item border-0" *ngIf="filtroGenero !== 'Todos'">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                data-bs-toggle="collapse"
+                data-bs-target="#categoria"
+              >
+                CATEGORÍA
+              </button>
+            </h2>
+            <div id="categoria" class="accordion-collapse collapse show">
+              <div class="accordion-body">
+                <div
+                  class="filter-pill"
+                  [class.active]="filtroPrenda === 'Todos'"
+                  (click)="setFiltroPrenda('Todos')"
+                >
+                  Todos
+                </div>
 
-          <div
-            class="filter-link"
-            [class.active]="filtroPrenda === 'Todos'"
-            (click)="setFiltroPrenda('Todos')"
-          >
-            Todos
+                <div
+                  class="filter-pill"
+                  *ngFor="let tipo of tiposDePrendaDisponibles()"
+                  [class.active]="filtroPrenda === tipo"
+                  (click)="setFiltroPrenda(tipo)"
+                >
+                  {{ tipo }}
+                </div>
+              </div>
+            </div>
           </div>
-          <div
-            class="filter-link"
-            *ngFor="let tipo of tiposDePrendaDisponibles()"
-            [class.active]="filtroPrenda === tipo"
-            (click)="setFiltroPrenda(tipo)"
-          >
-            {{ tipo }}
+
+          <!-- PRECIO -->
+          <div class="accordion-item border-0">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                data-bs-toggle="collapse"
+                data-bs-target="#precio"
+              >
+                PRECIO
+              </button>
+            </h2>
+
+            <div id="precio" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <div class="d-flex gap-2">
+                  <!-- MIN -->
+                  <div class="w-50">
+                    <label class="small text-muted">Mín</label>
+                    <input
+                      type="number"
+                      class="form-control form-control-sm rounded-pill"
+                      [(ngModel)]="precioMin"
+                      (input)="validarPrecio()"
+                      placeholder="0"
+                    />
+                  </div>
+
+                  <!-- MAX -->
+                  <div class="w-50">
+                    <label class="small text-muted">Máx</label>
+                    <input
+                      type="number"
+                      class="form-control form-control-sm rounded-pill"
+                      [(ngModel)]="precioMax"
+                      (input)="validarPrecio()"
+                      placeholder="100000"
+                    />
+                  </div>
+                </div>
+
+                <!-- BOTON LIMPIAR -->
+                <button class="btn btn-light w-100 mt-3 rounded-pill small" (click)="resetPrecio()">
+                  Limpiar filtro
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- DESTACADOS -->
+          <div class="accordion-item border-0">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                data-bs-toggle="collapse"
+                data-bs-target="#destacados"
+              >
+                DESTACADOS
+              </button>
+            </h2>
+            <div id="destacados" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <div
+                  class="filter-pill"
+                  [class.active]="soloDestacados"
+                  (click)="soloDestacados = !soloDestacados"
+                >
+                  ⭐ Solo destacados
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -118,7 +226,11 @@
       <!-- PRODUCTOS -->
       <div class="row g-4" *ngIf="productosFiltrados.length > 0">
         <div *ngFor="let item of productosPaginados" class="col-lg-4 col-md-6 col-6">
-          <div class="nike-card-premium" (click)="abrirDetalle(item)">
+          <div
+            class="nike-card-premium"
+            (click)="abrirDetalle(item)"
+            [class.destacado]="item.destacado"
+          >
             <div class="img-container-premium">
               <img [src]="item.imagen" class="product-img-main" />
             </div>
@@ -154,6 +266,41 @@
   </div>
 </section>
 
+<!-- 🔥 FILTROS MOBILE -->
+<div class="offcanvas offcanvas-start" id="filtrosMobile">
+  <div class="offcanvas-header">
+    <h5 class="fw-black">FILTRAR</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+
+  <div class="offcanvas-body">
+    <!-- GENERO -->
+    <p class="fw-bold">GÉNERO</p>
+    <div class="filter-pill" (click)="setFiltro('Todos')">Todos</div>
+    <div class="filter-pill" (click)="setFiltro('Hombre')">Hombre</div>
+    <div class="filter-pill" (click)="setFiltro('Mujer')">Mujer</div>
+    <div class="filter-pill" (click)="setFiltro('Niño')">Niño</div>
+
+    <!-- CATEGORIA -->
+    <div *ngIf="filtroGenero !== 'Todos'" class="mt-4">
+      <p class="fw-bold">CATEGORÍA</p>
+      <div class="filter-pill" (click)="setFiltroPrenda('Todos')">Todos</div>
+      <div
+        *ngFor="let tipo of tiposDePrendaDisponibles()"
+        class="filter-pill"
+        (click)="setFiltroPrenda(tipo)"
+      >
+        {{ tipo }}
+      </div>
+    </div>
+
+    <!-- DESTACADOS -->
+    <div class="mt-4">
+      <p class="fw-bold">DESTACADOS</p>
+      <div class="filter-pill" (click)="soloDestacados = !soloDestacados">⭐ Solo destacados</div>
+    </div>
+  </div>
+</div>
 <!-- 🔥 MODAL DETALLE PRO (SIN CAMBIOS) -->
 <div class="modal fade" id="detailModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-xl">

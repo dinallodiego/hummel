@@ -153,6 +153,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       showConfirmButton: false,
       timer: 1500,
     });
+    // 🔥 CERRAR MODAL
+    const modalElement = document.getElementById('detailModal');
+    if (modalElement) {
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      modal?.hide();
+    }
   }
 
   siguienteImagen() {

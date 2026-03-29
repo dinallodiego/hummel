@@ -1,3 +1,211 @@
+/* PAGINACION */
+.text-center button {
+  border-radius: 8px;
+}
+
+/* PREVIEW */
+#modalPreview img {
+  border-radius: 12px;
+}
+
+/* MOBILE FIX FUERTE */
+@media (max-width: 768px) {
+  .producto-card {
+    flex-direction: column !important;
+    height: auto !important;
+  }
+
+  .producto-card img {
+    width: 100% !important;
+    height: 200px !important;
+  }
+
+  .producto-info {
+    font-size: 14px;
+  }
+}
+
+/* ---------------- FORM PRO ---------------- */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.form-section {
+  background: #fafafa;
+  padding: 20px;
+  border-radius: 14px;
+}
+
+.form-title {
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.form-title.small {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* INPUTS */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 12px;
+  transition: 0.2s;
+  font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: black;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+/* COLORES */
+.color-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.color-item {
+  background: #f1f1f1;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* UPLOAD */
+.upload-box {
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.upload-box:hover {
+  border-color: black;
+}
+
+.preview-images {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+}
+
+/* BOTÓN */
+.btn-save {
+  width: 100%;
+  margin-top: 20px;
+  background: black;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  transition: 0.3s;
+}
+
+.btn-save:hover {
+  background: #222;
+  transform: translateY(-2px);
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-section {
+    padding: 15px;
+  }
+}
+
+/* -------------------- BOTÓN PRO -------------------- */
+.productos-header button {
+  background: black;
+  border: none;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: 0.3s;
+}
+
+.productos-header button:hover {
+  background: #222;
+  transform: translateY(-2px);
+}
+
+/* -------------------- DROPDOWN TALLES -------------------- */
+.dropdown-talles-header {
+  display: flex;
+  justify-content: space-between;
+  background: #f1f1f1;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.dropdown-talles-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.dropdown-talles-body.open {
+  max-height: 300px;
+  margin-top: 10px;
+}
+
+/* -------------------- MOBILE PRO -------------------- */
+@media (max-width: 768px) {
+  .productos-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .productos-header button {
+    width: 100%;
+  }
+
+  .producto-card {
+    flex-direction: column !important;
+    height: auto !important;
+  }
+
+  .producto-card img {
+    width: 100% !important;
+    height: 180px !important;
+  }
+
+  .producto-info {
+    font-size: 13px;
+  }
+
+  .checkbox-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 /* -------------------------- LAYOUT -------------------------- */
 .admin-layout {
   display: flex;
@@ -15,6 +223,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: 0.3s;
 }
 
 .logo {
@@ -23,6 +232,7 @@
   margin-bottom: 30px;
 }
 
+/* NAV */
 nav {
   display: flex;
   flex-direction: column;
@@ -35,49 +245,110 @@ nav a {
   text-decoration: none;
   color: white;
   font-weight: 500;
+  transition: 0.2s;
+  padding: 10px 12px;
+  border-radius: 8px;
 }
 
-nav a.active,
 nav a:hover {
+  background: rgba(255, 255, 255, 0.08);
   opacity: 1;
 }
 
+nav a.active {
+  opacity: 1;
+  background: white;
+  color: black;
+  font-weight: 700;
+}
+
+/* BOTÓN LOGOUT */
 .sidebar button {
   padding: 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+.sidebar button:hover {
+  background: #ddd;
 }
 
 /* -------------------------- MAIN -------------------------- */
 .main {
   flex: 1;
-  background: #f4f4f4;
   padding: 50px;
+  width: 100%;
 }
 
+/* -------------------------- DASHBOARD -------------------------- */
 .welcome {
-  margin-bottom: 40px;
-  max-width: 700px;
+  margin-bottom: 30px;
 }
 
-/* -------------------------- STATS CARDS -------------------------- */
+.welcome h1 {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.welcome p {
+  color: #666;
+}
+
+/* STATS */
 .stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
 }
 
 .stat-card {
   background: white;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 35px;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 140px;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(0, 0, 0, 0.05));
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.stat-card:hover::after {
+  opacity: 1;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card:active {
+  transform: scale(0.98);
+}
+
+.stat-card h3 {
+  font-size: 15px;
+  color: #666;
 }
 
 .stat-card span {
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 36px;
+  font-weight: 900;
 }
 
 /* -------------------------- PRODUCTOS -------------------------- */
@@ -85,7 +356,7 @@ nav a:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
 }
 
 .productos-grid {
@@ -96,23 +367,22 @@ nav a:hover {
 
 .producto-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  transition: 0.2s;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  transition: 0.25s;
   position: relative;
 }
 
 .producto-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.15);
 }
 
 .producto-card img {
   width: 100%;
   height: 200px;
   object-fit: cover;
-  background: #f4f4f4;
 }
 
 .producto-info {
@@ -120,163 +390,182 @@ nav a:hover {
 }
 
 .producto-info h4 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 6px;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .producto-info span {
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: 800;
 }
 
-/* -------------------------- DESTACAR -------------------------- */
+/* DESTACADO */
 .destacar-btn {
   position: absolute;
   top: 10px;
   right: 10px;
   padding: 6px 12px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
   border-radius: 6px;
   cursor: pointer;
-  text-align: center;
-  transition: all 0.2s ease-in-out;
   z-index: 10;
 }
 
 .destacar-btn.no-destacado {
   background: white;
-  color: black;
   border: 2px solid gold;
 }
 
 .destacar-btn.destacado {
   background: gold;
-  color: black;
   border: 2px solid black;
 }
 
-/* -------------------------- CHECKBOX GRID -------------------------- */
-.checkbox-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 10px;
-  margin-top: 10px;
+/* -------------------------- MODAL PRODUCTO -------------------------- */
+.form-modal {
+  border-radius: 16px;
+  overflow: hidden;
 }
 
-/* -------------------------- MODAL FORM -------------------------- */
-.form-modal .modal-content {
-  border-radius: 12px;
-  padding: 20px;
-  background: #fff;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+.form-modal .modal-header {
+  background: black;
+  color: white;
+}
+
+.producto-form label {
+  font-weight: 600;
+  margin-bottom: 5px;
 }
 
 .producto-form input,
 .producto-form select,
 .producto-form textarea {
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   padding: 10px;
-  width: 100%;
-  font-size: 14px;
-  transition: all 0.3s;
+  transition: 0.2s;
 }
 
 .producto-form input:focus,
 .producto-form select:focus,
 .producto-form textarea:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  border-color: black;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
 }
 
-.producto-form label {
-  font-weight: 500;
-  margin-bottom: 5px;
-  display: block;
+/* CHECKBOX GRID */
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
 }
 
-/* BOTÓN FORMULARIO */
-.producto-form button {
-  padding: 12px;
-  font-weight: bold;
-  font-size: 14px;
+.checkbox-grid label {
+  background: #f1f1f1;
+  padding: 8px;
   border-radius: 8px;
-  border: none;
-  transition: all 0.3s;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.producto-form button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+.checkbox-grid input {
+  transform: scale(1.2);
 }
 
+/* -------------------------- TABLA VENTAS -------------------------- */
 .tabla-ventas {
   background: white;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
 }
 
 .table {
-  margin-bottom: 0;
+  min-width: 700px;
 }
 
 .table th {
-  background: #111;
+  background: black;
   color: white;
   font-size: 13px;
-  text-transform: uppercase;
 }
 
 .table td {
-  font-size: 14px;
-  vertical-align: middle;
+  font-size: 13px;
 }
 
-.stats {
-  display: flex;
-  gap: 20px;
-}
-
-.stats .stat-card {
-  min-width: 250px;
-}
-
-/* -------------------------- RESPONSIVE -------------------------- */
-@media (max-width: 1000px) {
-  .stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 700px) {
+/* -------------------------- MOBILE -------------------------- */
+@media (max-width: 768px) {
   .admin-layout {
     flex-direction: column;
   }
 
   .sidebar {
     width: 100%;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .logo {
+    text-align: center;
+    font-size: 18px;
   }
 
   nav {
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  nav a {
+    text-align: center;
+    padding: 14px;
+    font-size: 14px;
   }
 
   .main {
-    padding: 30px;
+    padding: 15px;
   }
 
   .stats {
     grid-template-columns: 1fr;
   }
 
-  .checkbox-grid {
-    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  /* PRODUCTOS MEJORADO MOBILE */
+  .productos-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .producto-card {
+    display: flex;
+    flex-direction: row;
+    height: 120px;
+  }
+
+  .producto-card img {
+    width: 120px;
+    height: 100%;
+  }
+
+  .producto-info {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  /* TABLA */
+  .tabla-ventas {
+    padding: 10px;
+  }
+}
+
+/* -------------------------- TABLET -------------------------- */
+@media (max-width: 1024px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
