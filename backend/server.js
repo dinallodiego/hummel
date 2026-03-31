@@ -51,16 +51,9 @@ app.get("/", (req, res) => {
 app.get("/productos-activos-destacados", (req, res) => {
   const sql = `
   SELECT 
-    p.id,
-    p.nombre,
-    p.descripcion,
-    p.precio,
-    p.categoria_id,
-    p.genero_id,
-    p.disponible,
-    p.destacado,
-    c.nombre AS categoria,
-    g.nombre AS genero
+    p.id, p.nombre, p.descripcion, p.precio, p.categoria_id, p.genero_id,
+    p.disponible, p.destacado, p.tiene_descuento, p.descuento_valor,
+    c.nombre AS categoria, g.nombre AS genero
   FROM productos p
   LEFT JOIN categorias c ON p.categoria_id = c.id
   LEFT JOIN generos g ON p.genero_id = g.id
@@ -68,15 +61,8 @@ app.get("/productos-activos-destacados", (req, res) => {
   `;
 
   db.query(sql, (err, productos) => {
-    if (err) {
-      res.status(500).json(err);
-      return;
-    }
-
-    if (productos.length === 0) {
-      res.json([]);
-      return;
-    }
+    if (err) return res.status(500).json(err);
+    if (productos.length === 0) return res.json([]);
 
     let productosFinal = [];
     let pendientes = productos.length;
@@ -87,21 +73,11 @@ app.get("/productos-activos-destacados", (req, res) => {
         [producto.id],
         (err, imagenes) => {
           db.query(
-            `
-            SELECT t.id,t.nombre
-            FROM producto_talles pt
-            JOIN talles t ON pt.talle_id=t.id
-            WHERE pt.producto_id=? AND pt.disponible=1
-            `,
+            `SELECT t.id,t.nombre FROM producto_talles pt JOIN talles t ON pt.talle_id=t.id WHERE pt.producto_id=? AND pt.disponible=1`,
             [producto.id],
             (err, talles) => {
               db.query(
-                `
-                SELECT c.id,c.nombre
-                FROM producto_colores pc
-                JOIN colores c ON pc.color_id=c.id
-                WHERE pc.producto_id=? AND pc.disponible=1
-                `,
+                `SELECT c.id,c.nombre FROM producto_colores pc JOIN colores c ON pc.color_id=c.id WHERE pc.producto_id=? AND pc.disponible=1`,
                 [producto.id],
                 (err, colores) => {
                   productosFinal.push({
@@ -115,10 +91,7 @@ app.get("/productos-activos-destacados", (req, res) => {
                   });
 
                   pendientes--;
-
-                  if (pendientes === 0) {
-                    res.json(productosFinal);
-                  }
+                  if (pendientes === 0) res.json(productosFinal);
                 },
               );
             },
@@ -130,20 +103,12 @@ app.get("/productos-activos-destacados", (req, res) => {
 });
 
 /* PRODUCTOS ACTIVOS */
-
 app.get("/productos-activos", (req, res) => {
   const sql = `
   SELECT 
-    p.id,
-    p.nombre,
-    p.descripcion,
-    p.precio,
-    p.categoria_id,
-    p.genero_id,
-    p.disponible,
-    p.destacado,
-    c.nombre AS categoria,
-    g.nombre AS genero
+    p.id, p.nombre, p.descripcion, p.precio, p.categoria_id, p.genero_id,
+    p.disponible, p.destacado, p.tiene_descuento, p.descuento_valor,
+    c.nombre AS categoria, g.nombre AS genero
   FROM productos p
   LEFT JOIN categorias c ON p.categoria_id = c.id
   LEFT JOIN generos g ON p.genero_id = g.id
@@ -151,15 +116,8 @@ app.get("/productos-activos", (req, res) => {
   `;
 
   db.query(sql, (err, productos) => {
-    if (err) {
-      res.status(500).json(err);
-      return;
-    }
-
-    if (productos.length === 0) {
-      res.json([]);
-      return;
-    }
+    if (err) return res.status(500).json(err);
+    if (productos.length === 0) return res.json([]);
 
     let productosFinal = [];
     let pendientes = productos.length;
@@ -170,21 +128,11 @@ app.get("/productos-activos", (req, res) => {
         [producto.id],
         (err, imagenes) => {
           db.query(
-            `
-            SELECT t.id,t.nombre
-            FROM producto_talles pt
-            JOIN talles t ON pt.talle_id=t.id
-            WHERE pt.producto_id=? AND pt.disponible=1
-            `,
+            `SELECT t.id,t.nombre FROM producto_talles pt JOIN talles t ON pt.talle_id=t.id WHERE pt.producto_id=? AND pt.disponible=1`,
             [producto.id],
             (err, talles) => {
               db.query(
-                `
-                SELECT c.id,c.nombre
-                FROM producto_colores pc
-                JOIN colores c ON pc.color_id=c.id
-                WHERE pc.producto_id=? AND pc.disponible=1
-                `,
+                `SELECT c.id,c.nombre FROM producto_colores pc JOIN colores c ON pc.color_id=c.id WHERE pc.producto_id=? AND pc.disponible=1`,
                 [producto.id],
                 (err, colores) => {
                   productosFinal.push({
@@ -198,10 +146,7 @@ app.get("/productos-activos", (req, res) => {
                   });
 
                   pendientes--;
-
-                  if (pendientes === 0) {
-                    res.json(productosFinal);
-                  }
+                  if (pendientes === 0) res.json(productosFinal);
                 },
               );
             },
@@ -213,35 +158,20 @@ app.get("/productos-activos", (req, res) => {
 });
 
 /* PRODUCTOS TOTALES (ADMIN) */
-
 app.get("/productos", (req, res) => {
   const sql = `
   SELECT 
-    p.id,
-    p.nombre,
-    p.descripcion,
-    p.precio,
-    p.categoria_id,
-    p.genero_id,
-    p.disponible,
-    p.destacado,
-    c.nombre AS categoria,
-    g.nombre AS genero
+    p.id, p.nombre, p.descripcion, p.precio, p.categoria_id, p.genero_id,
+    p.disponible, p.destacado, p.tiene_descuento, p.descuento_valor,
+    c.nombre AS categoria, g.nombre AS genero
   FROM productos p
   LEFT JOIN categorias c ON p.categoria_id = c.id
   LEFT JOIN generos g ON p.genero_id = g.id
   `;
 
   db.query(sql, (err, productos) => {
-    if (err) {
-      res.status(500).json(err);
-      return;
-    }
-
-    if (productos.length === 0) {
-      res.json([]);
-      return;
-    }
+    if (err) return res.status(500).json(err);
+    if (productos.length === 0) return res.json([]);
 
     let productosFinal = [];
     let pendientes = productos.length;
@@ -252,21 +182,11 @@ app.get("/productos", (req, res) => {
         [producto.id],
         (err, imagenes) => {
           db.query(
-            `
-            SELECT t.id,t.nombre
-            FROM producto_talles pt
-            JOIN talles t ON pt.talle_id=t.id
-            WHERE pt.producto_id=?
-            `,
+            `SELECT t.id,t.nombre FROM producto_talles pt JOIN talles t ON pt.talle_id=t.id WHERE pt.producto_id=?`,
             [producto.id],
             (err, talles) => {
               db.query(
-                `
-                SELECT c.id,c.nombre
-                FROM producto_colores pc
-                JOIN colores c ON pc.color_id=c.id
-                WHERE pc.producto_id=?
-                `,
+                `SELECT c.id,c.nombre FROM producto_colores pc JOIN colores c ON pc.color_id=c.id WHERE pc.producto_id=?`,
                 [producto.id],
                 (err, colores) => {
                   productosFinal.push({
@@ -280,10 +200,7 @@ app.get("/productos", (req, res) => {
                   });
 
                   pendientes--;
-
-                  if (pendientes === 0) {
-                    res.json(productosFinal);
-                  }
+                  if (pendientes === 0) res.json(productosFinal);
                 },
               );
             },
@@ -343,21 +260,37 @@ app.get("/colores", (req, res) => {
 });
 
 /* CREAR PRODUCTO */
-
 app.post("/productos", upload.array("imagenes", 10), (req, res) => {
-  const { nombre, descripcion, precio, categoria_id, genero_id } = req.body;
+  const {
+    nombre,
+    descripcion,
+    precio,
+    categoria_id,
+    genero_id,
+    tiene_descuento,
+    descuento_valor,
+  } = req.body;
 
   const sql = `
   INSERT INTO productos
-  (nombre,descripcion,precio,categoria_id,genero_id,disponible,destacado)
-  VALUES(?,?,?,?,?,true,false)
+  (nombre, descripcion, precio, categoria_id, genero_id, disponible, destacado, tiene_descuento, descuento_valor)
+  VALUES(?,?,?,?,?,true,false,?,?)
   `;
 
   db.query(
     sql,
-    [nombre, descripcion, precio, categoria_id, genero_id],
+    [
+      nombre,
+      descripcion,
+      precio,
+      categoria_id,
+      genero_id,
+      tiene_descuento === "true" || tiene_descuento === "1" ? 1 : 0,
+      descuento_valor || 0,
+    ],
     (err, result) => {
       if (err) {
+        console.error(err);
         res.status(500).json(err);
         return;
       }
@@ -374,7 +307,6 @@ app.post("/productos", upload.array("imagenes", 10), (req, res) => {
       }
 
       const talles = JSON.parse(req.body.talles || "[]");
-
       talles.forEach((talleId) => {
         db.query(
           "INSERT INTO producto_talles(producto_id,talle_id,disponible) VALUES(?,?,true)",
@@ -383,7 +315,6 @@ app.post("/productos", upload.array("imagenes", 10), (req, res) => {
       });
 
       const colores = JSON.parse(req.body.colores || "[]");
-
       colores.forEach((colorId) => {
         db.query(
           "INSERT INTO producto_colores(producto_id,color_id,disponible) VALUES(?,?,true)",
@@ -400,20 +331,36 @@ app.post("/productos", upload.array("imagenes", 10), (req, res) => {
 });
 
 /* EDITAR PRODUCTO */
-
 app.put("/productos/:id", upload.array("imagenes", 10), (req, res) => {
   const { id } = req.params;
-  const { nombre, descripcion, precio, categoria_id, genero_id } = req.body;
+  const {
+    nombre,
+    descripcion,
+    precio,
+    categoria_id,
+    genero_id,
+    tiene_descuento,
+    descuento_valor,
+  } = req.body;
 
   const sql = `
   UPDATE productos
-  SET nombre=?,descripcion=?,precio=?,categoria_id=?,genero_id=?
+  SET nombre=?, descripcion=?, precio=?, categoria_id=?, genero_id=?, tiene_descuento=?, descuento_valor=?
   WHERE id=?
   `;
 
   db.query(
     sql,
-    [nombre, descripcion, precio, categoria_id, genero_id, id],
+    [
+      nombre,
+      descripcion,
+      precio,
+      categoria_id,
+      genero_id,
+      tiene_descuento === "true" || tiene_descuento === "1" ? 1 : 0,
+      descuento_valor || 0,
+      id,
+    ],
     (err) => {
       if (err) {
         res.status(500).json(err);

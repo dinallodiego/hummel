@@ -48,7 +48,30 @@
             <div class="product-info-premium text-center">
               <p class="p-category">{{ prod.genero }}</p>
               <h3 class="p-name">{{ prod.nombre }}</h3>
-              <p class="p-price">${{ prod.precio | number }}</p>
+
+              <div class="d-flex align-items-center justify-content-center gap-2">
+                <span
+                  [ngStyle]="{
+                    'text-decoration': prod.tiene_descuento ? 'line-through' : 'none',
+                    color: prod.tiene_descuento ? '#888' : '#fff',
+                    'font-size': prod.tiene_descuento ? '0.9rem' : '1.2rem',
+                  }"
+                >
+                  ${{ prod.precio | number: '1.0-0' : 'es-AR' }}
+                </span>
+
+                <span
+                  *ngIf="prod.tiene_descuento"
+                  class="text-danger fw-bold"
+                  style="font-size: 1.2rem"
+                >
+                  ${{ prod.precio_final | number: '1.0-0' : 'es-AR' }}
+                </span>
+              </div>
+
+              <div class="mt-2" *ngIf="prod.tiene_descuento">
+                <span class="badge bg-danger">{{ prod.descuento_valor }}% OFF</span>
+              </div>
             </div>
           </div>
         </div>

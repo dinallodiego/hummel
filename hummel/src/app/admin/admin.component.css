@@ -569,3 +569,28 @@ nav a.active {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+.no-talles-msg {
+  background: #eee;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 10px;
+  border: 1px dashed #ccc;
+}
+
+.no-talles-msg p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Estilo para el badge de descuento en la lista de productos (opcional) */
+.badge-discount {
+  background: #ff4444;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  margin-left: 5px;
+}

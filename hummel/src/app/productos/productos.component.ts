@@ -70,7 +70,6 @@ export class ProductosComponent implements OnInit {
         }
 
         let imagenesArray: string[] = [];
-
         if (Array.isArray(p.imagenes) && p.imagenes.length > 0) {
           imagenesArray = p.imagenes.map((img: string) => {
             return img.startsWith('http') ? img : 'http://localhost:3000' + img;
@@ -79,24 +78,35 @@ export class ProductosComponent implements OnInit {
           imagenesArray = [imagenPrincipal];
         }
 
+        // Calculamos el precio con descuento si corresponde
+        const precioBase = Number(p.precio);
+        const tieneDescuento = !!p.tiene_descuento; // Fuerza booleano
+        const valorDescuento = Number(p.descuento_valor || 0);
+
+        const precioFinal = tieneDescuento
+          ? precioBase - (precioBase * valorDescuento) / 100
+          : precioBase;
+
         return {
           id: p.id,
           nombre: p.nombre,
           genero: p.genero,
           tipo: p.tipo || 'Otro',
           descripcion: p.descripcion,
-          precio: Number(p.precio),
+          precio: precioBase,
+          precio_final: precioFinal, // Nueva propiedad para facilitar el HTML
+          tiene_descuento: tieneDescuento,
+          descuento_valor: valorDescuento,
           imagen: imagenPrincipal,
           imagenes: imagenesArray,
           talles: Array.isArray(p.talles) ? p.talles : [],
           colores: Array.isArray(p.colores) ? p.colores : [],
-          destacado: p.destacado || false,
+          destacado: !!p.destacado,
         };
       });
 
       this.catalogoCompleto = nuevosProductos;
       this.paginaActual = 1;
-
       this.cdr.detectChanges();
     });
   }

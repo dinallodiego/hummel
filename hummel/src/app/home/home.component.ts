@@ -86,11 +86,22 @@ export class HomeComponent implements OnInit, OnDestroy {
               ? p.imagenes.map((img: string) => (img.startsWith('http') ? img : base + img))
               : [imagen];
 
+          // Lógica de descuento
+          const precioBase = Number(p.precio);
+          const tieneDescuento = !!p.tiene_descuento;
+          const valorDescuento = Number(p.descuento_valor || 0);
+          const precioFinal = tieneDescuento
+            ? precioBase - (precioBase * valorDescuento) / 100
+            : precioBase;
+
           return {
             ...p,
             imagen,
             imagenes,
-            precio: Number(p.precio),
+            precio: precioBase,
+            precio_final: precioFinal,
+            tiene_descuento: tieneDescuento,
+            descuento_valor: valorDescuento,
             talles: p.talles || [],
             colores: p.colores || [],
           };

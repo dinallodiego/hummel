@@ -62,8 +62,18 @@ export class AdminComponent implements OnInit {
   }
 
   getProductoVacio() {
-    return { id: null, nombre: '', precio: '', descripcion: '', genero_id: '', categoria_id: '' };
+    return {
+      id: null,
+      nombre: '',
+      precio: null,
+      descripcion: '',
+      genero_id: '',
+      categoria_id: '',
+      tiene_descuento: false,
+      descuento_valor: null,
+    };
   }
+
   get totalVentas(): number {
     return this.ventas.reduce((acc, v) => acc + Number(v.total), 0);
   }
@@ -72,39 +82,37 @@ export class AdminComponent implements OnInit {
     this.tallesSeleccionados = [];
 
     if (this.producto.categoria_id == 1) {
+      // INDUMENTARIA: IDs del 1 al 7 según tu nueva DB
       this.mostrarTalles = true;
       this.tallesFiltrados = [
-        { id: 1, nombre: 'XS' },
-        { id: 2, nombre: 'S' },
-        { id: 3, nombre: 'M' },
-        { id: 4, nombre: 'L' },
-        { id: 5, nombre: 'XL' },
-        { id: 6, nombre: 'XXL' },
+        { id: 1, nombre: 'XXS' },
+        { id: 2, nombre: 'XS' },
+        { id: 3, nombre: 'S' },
+        { id: 4, nombre: 'M' },
+        { id: 5, nombre: 'L' },
+        { id: 6, nombre: 'XL' },
+        { id: 7, nombre: 'XXL' },
       ];
-    }
-
-    if (this.producto.categoria_id == 2) {
+    } else if (this.producto.categoria_id == 2) {
+      // CALZADO: IDs del 35 al 45
       this.mostrarTalles = true;
       this.tallesFiltrados = Array.from({ length: 11 }, (_, i) => ({
         id: i + 35,
         nombre: (i + 35).toString(),
       }));
-    }
-
-    if (this.producto.categoria_id == 3) {
+    } else {
+      // ACCESORIOS (Gorras, muñequeras, etc.)
       this.mostrarTalles = false;
       this.tallesFiltrados = [];
     }
   }
 
-  // 👇 CLAVE PARA EDITAR
   editarProducto(p: any) {
     this.producto = { ...p };
-    this.tallesSeleccionados = [...p.talles_ids];
-    this.coloresSeleccionados = [...p.colores_ids];
+    this.tallesSeleccionados = [...(p.talles_ids || [])];
+    this.coloresSeleccionados = [...(p.colores_ids || [])];
     this.imagenes = [];
-
-    this.onCategoriaChange(); // 🔥 IMPORTANTE
+    this.onCategoriaChange();
   }
 
   cargarProductos() {
@@ -112,6 +120,8 @@ export class AdminComponent implements OnInit {
       this.productos = productos.map((p: any) => ({
         ...p,
         precio: Number(p.precio),
+        descuento_valor: Number(p.descuento_valor || 0),
+        tiene_descuento: !!p.tiene_descuento,
         imagen: p.imagen?.startsWith('/uploads')
           ? 'http://localhost:3000' + p.imagen
           : 'assets/no-image.png',
@@ -150,10 +160,21 @@ export class AdminComponent implements OnInit {
     this.imagenes = event.target.files;
   }
 
-  toggleTalle(id: number, event: any) {
-    event.target.checked
-      ? this.tallesSeleccionados.push(id)
-      : (this.tallesSeleccionados = this.tallesSeleccionados.filter((t) => t !== id));
+  toggleTalle(id: any, event: any) {
+    // Forzamos que el ID sea un número para que coincida 100% con la DB
+    const idNum = Number(id);
+
+    if (event.target.checked) {
+      // Verificamos que no esté ya en el array (evita duplicados por clics rápidos)
+      if (!this.tallesSeleccionados.includes(idNum)) {
+        this.tallesSeleccionados.push(idNum);
+      }
+    } else {
+      // Filtramos comparando números
+      this.tallesSeleccionados = this.tallesSeleccionados.filter((t) => t !== idNum);
+    }
+
+    console.log('Talles seleccionados para enviar:', this.tallesSeleccionados);
   }
 
   toggleColor(id: number, event: any) {
@@ -162,42 +183,147 @@ export class AdminComponent implements OnInit {
       : (this.coloresSeleccionados = this.coloresSeleccionados.filter((c) => c !== id));
   }
 
+  // 2. Función para formatear el precio mientras escribís y limpiar puntos para el modelo
+  onPrecioInput(event: any) {
+    let value = event.target.value.replace(/\D/g, ''); // Remueve todo lo que no sea número
+
+    if (value) {
+      this.producto.precio = parseInt(value, 10);
+      // El pipe de Angular en el HTML se encarga de mostrar los puntos visualmente mediante el [ngModel]
+    } else {
+      this.producto.precio = null;
+    }
+  }
+  // 👇 FUNCIÓN DE CONFIRMACIÓN CON SWEETALERT
+  confirmarGuardado() {
+    const textoAccion = this.producto.id ? 'actualizar' : 'crear';
+
+    // 1. Validaciones de Texto y Selección
+    const camposIncompletos =
+      !this.producto.nombre ||
+      !this.producto.descripcion ||
+      !this.producto.categoria_id ||
+      !this.producto.genero_id;
+
+    // 2. Validación de Arreglos (Talles solo si la categoría no es 'Accesorio')
+    const faltanTalles = this.mostrarTalles && this.tallesSeleccionados.length === 0;
+    const faltanColores = this.coloresSeleccionados.length === 0;
+
+    // 3. Validación de Imágenes (Solo obligatorias al CREAR nuevo)
+    const faltanImagenes = !this.producto.id && this.imagenes.length === 0;
+
+    // --- DISPARO DE ERRORES ---
+
+    if (camposIncompletos) {
+      Swal.fire(
+        'Campos incompletos',
+        'Por favor, completá el nombre, descripción, categoría y género.',
+        'error',
+      );
+      return;
+    }
+
+    if (faltanTalles) {
+      Swal.fire(
+        'Faltan talles',
+        'Debes seleccionar al menos un talle para esta categoría.',
+        'error',
+      );
+      return;
+    }
+
+    if (faltanColores) {
+      Swal.fire('Faltan colores', 'Seleccioná al menos un color para el producto.', 'error');
+      return;
+    }
+
+    if (faltanImagenes) {
+      Swal.fire('Sin imágenes', 'Debes subir al menos una imagen para crear el producto.', 'error');
+      return;
+    }
+
+    if (!this.producto.precio || this.producto.precio <= 0) {
+      Swal.fire('Precio inválido', 'El precio debe ser mayor a 0.', 'error');
+      return;
+    }
+
+    if (
+      this.producto.tiene_descuento &&
+      (!this.producto.descuento_valor ||
+        this.producto.descuento_valor <= 0 ||
+        this.producto.descuento_valor > 100)
+    ) {
+      Swal.fire(
+        'Error en descuento',
+        'Ingresá un porcentaje de descuento válido (1-100).',
+        'error',
+      );
+      return;
+    }
+
+    // --- SI TODO ESTÁ OK, PEDIR CONFIRMACIÓN FINAL ---
+
+    Swal.fire({
+      title: `¿Confirmás ${textoAccion} este producto?`,
+      text: 'Revisá que toda la información sea correcta.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, guardar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#000',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.crearProducto();
+      }
+    });
+  }
+
   crearProducto() {
     const formData = new FormData();
     formData.append('nombre', this.producto.nombre);
     formData.append('descripcion', this.producto.descripcion);
-    formData.append('precio', this.producto.precio);
+    formData.append('precio', this.producto.precio.toString());
     formData.append('categoria_id', this.producto.categoria_id);
     formData.append('genero_id', this.producto.genero_id);
+
+    // Campos de descuento
+    formData.append('tiene_descuento', this.producto.tiene_descuento ? '1' : '0');
+    formData.append(
+      'descuento_valor',
+      this.producto.tiene_descuento ? this.producto.descuento_valor.toString() : '0',
+    );
+
     formData.append('talles', JSON.stringify(this.tallesSeleccionados));
     formData.append('colores', JSON.stringify(this.coloresSeleccionados));
-    for (let i = 0; i < this.imagenes.length; i++) formData.append('imagenes', this.imagenes[i]);
 
-    if (this.producto.id) {
-      this.http
-        .put(`http://localhost:3000/productos/${this.producto.id}`, formData)
-        .subscribe(() => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Producto actualizado',
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          this.cargarProductos();
-        });
-    } else {
-      this.http.post('http://localhost:3000/productos', formData).subscribe(() => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Producto creado',
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        this.cargarProductos();
-      });
+    for (let i = 0; i < this.imagenes.length; i++) {
+      formData.append('imagenes', this.imagenes[i]);
     }
 
+    const url = 'http://localhost:3000/productos';
+
+    if (this.producto.id) {
+      this.http.put(`${url}/${this.producto.id}`, formData).subscribe(() => {
+        this.finalizarProceso('Producto actualizado correctamente');
+      });
+    } else {
+      this.http.post(url, formData).subscribe(() => {
+        this.finalizarProceso('Producto creado exitosamente');
+      });
+    }
+  }
+
+  finalizarProceso(mensaje: string) {
+    Swal.fire({
+      icon: 'success',
+      title: mensaje,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    this.cargarProductos();
     this.abrirCrearProducto();
+    // Cerramos el modal usando el ID del botón de cerrar que definimos en el HTML
+    document.getElementById('cerrarModalProducto')?.click();
   }
 
   eliminarProducto(p: any) {
@@ -245,12 +371,8 @@ export class AdminComponent implements OnInit {
       cancelButtonText: 'Cancelar',
     }).then((res) => {
       if (!res.isConfirmed) return;
-
-      // Actualización instantánea en UI
       producto.destacado = !producto.destacado;
       this.cdr.detectChanges();
-
-      // Backend
       this.http
         .put(`http://localhost:3000/productos/${producto.id}/destacar`, {
           destacado: producto.destacado,
@@ -258,7 +380,7 @@ export class AdminComponent implements OnInit {
         .subscribe(() => {
           Swal.fire({
             icon: 'success',
-            title: `Producto ${producto.destacado ? 'destacado' : 'quitado de destacados'}`,
+            title: `Producto ${producto.destacado ? 'destacado' : 'quitado'}`,
             showConfirmButton: false,
             timer: 1200,
           });
@@ -276,10 +398,8 @@ export class AdminComponent implements OnInit {
   filtrarVentas() {
     this.ventas = this.ventasOriginal.filter((v) => {
       const fecha = new Date(v.fecha).getTime();
-
       const desde = this.fechaDesde ? new Date(this.fechaDesde).getTime() : null;
       const hasta = this.fechaHasta ? new Date(this.fechaHasta).getTime() : null;
-
       return (!desde || fecha >= desde) && (!hasta || fecha <= hasta);
     });
   }
@@ -290,7 +410,6 @@ export class AdminComponent implements OnInit {
 
   descargarExcel() {
     let data: any[] = [];
-
     this.ventas.forEach((v) => {
       if (v.productos_detalle && v.productos_detalle.length) {
         v.productos_detalle.forEach((p: any) => {
@@ -309,30 +428,15 @@ export class AdminComponent implements OnInit {
         data.push({
           Cliente: v.cliente_nombre,
           Email: v.cliente_email,
-          Producto: '',
-          Cantidad: '',
-          PrecioUnitario: '',
-          TotalProducto: '',
           TotalVenta: v.total,
           Fecha: new Date(v.fecha).toLocaleDateString(),
         });
       }
     });
 
-    // TOTAL FINAL
-    data.push({
-      Cliente: '',
-      Email: '',
-      Producto: '',
-      Cantidad: '',
-      PrecioUnitario: '',
-      TotalProducto: '',
-      TotalVenta: this.totalVentas,
-      Fecha: 'TOTAL',
-    });
+    data.push({ Fecha: 'TOTAL', TotalVenta: this.totalVentas });
 
     const worksheet = XLSX.utils.json_to_sheet(data);
-
     worksheet['!cols'] = [
       { wch: 20 },
       { wch: 25 },
@@ -343,19 +447,9 @@ export class AdminComponent implements OnInit {
       { wch: 15 },
       { wch: 15 },
     ];
-
-    const workbook = {
-      Sheets: { Ventas: worksheet },
-      SheetNames: ['Ventas'],
-    };
-
-    const buffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-
+    const workbook = { Sheets: { Ventas: worksheet }, SheetNames: ['Ventas'] };
+    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([buffer], { type: 'application/octet-stream' });
-
     saveAs(blob, `ventas-${new Date().toISOString().split('T')[0]}.xlsx`);
   }
 
