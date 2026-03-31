@@ -1,415 +1,501 @@
+/* ==========================================
+   1. ESTRUCTURA BASE Y RESET
+   ========================================== */
 body.menu-open {
-  overflow: hidden;
+    overflow: hidden;
 }
+
 app-root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
+
 .main-content {
-  flex: 1;
+    flex: 1;
 }
 
-/* ANIMACIONES DESKTOP (Recuperadas) */
-.nav-links .nav-link::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: -2px;
-  left: 50%;
-  background-color: #000;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: translateX(-50%);
-}
-.nav-links .nav-link:hover::after,
-.nav-links .nav-link.active::after {
-  width: 80%;
-}
-
-.hover-underline {
-  position: relative;
-  padding-bottom: 2px;
-}
-.hover-underline::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 1px;
-  bottom: 0;
-  left: 0;
-  background-color: #fff;
-  transition: 0.3s ease;
-}
-.hover-underline:hover::after {
-  width: 100%;
-}
-
-/* REDISEÑO MOBILE MENU */
-@media (max-width: 991px) {
-  .menu-mobile {
-    padding: 2rem;
-    justify-content: flex-start !important; /* Empieza desde arriba */
-    padding-top: 80px;
-  }
-
-  .nav-links .nav-link {
-    font-size: 32px;
-    margin: 10px 0;
-    text-align: left;
-    width: 100%;
-  }
-
-  /* La Grilla de Tarjetas */
-  .mobile-extra-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    width: 100%;
-    margin-top: 40px;
-  }
-
-  .mobile-card {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: 0.2s;
-    border: 1px solid #eee;
-  }
-
-  .mobile-card i {
-    font-size: 22px;
-    color: #000;
-  }
-  .mobile-card span {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #555;
-  }
-
-  .mobile-card.highlight {
-    background: #000;
-    border-color: #000;
-  }
-  .mobile-card.highlight i,
-  .mobile-card.highlight span {
-    color: #fff;
-  }
-
-  .mobile-card:active {
-    transform: scale(0.95);
-    background: #eee;
-  }
-}
-
+/* ==========================================
+   2. NAVEGACIÓN Y TOP BAR
+   ========================================== */
 .top-bar {
-  background: #111;
-  padding: 15px 10px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  position: relative;
-  z-index: 900;
-  width: 100%;
-}
-.top-bar-links {
-  gap: 50px;
-}
-.top-link {
-  color: #888;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-/* Efecto al acercarse en PC */
-.top-link:hover {
-  color: #fff;
-  transform: translateY(-1px);
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-}
-
-/* NAVBAR */
-.main-navbar {
-  border-bottom: 1px solid #eee;
-  padding: 10px 0;
-  background: rgba(255, 255, 255, 0.9) !important;
-  backdrop-filter: blur(8px);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-.logo {
-  font-weight: 900;
-  font-size: 26px;
-  color: #000 !important;
-  text-transform: uppercase;
-  text-decoration: none;
-}
-.nav-links .nav-link {
-  font-weight: 700;
-  color: #000 !important;
-  font-size: 15px;
-  text-transform: uppercase;
-  margin: 0 15px;
-  position: relative;
-}
-
-/* MENU MOBILE SIDEBAR */
-@media (max-width: 991px) {
-  .menu-mobile {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 85%;
-    height: 100vh;
-    background: #fff;
-    z-index: 1400;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transform: translateX(101%);
-    transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-    visibility: hidden;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
-  }
-  .menu-mobile.show {
-    transform: translateX(0);
-    visibility: visible;
-  }
-  .nav-links {
-    flex-direction: column;
-    text-align: center;
+    background: #111;
+    padding: 15px 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    position: relative;
+    z-index: 900;
     width: 100%;
-  }
-  .nav-links .nav-link {
-    font-size: 28px;
-    margin: 18px 0;
-    font-weight: 800;
-  }
-  .close-menu {
-    display: block !important;
-    position: absolute;
-    top: 25px;
-    right: 25px;
-    font-size: 32px;
-    font-weight: bold;
+}
+
+.top-bar-links {
+    gap: 50px;
+}
+
+.top-link {
+    color: #888;
+    text-decoration: none;
+    transition: all 0.3s ease;
     cursor: pointer;
-    color: #000;
-  }
+    display: flex;
+    align-items: center;
 }
 
-/* CARRITO (OFFCANVAS) */
+.top-link:hover {
+    color: #fff;
+    transform: translateY(-1px);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.main-navbar {
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-weight: 900;
+    font-size: 26px;
+    color: #000 !important;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.nav-links .nav-link {
+    font-weight: 700;
+    color: #000 !important;
+    font-size: 15px;
+    text-transform: uppercase;
+    margin: 0 15px;
+    position: relative;
+}
+
+/* Subrayado animado (Underline) */
+.hover-underline {
+    position: relative;
+    padding-bottom: 2px;
+}
+
+.hover-underline::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background-color: #fff;
+    transition: 0.3s ease;
+}
+
+.hover-underline:hover::after {
+    width: 100%;
+}
+
+/* ==========================================
+   3. COMPONENTES SWEETALERT (MODAL)
+   ========================================== */
+.swal-popup {
+    border-radius: 30px !important;
+    padding: 2rem 1.5rem !important;
+    border-top: 6px solid #20c997 !important;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.swal-title {
+    padding-top: 25px !important;
+}
+
+/* Badge Distribuidor con Hover */
+.distribuidor-badge {
+    display: inline-block;
+    border: 2px solid #20c997;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #20c997;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: all 0.4s ease;
+    margin-bottom: 10px;
+    cursor: default;
+}
+
+.distribuidor-badge:hover {
+    background-color: #20c997;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+/* ==========================================
+   4. BOTONES DEL SISTEMA
+   ========================================== */
+
+
+
+/* ==========================================
+   5. CARRITO (OFFCANVAS)
+   ========================================== */
 .offcanvas {
-  background: #ffffff !important;
-  z-index: 3000 !important;
-  border-left: 1px solid #eee;
-}
-.offcanvas-header {
-  background: #ffffff !important;
-  border-bottom: 1px solid #eee;
-}
-.offcanvas-header h5 {
-  font-weight: 800;
-  font-size: 1.2rem;
-}
-.offcanvas-body {
-  background: #ffffff !important;
-}
-.cart-item {
-  display: flex;
-  gap: 12px;
-  background: #fff;
-  padding: 12px;
-  border-radius: 12px;
-  align-items: center;
-  margin-bottom: 15px;
-}
-.cart-item img {
-  width: 75px;
-  height: 75px;
-  object-fit: contain;
-  background: #f4f4f4;
-  border-radius: 10px;
-}
-.cart-info {
-  flex: 1;
-}
-.cart-info h6 {
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin-bottom: 3px;
-}
-.cart-info p {
-  font-size: 0.75rem;
-  color: #777;
-}
-.cart-price {
-  font-weight: 800;
-  font-size: 0.9rem;
-}
-.quantity-control {
-  display: inline-flex;
-  align-items: center;
-  background: #f8f8f8;
-  border-radius: 50px;
-  border: 1px solid #eee;
-  overflow: hidden;
-}
-.btn-qty {
-  background: none;
-  border: none;
-  padding: 5px 15px;
-  font-weight: 800;
-  color: #555;
-  font-size: 1.1rem;
-}
-.qty-num {
-  padding: 0 5px;
-  font-weight: 800;
-  color: #000;
-  min-width: 25px;
-  text-align: center;
-}
-.cart-remove {
-  font-size: 0.75rem;
-  color: #999;
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-.cart-remove:hover {
-  color: red;
-}
-.offcanvas-footer {
-  padding: 20px;
-  background: #ffffff !important;
-  border-top: 1px solid #eee;
+    background: #ffffff !important;
+    z-index: 3000 !important;
+    border-left: 1px solid #eee;
 }
 
-/* FOOTER (Original completo) */
+.offcanvas-header {
+    background: #ffffff !important;
+    border-bottom: 1px solid #eee;
+}
+
+.offcanvas-header h5 {
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+.offcanvas-body {
+    background: #ffffff !important;
+}
+
+.cart-item {
+    display: flex;
+    gap: 12px;
+    background: #fff;
+    padding: 12px;
+    border-radius: 12px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.cart-item img {
+    width: 75px;
+    height: 75px;
+    object-fit: contain;
+    background: #f4f4f4;
+    border-radius: 10px;
+}
+
+.cart-info {
+    flex: 1;
+}
+
+.cart-info h6 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.cart-info p {
+    font-size: 0.75rem;
+    color: #777;
+}
+
+.cart-price {
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+.quantity-control {
+    display: inline-flex;
+    align-items: center;
+    background: #f8f8f8;
+    border-radius: 50px;
+    border: 1px solid #eee;
+    overflow: hidden;
+}
+
+.btn-qty {
+    background: none;
+    border: none;
+    padding: 5px 15px;
+    font-weight: 800;
+    color: #555;
+    font-size: 1.1rem;
+}
+
+.qty-num {
+    padding: 0 5px;
+    font-weight: 800;
+    color: #000;
+    min-width: 25px;
+    text-align: center;
+}
+
+.cart-remove {
+    font-size: 0.75rem;
+    color: #999;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.cart-remove:hover {
+    color: red;
+}
+
+.offcanvas-footer {
+    padding: 20px;
+    background: #ffffff !important;
+    border-top: 1px solid #eee;
+}
+
+/* ==========================================
+   6. FOOTER Y WHATSAPP
+   ========================================== */
 .simple-footer {
-  margin-top: auto;
-  background-color: #000;
-  color: #fff;
-  padding: 60px 0 20px;
-  border-top: 1px solid #111;
+    margin-top: auto;
+    background-color: #000;
+    color: #fff;
+    padding: 60px 0 20px;
+    border-top: 1px solid #111;
 }
+
 .footer-logo {
-  font-weight: 900;
-  font-size: 1.6rem;
-  margin-bottom: 15px;
-  letter-spacing: -1px;
+    font-weight: 900;
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+    letter-spacing: -1px;
 }
+
 .contact-info-footer p {
-  color: #888;
-  font-size: 0.85rem;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
+    color: #888;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
 }
+
 .social-simple a {
-  color: #fff;
-  font-size: 1.4rem;
-  margin-right: 20px;
-  transition: 0.3s ease;
-  display: inline-block;
+    color: #fff;
+    font-size: 1.4rem;
+    margin-right: 20px;
+    transition: 0.3s ease;
+    display: inline-block;
 }
+
 .social-simple a:hover {
-  transform: translateY(-5px);
+    transform: translateY(-5px);
 }
+
 .footer-section-title {
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 2px;
-  color: #555;
-  margin-bottom: 25px;
-  text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #555;
+    margin-bottom: 25px;
+    text-transform: uppercase;
 }
+
 .footer-nav-simple a,
 .footer-support-list a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 600;
-  display: block;
-  margin-bottom: 15px;
-  transition: 0.3s;
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 15px;
+    transition: 0.3s;
 }
+
 .footer-nav-simple a:hover,
 .footer-support-list a:hover {
-  opacity: 0.7;
-  padding-left: 5px;
+    opacity: 0.7;
+    padding-left: 5px;
 }
 
-@media (max-width: 767px) {
-  .simple-footer {
-    text-align: center;
-    padding: 40px 20px;
-  }
-  .simple-footer [class*='col-'] {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .contact-info-footer p {
-    justify-content: center;
-  }
-  .social-simple {
-    justify-content: center;
-    margin-right: 0;
-    margin-bottom: 30px;
-  }
-  .footer-support-list {
-    padding-left: 0;
-  }
-  .footer-section-title {
-    margin-top: 30px;
-  }
-}
 .footer-copyright {
-  border-top: 1px solid #111;
-  padding-top: 25px;
-  margin-top: 40px;
-  text-align: center;
-}
-.footer-copyright p {
-  color: #333;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  margin: 0;
+    border-top: 1px solid #111;
+    padding-top: 25px;
+    margin-top: 40px;
+    text-align: center;
 }
 
-/* WHATSAPP */
-.whatsapp-float {
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  background-color: #1e7d41;
-  padding: 14px;
-  border-radius: 50%;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
-  z-index: 190;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+.footer-copyright p {
+    color: #333;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin: 0;
 }
+
+.whatsapp-float {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    background-color: #1e7d41;
+    padding: 14px;
+    border-radius: 50%;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+    z-index: 190;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
 .whatsapp-float img {
-  width: 40px;
-  height: 40px;
+    width: 40px;
+    height: 40px;
 }
 
 .whatsapp-float:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+    transform: translateY(-6px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+}
+
+/* ==========================================
+   7. ANIMACIONES Y KEYFRAMES
+   ========================================== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================
+   8. MEDIA QUERIES (ADAPTABILIDAD)
+   ========================================== */
+
+/* --- TABLET/DESKTOP (PC) --- */
+@media (min-width: 992px) {
+    .btn-roxbel-handball:hover {
+        background-color: transparent !important;
+        color: #000 !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .nav-links .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -2px;
+        left: 50%;
+        background-color: #000;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateX(-50%);
+    }
+
+    .nav-links .nav-link:hover::after,
+    .nav-links .nav-link.active::after {
+        width: 80%;
+    }
+}
+
+/* --- MOBILE MENU SIDEBAR --- */
+@media (max-width: 991px) {
+    .menu-mobile {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 85%;
+        height: 100vh;
+        background: #fff;
+        z-index: 1400;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start !important;
+        align-items: center;
+        padding: 2rem;
+        padding-top: 80px;
+        transform: translateX(101%);
+        transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+        visibility: hidden;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu-mobile.show {
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        text-align: center;
+        width: 100%;
+    }
+
+    .nav-links .nav-link {
+        font-size: 28px;
+        margin: 18px 0;
+        font-weight: 800;
+        text-align: left;
+    }
+
+    .close-menu {
+        display: block !important;
+        position: absolute;
+        top: 25px;
+        right: 25px;
+        font-size: 32px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #000;
+    }
+
+    /* Grilla de Tarjetas en Menú Mobile */
+    .mobile-extra-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        width: 100%;
+        margin-top: 40px;
+    }
+
+    .mobile-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: 0.2s;
+        border: 1px solid #eee;
+    }
+
+    .mobile-card i { font-size: 22px; color: #000; }
+    .mobile-card span { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #555; }
+
+    .mobile-card.highlight { background: #000; border-color: #000; }
+    .mobile-card.highlight i, .mobile-card.highlight span { color: #fff; }
+
+    .mobile-card:active { transform: scale(0.95); background: #eee; }
+}
+
+/* --- AJUSTES EXTRA MOBILE (< 768px) --- */
+@media (max-width: 767px) {
+    .swal-html-container {
+        font-size: 16px !important;
+    }
+
+    .btn-roxbel-handball {
+        font-size: 14px !important;
+        padding: 18px 20px !important;
+    }
+
+    .btn-roxbel-handball:active {
+        transform: scale(0.96) !important;
+        background-color: #20c997 !important;
+        border-color: #20c997 !important;
+        color: #fff !important;
+    }
+
+    .simple-footer {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .simple-footer [class*='col-'] {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .contact-info-footer p { justify-content: center; }
+    .social-simple { justify-content: center; margin-right: 0; margin-bottom: 30px; }
+    .footer-support-list { padding-left: 0; }
+    .footer-section-title { margin-top: 30px; }
 }

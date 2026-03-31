@@ -25,53 +25,52 @@ export class NosotrosComponent {
     backdrop: 'rgba(0,0,0,0.5)',
   };
 
-  mostrarLocales() {
+   mostrarLocales() {
     Swal.fire({
       ...this.swalBase,
-      title: 'Nuestros Locales',
+      width: '420px', 
+      padding: '1.5rem',
+      title: `
+        <div style="display:flex; align-items:center; justify-content:center; gap:15px; padding-top: 5px;">
+          <div style="background: #20c997; width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(32,201,151,0.3);">
+            <i class="bi bi-geo-alt-fill" style="font-size: 22px; color: #000;"></i>
+          </div>
+          <h2 style="font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 20px; color: #111; text-transform: uppercase; letter-spacing: 1px; margin: 0;">Encontranos</h2>
+        </div>
+      `,
       html: `
-        <div style="display:flex; flex-direction:column; gap:12px">
+        <div style="display:flex; flex-direction:column; gap:12px; margin-top: 15px; overflow: hidden;">
+          
+          <div style="background: #f8f9fa; border: 2px solid #20c997; border-radius: 15px; padding: 12px; text-align: center;">
+            <p style="font-size: 15px; color: #000; font-weight: 900; margin-bottom: 2px; text-transform: uppercase;">Ramos Mejía</p>
+            <p style="font-size: 13px; color: #444; margin: 0; font-weight: 600;">
+              Belgrano 69, Local 26 <br> 
+              <span style="color: #20c997; font-weight: 800; font-size: 11px;">GALERÍA GRAN RIVADAVIA</span>
+            </p>
+          </div>
   
-          <div style="
-            border:1px solid #eee;
-            border-radius:12px;
-            padding:14px;
-            background:#fafafa;
-          ">
-            <div style="font-weight:600; font-size:15px; margin-bottom:4px;">
-              📍 Ramos Mejía
+          <div style="background: #111; border-radius: 15px; padding: 15px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="color: #20c997; font-size: 11px; font-weight: 800; text-transform: uppercase;">Mar a Vie</span>
+              <span style="color: #fff; font-size: 12px; font-weight: 700;">10:30 - 19:30 hs</span>
             </div>
-  
-            <div style="font-size:13px; color:#555; line-height:1.5;">
-              Belgrano 69<br>
-              Local 26<br>
-              Galería Gran Rivadavia<br>
-              <strong>Horarios:</strong><br><br> 
-              <strong>Martes a Viernes</strong> de 10:30 hs a 19:30 hs <br> <br> 
-              <strong>Sabados</strong> de 10:30 hs a 15 hs <br><br> 
-              <strong>Lunes y feriados cerrado</strong>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #333;">
+              <span style="color: #20c997; font-size: 11px; font-weight: 800; text-transform: uppercase;">Sábados</span>
+              <span style="color: #fff; font-size: 12px; font-weight: 700;">10:30 - 15:00 hs</span>
             </div>
           </div>
   
-          <a 
-            href="https://www.google.com/maps/search/?api=1&query=Belgrano+69+Ramos+Mejia"
-            target="_blank"
-            style="
-              text-decoration:none;
-              text-align:center;
-              padding:10px;
-              border-radius:999px;
-              background:#111;
-              color:white;
-              font-size:14px;
-            "
-          >
-            Ver en Google Maps
+          <a href="https://maps.app.goo.gl/tkifYi3orEt9gP7f7" target="_blank" 
+             style="text-decoration:none; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px; border-radius: 12px; background: #20c997; color: #000; font-size: 13px; font-weight: 900; text-transform: uppercase; transition: 0.3s; border: 2px solid #20c997;">
+            <i class="bi bi-cursor-fill"></i> Ver Ubicación
           </a>
   
-        </div>
-      `,
+          <div style="font-size: 15px; color: #ff4d4d; font-weight: 900; text-align: center; text-transform: uppercase; letter-spacing: 1px;">
+             Lunes y feriados cerrado
+          </div>
+        </div>`,
       confirmButtonText: 'Cerrar',
+      
     });
   }
 
