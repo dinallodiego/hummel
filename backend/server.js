@@ -172,11 +172,9 @@ FROM talles t
 LEFT JOIN producto_talles pt 
   ON pt.talle_id = t.id 
   AND pt.producto_id = ?
-WHERE 
-  (t.tipo = 'indumentaria' AND ? != 'Zapatillas')
-  OR
-  (t.tipo = 'calzado' AND ? = 'Zapatillas')`,
+ WHERE t.tipo = ?`,
             [producto.id],
+            [producto.categoria === "accesorio" ? "calzado" : "indumentaria"],
             (err, talles) => {
               db.query(
                 `SELECT 
