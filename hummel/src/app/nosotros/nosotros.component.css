@@ -207,6 +207,123 @@
   transform: scale(1.2);
 }
 
+/* --- SECCIÓN EQUIPO --- */
+.nosotros-equipo {
+  padding: 60px 20px;
+  background: #fff;
+}
+
+.equipo-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.equipo-img img {
+  width: 100%;
+  max-width: 350px;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.equipo-img img:hover {
+  transform: scale(1.02);
+}
+
+.equipo-texto {
+  flex: 1;
+  min-width: 300px;
+}
+
+.equipo-texto h3 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 15px;
+  color: #111;
+}
+
+/* --- SECCIÓN CLIENTES (MURAL) --- */
+.nosotros-clientes {
+  padding: 100px 20px;
+  background: #fdfdfd;
+  text-align: center;
+}
+
+.mural-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr; /* Video más ancho en el centro */
+  gap: 20px;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.mural-item img, .mural-item video {
+  width: 100%;
+  border-radius: 15px;
+  object-fit: cover;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.video-central {
+  position: relative;
+  transform: scale(1.1); /* Resalta el video */
+  z-index: 2;
+}
+
+.video-central video {
+  height: 450px;
+  border: 4px solid #1abc9c;
+}
+
+.video-caption {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(26, 188, 156, 0.9);
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.side-img img {
+  height: 350px;
+  filter: grayscale(30%);
+  transition: 0.3s;
+}
+
+.side-img img:hover {
+  filter: grayscale(0%);
+}
+
+/* --- RESPONSIVE CLIENTES --- */
+@media (max-width: 900px) {
+  .mural-grid {
+    grid-template-columns: 1fr; /* Todo en una columna en mobile */
+    gap: 30px;
+  }
+  
+  .video-central {
+    transform: scale(1);
+    order: -1; /* Video primero en mobile */
+  }
+
+  .video-central video {
+    height: auto;
+  }
+
+  .side-img img {
+    height: auto;
+  }
+}
+
 /* --- ANIMACIONES --- */
 @keyframes fadeInDown {
   from {
