@@ -52,7 +52,7 @@ app.get("/productos-activos-destacados", (req, res) => {
   const sql = `
   SELECT 
     p.id, p.nombre, p.descripcion, p.precio, p.categoria_id, p.genero_id,
-    p.disponible, p.destacado, p.tiene_descuento, p.descuento_valor,
+    p.disponible, p.destacado, p.tiene_descuento, p.descuento_valor,  p.tipo_descuento, p.descuento_cantidad,
     c.nombre AS categoria, g.nombre AS genero
   FROM productos p
   LEFT JOIN categorias c ON p.categoria_id = c.id
@@ -73,19 +73,51 @@ app.get("/productos-activos-destacados", (req, res) => {
         [producto.id],
         (err, imagenes) => {
           db.query(
-            `SELECT t.id,t.nombre FROM producto_talles pt JOIN talles t ON pt.talle_id=t.id WHERE pt.producto_id=? AND pt.disponible=1`,
+            `SELECT 
+  t.id,
+  t.nombre,
+  CASE 
+    WHEN pt.disponible = 1 THEN 1 
+    ELSE 0 
+  END AS disponible
+FROM talles t
+LEFT JOIN producto_talles pt 
+  ON pt.talle_id = t.id 
+  AND pt.producto_id = ?
+WHERE 
+  (t.tipo = 'indumentaria' AND ? != 'Zapatillas')
+  OR
+  (t.tipo = 'calzado' AND ? = 'Zapatillas')`,
+
             [producto.id],
             (err, talles) => {
               db.query(
-                `SELECT c.id,c.nombre FROM producto_colores pc JOIN colores c ON pc.color_id=c.id WHERE pc.producto_id=? AND pc.disponible=1`,
+                `SELECT 
+  c.id,
+  c.nombre,
+  CASE 
+    WHEN pc.disponible = 1 THEN 1 
+    ELSE 0 
+  END AS disponible
+FROM colores c
+LEFT JOIN producto_colores pc 
+  ON pc.color_id = c.id 
+  AND pc.producto_id = ?`,
                 [producto.id],
                 (err, colores) => {
                   productosFinal.push({
                     ...producto,
                     imagen: imagenes.length ? imagenes[0].url : null,
                     imagenes: imagenes.map((i) => i.url),
-                    talles: talles.map((t) => t.nombre),
-                    colores: colores.map((c) => c.nombre),
+                    talles: talles.map((t) => ({
+                      nombre: t.nombre,
+                      disponible: !!t.disponible,
+                    })),
+
+                    colores: colores.map((c) => ({
+                      nombre: c.nombre,
+                      disponible: !!c.disponible,
+                    })),
                     talles_ids: talles.map((t) => t.id),
                     colores_ids: colores.map((c) => c.id),
                   });
@@ -107,7 +139,7 @@ app.get("/productos-activos", (req, res) => {
   const sql = `
   SELECT 
     p.id, p.nombre, p.descripcion, p.precio, p.categoria_id, p.genero_id,
-    p.disponible, p.destacado, p.tiene_descuento, p.descuento_valor,
+    p.disponible, p.destacado, p.tiene_descuento, p.descuento_valor, p.tipo_descuento, p.descuento_cantidad,
     c.nombre AS categoria, g.nombre AS genero
   FROM productos p
   LEFT JOIN categorias c ON p.categoria_id = c.id
@@ -128,19 +160,51 @@ app.get("/productos-activos", (req, res) => {
         [producto.id],
         (err, imagenes) => {
           db.query(
-            `SELECT t.id,t.nombre FROM producto_talles pt JOIN talles t ON pt.talle_id=t.id WHERE pt.producto_id=? AND pt.disponible=1`,
+            `SELECT 
+  SELECT 
+  t.id,
+  t.nombre,
+  CASE 
+    WHEN pt.disponible = 1 THEN 1 
+    ELSE 0 
+  END AS disponible
+FROM talles t
+LEFT JOIN producto_talles pt 
+  ON pt.talle_id = t.id 
+  AND pt.producto_id = ?
+WHERE 
+  (t.tipo = 'indumentaria' AND ? != 'Zapatillas')
+  OR
+  (t.tipo = 'calzado' AND ? = 'Zapatillas')`,
             [producto.id],
             (err, talles) => {
               db.query(
-                `SELECT c.id,c.nombre FROM producto_colores pc JOIN colores c ON pc.color_id=c.id WHERE pc.producto_id=? AND pc.disponible=1`,
+                `SELECT 
+  c.id,
+  c.nombre,
+  CASE 
+    WHEN pc.disponible = 1 THEN 1 
+    ELSE 0 
+  END AS disponible
+FROM colores c
+LEFT JOIN producto_colores pc 
+  ON pc.color_id = c.id 
+  AND pc.producto_id = ?`,
                 [producto.id],
                 (err, colores) => {
                   productosFinal.push({
                     ...producto,
                     imagen: imagenes.length ? imagenes[0].url : null,
                     imagenes: imagenes.map((i) => i.url),
-                    talles: talles.map((t) => t.nombre),
-                    colores: colores.map((c) => c.nombre),
+                    talles: talles.map((t) => ({
+                      nombre: t.nombre,
+                      disponible: !!t.disponible,
+                    })),
+
+                    colores: colores.map((c) => ({
+                      nombre: c.nombre,
+                      disponible: !!c.disponible,
+                    })),
                     talles_ids: talles.map((t) => t.id),
                     colores_ids: colores.map((c) => c.id),
                   });
@@ -162,7 +226,7 @@ app.get("/productos", (req, res) => {
   const sql = `
   SELECT 
     p.id, p.nombre, p.descripcion, p.precio, p.categoria_id, p.genero_id,
-    p.disponible, p.destacado, p.tiene_descuento, p.descuento_valor,
+    p.disponible, p.destacado, p.tiene_descuento, p.descuento_valor, p.tipo_descuento, p.descuento_cantidad,
     c.nombre AS categoria, g.nombre AS genero
   FROM productos p
   LEFT JOIN categorias c ON p.categoria_id = c.id
@@ -269,12 +333,14 @@ app.post("/productos", upload.array("imagenes", 10), (req, res) => {
     genero_id,
     tiene_descuento,
     descuento_valor,
+    tipo_descuento,
+    descuento_cantidad,
   } = req.body;
 
   const sql = `
   INSERT INTO productos
-  (nombre, descripcion, precio, categoria_id, genero_id, disponible, destacado, tiene_descuento, descuento_valor)
-  VALUES(?,?,?,?,?,true,false,?,?)
+  (nombre, descripcion, precio, categoria_id, genero_id, disponible, destacado, tiene_descuento, descuento_valor, tipo_descuento, descuento_cantidad)
+  VALUES(?,?,?,?,?,true,false,?,?,?,?,?)
   `;
 
   db.query(
@@ -287,6 +353,8 @@ app.post("/productos", upload.array("imagenes", 10), (req, res) => {
       genero_id,
       tiene_descuento === "true" || tiene_descuento === "1" ? 1 : 0,
       descuento_valor || 0,
+      tipo_descuento || "simple",
+      descuento_cantidad || 0,
     ],
     (err, result) => {
       if (err) {
@@ -341,11 +409,13 @@ app.put("/productos/:id", upload.array("imagenes", 10), (req, res) => {
     genero_id,
     tiene_descuento,
     descuento_valor,
+    tipo_descuento,
+    descuento_cantidad,
   } = req.body;
 
   const sql = `
   UPDATE productos
-  SET nombre=?, descripcion=?, precio=?, categoria_id=?, genero_id=?, tiene_descuento=?, descuento_valor=?
+  SET nombre=?, descripcion=?, precio=?, categoria_id=?, genero_id=?, tiene_descuento=?, descuento_valor=? , tipo_descuento=?, descuento_cantidad=?
   WHERE id=?
   `;
 
@@ -359,6 +429,8 @@ app.put("/productos/:id", upload.array("imagenes", 10), (req, res) => {
       genero_id,
       tiene_descuento === "true" || tiene_descuento === "1" ? 1 : 0,
       descuento_valor || 0,
+      tipo_descuento || "simple",
+      descuento_cantidad || 0,
       id,
     ],
     (err) => {

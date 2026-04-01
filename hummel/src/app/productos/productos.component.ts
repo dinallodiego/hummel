@@ -21,8 +21,6 @@ export class ProductosComponent implements OnInit {
   filtroGenero: string = 'Todos';
   filtroPrenda: string = 'Todos';
   filtroPrecio: string = 'Todos';
-  filtroDestacados: boolean = false;
-
   ordenActual: string = 'Relevancia';
 
   paginaActual = 1;
@@ -35,11 +33,11 @@ export class ProductosComponent implements OnInit {
 
   imagenIndex = 0;
   zoomActivo = false;
-
+  filtroCategoria: string = 'Todos';
   precioMin = 0;
   precioMax = 100000;
   precioMaxGlobal = 100000;
-
+  verMas = false;
   soloDestacados = false;
 
   constructor(
@@ -82,21 +80,28 @@ export class ProductosComponent implements OnInit {
         const precioBase = Number(p.precio);
         const tieneDescuento = !!p.tiene_descuento; // Fuerza booleano
         const valorDescuento = Number(p.descuento_valor || 0);
+        const tipoDescuento = p.tipo_descuento || 'simple';
+        const cantidadDescuento = Number(p.descuento_cantidad || 0);
 
-        const precioFinal = tieneDescuento
-          ? precioBase - (precioBase * valorDescuento) / 100
-          : precioBase;
+        let precioFinal = precioBase;
+
+        if (tieneDescuento && tipoDescuento === 'simple') {
+          precioFinal = precioBase - (precioBase * valorDescuento) / 100;
+        }
 
         return {
           id: p.id,
           nombre: p.nombre,
           genero: p.genero,
           tipo: p.tipo || 'Otro',
+          categoria: p.categoria,
           descripcion: p.descripcion,
           precio: precioBase,
           precio_final: precioFinal, // Nueva propiedad para facilitar el HTML
           tiene_descuento: tieneDescuento,
           descuento_valor: valorDescuento,
+          tipo_descuento: tipoDescuento,
+          descuento_cantidad: cantidadDescuento,
           imagen: imagenPrincipal,
           imagenes: imagenesArray,
           talles: Array.isArray(p.talles) ? p.talles : [],
@@ -141,6 +146,12 @@ export class ProductosComponent implements OnInit {
       );
     }
 
+    if (this.filtroCategoria !== 'Todos') {
+      resultado = resultado.filter(
+        (p) => (p.categoria || '').toLowerCase() === this.filtroCategoria.toLowerCase(),
+      );
+    }
+
     if (this.filtroPrenda !== 'Todos') {
       resultado = resultado.filter((p) => p.tipo === this.filtroPrenda);
     }
@@ -153,7 +164,7 @@ export class ProductosComponent implements OnInit {
       resultado = resultado.filter((p) => p.precio >= 50000);
     }
 
-    if (this.filtroDestacados) {
+    if (this.soloDestacados) {
       resultado = resultado.filter((p) => p.destacado);
     }
 
@@ -239,7 +250,7 @@ export class ProductosComponent implements OnInit {
   }
 
   agregarAlCarrito() {
-    if (!this.talleElegido) {
+    if (this.productoSeleccionado.categoria !== 'Accesorio' && !this.talleElegido) {
       Swal.fire({ title: 'Selecciona el talle', icon: 'warning', confirmButtonColor: '#000' });
       return;
     }

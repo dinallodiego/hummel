@@ -70,16 +70,29 @@
                 ${{ p.precio }}
               </span>
               <span *ngIf="p.tiene_descuento" class="text-danger fw-bold">
-                ${{ p.precio - (p.precio * p.descuento_valor) / 100 }}
+                ${{ calcularPrecioAdmin(p) }}
               </span>
             </div>
 
-            <div class="mt-2">
+            <div class="mt-2 d-flex flex-wrap gap-1">
               <span *ngIf="p.disponible" class="badge bg-success">Activo</span>
               <span *ngIf="!p.disponible" class="badge bg-secondary">Inactivo</span>
-              <span *ngIf="p.tiene_descuento" class="badge bg-danger ms-1"
-                >{{ p.descuento_valor }}% OFF</span
+
+              <!-- DESCUENTO SIMPLE -->
+              <span
+                *ngIf="p.tiene_descuento && p.tipo_descuento === 'simple'"
+                class="badge bg-danger"
               >
+                {{ p.descuento_valor }}% OFF
+              </span>
+
+              <!-- DESCUENTO POR CANTIDAD -->
+              <span
+                *ngIf="p.tiene_descuento && p.tipo_descuento === 'cantidad'"
+                class="badge bg-warning text-dark"
+              >
+                {{ p.descuento_valor }}% OFF x{{ p.descuento_cantidad }}+
+              </span>
             </div>
 
             <div class="mt-3 d-flex gap-2 flex-wrap">
@@ -159,10 +172,10 @@
       <div class="modal-header">
         <h5>{{ producto.id ? 'Editar producto' : 'Crear producto' }}</h5>
         <button
+          id="cerrarModalProducto"
           type="button"
           class="btn-close btn-close-white"
           data-bs-dismiss="modal"
-          id="cerrarModalProducto"
         ></button>
       </div>
 
@@ -190,7 +203,7 @@
               </div>
 
               <div class="form-group">
-                <label class="d-flex align-items-center gap-2" style="cursor: pointer">
+                <label class="d-flex align-items-center gap-2">
                   <input
                     type="checkbox"
                     [(ngModel)]="producto.tiene_descuento"
@@ -198,6 +211,28 @@
                   />
                   ¿Aplicar descuento?
                 </label>
+              </div>
+
+              <div *ngIf="producto.tiene_descuento">
+                <!-- TIPO -->
+                <div class="form-group">
+                  <label>Tipo de descuento</label>
+                  <select [(ngModel)]="producto.tipo_descuento" name="tipo_descuento">
+                    <option value="simple">Descuento simple (%)</option>
+                    <option value="cantidad">Por cantidad</option>
+                  </select>
+                </div>
+
+                <!-- POR CANTIDAD -->
+                <div *ngIf="producto.tipo_descuento === 'cantidad'" class="form-group">
+                  <label>Cantidad mínima</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="producto.descuento_cantidad"
+                    name="descuento_cantidad"
+                    min="1"
+                  />
+                </div>
               </div>
 
               <div class="form-group" *ngIf="producto.tiene_descuento">

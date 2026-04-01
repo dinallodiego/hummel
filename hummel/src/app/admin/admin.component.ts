@@ -70,7 +70,11 @@ export class AdminComponent implements OnInit {
       genero_id: '',
       categoria_id: '',
       tiene_descuento: false,
+
+      // NUEVO 👇
+      tipo_descuento: 'simple',
       descuento_valor: null,
+      descuento_cantidad: null,
     };
   }
 
@@ -108,11 +112,48 @@ export class AdminComponent implements OnInit {
   }
 
   editarProducto(p: any) {
-    this.producto = { ...p };
+    this.producto = {
+      ...p,
+      tipo_descuento: p.tipo_descuento || 'simple',
+      descuento_cantidad: p.descuento_cantidad || null,
+    };
+    this.onCategoriaChange();
     this.tallesSeleccionados = [...(p.talles_ids || [])];
     this.coloresSeleccionados = [...(p.colores_ids || [])];
     this.imagenes = [];
-    this.onCategoriaChange();
+  }
+
+  hayCambios(): boolean {
+    return (
+      this.producto.nombre ||
+      this.producto.descripcion ||
+      this.producto.precio ||
+      this.tallesSeleccionados.length > 0 ||
+      this.coloresSeleccionados.length > 0 ||
+      this.imagenes.length > 0
+    );
+  }
+
+  confirmarCerrarModal(event: any) {
+    if (!this.hayCambios()) return true;
+
+    event.preventDefault();
+
+    Swal.fire({
+      title: '¿Seguro que querés cerrar?',
+      text: 'Se perderán los cambios no guardados',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cerrar',
+      cancelButtonText: 'Cancelar',
+    }).then((res) => {
+      if (res.isConfirmed) {
+        const btn = document.getElementById('cerrarModalProducto');
+        btn?.click();
+      }
+    });
+
+    return false;
   }
 
   cargarProductos() {
@@ -122,6 +163,8 @@ export class AdminComponent implements OnInit {
         precio: Number(p.precio),
         descuento_valor: Number(p.descuento_valor || 0),
         tiene_descuento: !!p.tiene_descuento,
+        descuento_cantidad: Number(p.descuento_cantidad || 0), // 👈 AGREGAR
+        tipo_descuento: p.tipo_descuento || 'simple', // 👈 AGREGAR
         imagen: p.imagen?.startsWith('/uploads')
           ? 'http://localhost:3000' + p.imagen
           : 'assets/no-image.png',
@@ -129,6 +172,17 @@ export class AdminComponent implements OnInit {
       }));
       this.cdr.detectChanges();
     });
+  }
+
+  calcularPrecioAdmin(p: any): number {
+    if (!p.tiene_descuento) return p.precio;
+
+    if (p.tipo_descuento === 'simple') {
+      return p.precio - (p.precio * p.descuento_valor) / 100;
+    }
+
+    // 👉 NO aplicar descuento por cantidad en admin
+    return p.precio;
   }
 
   logout() {
@@ -198,79 +252,67 @@ export class AdminComponent implements OnInit {
   confirmarGuardado() {
     const textoAccion = this.producto.id ? 'actualizar' : 'crear';
 
-    // 1. Validaciones de Texto y Selección
     const camposIncompletos =
       !this.producto.nombre ||
       !this.producto.descripcion ||
       !this.producto.categoria_id ||
       !this.producto.genero_id;
 
-    // 2. Validación de Arreglos (Talles solo si la categoría no es 'Accesorio')
     const faltanTalles = this.mostrarTalles && this.tallesSeleccionados.length === 0;
     const faltanColores = this.coloresSeleccionados.length === 0;
-
-    // 3. Validación de Imágenes (Solo obligatorias al CREAR nuevo)
     const faltanImagenes = !this.producto.id && this.imagenes.length === 0;
 
-    // --- DISPARO DE ERRORES ---
-
     if (camposIncompletos) {
-      Swal.fire(
-        'Campos incompletos',
-        'Por favor, completá el nombre, descripción, categoría y género.',
-        'error',
-      );
+      Swal.fire('Campos incompletos', 'Completá nombre, descripción, categoría y género.', 'error');
       return;
     }
 
     if (faltanTalles) {
-      Swal.fire(
-        'Faltan talles',
-        'Debes seleccionar al menos un talle para esta categoría.',
-        'error',
-      );
+      Swal.fire('Faltan talles', 'Seleccioná al menos un talle.', 'error');
       return;
     }
 
     if (faltanColores) {
-      Swal.fire('Faltan colores', 'Seleccioná al menos un color para el producto.', 'error');
+      Swal.fire('Faltan colores', 'Seleccioná al menos un color.', 'error');
       return;
     }
 
     if (faltanImagenes) {
-      Swal.fire('Sin imágenes', 'Debes subir al menos una imagen para crear el producto.', 'error');
+      Swal.fire('Sin imágenes', 'Debes subir al menos una imagen.', 'error');
       return;
     }
 
     if (!this.producto.precio || this.producto.precio <= 0) {
-      Swal.fire('Precio inválido', 'El precio debe ser mayor a 0.', 'error');
+      Swal.fire('Precio inválido', 'Debe ser mayor a 0.', 'error');
       return;
     }
 
-    if (
-      this.producto.tiene_descuento &&
-      (!this.producto.descuento_valor ||
+    // ✅ VALIDACIÓN CORRECTA DE DESCUENTO
+    if (this.producto.tiene_descuento) {
+      if (
+        this.producto.descuento_valor == null ||
         this.producto.descuento_valor <= 0 ||
-        this.producto.descuento_valor > 100)
-    ) {
-      Swal.fire(
-        'Error en descuento',
-        'Ingresá un porcentaje de descuento válido (1-100).',
-        'error',
-      );
-      return;
-    }
+        this.producto.descuento_valor > 100
+      ) {
+        Swal.fire('Error en descuento', 'Ingresá un % válido (1-100)', 'error');
+        return;
+      }
 
-    // --- SI TODO ESTÁ OK, PEDIR CONFIRMACIÓN FINAL ---
+      if (
+        this.producto.tipo_descuento === 'cantidad' &&
+        (!this.producto.descuento_cantidad || this.producto.descuento_cantidad <= 0)
+      ) {
+        Swal.fire('Error', 'Ingresá una cantidad válida', 'error');
+        return;
+      }
+    }
 
     Swal.fire({
       title: `¿Confirmás ${textoAccion} este producto?`,
-      text: 'Revisá que toda la información sea correcta.',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, guardar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#000',
     }).then((result) => {
       if (result.isConfirmed) {
         this.crearProducto();
@@ -291,6 +333,13 @@ export class AdminComponent implements OnInit {
     formData.append(
       'descuento_valor',
       this.producto.tiene_descuento ? this.producto.descuento_valor.toString() : '0',
+    );
+    formData.append('tipo_descuento', this.producto.tipo_descuento || 'simple');
+    formData.append(
+      'descuento_cantidad',
+      this.producto.tipo_descuento === 'cantidad'
+        ? this.producto.descuento_cantidad?.toString() || '0'
+        : '0',
     );
 
     formData.append('talles', JSON.stringify(this.tallesSeleccionados));

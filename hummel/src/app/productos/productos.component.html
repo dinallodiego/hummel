@@ -236,14 +236,15 @@
             </div>
 
             <div class="product-info-premium text-center">
-              <p class="p-category">{{ item.genero }}</p>
+              <p class="p-category">{{ item.genero }} • {{ item.categoria }}</p>
+
               <h3 class="p-name">{{ item.nombre }}</h3>
 
               <div class="d-flex align-items-center justify-content-center gap-2">
                 <span
                   [ngStyle]="{
                     'text-decoration': item.tiene_descuento ? 'line-through' : 'none',
-                    color: item.tiene_descuento ? '#888' : '#fff',
+                    color: item.tiene_descuento ? '#888' : '#000',
                     'font-size': item.tiene_descuento ? '0.9rem' : '1.2rem',
                   }"
                 >
@@ -260,7 +261,16 @@
               </div>
 
               <div class="mt-2" *ngIf="item.tiene_descuento">
-                <span class="badge bg-danger"> {{ item.descuento_valor }}% OFF </span>
+                <!-- DESCUENTO SIMPLE -->
+                <span *ngIf="item.tipo_descuento === 'simple'" class="badge bg-danger">
+                  {{ item.descuento_valor }}% OFF
+                </span>
+
+                <!-- DESCUENTO POR CANTIDAD -->
+                <span *ngIf="item.tipo_descuento === 'cantidad'" class="badge bg-warning text-dark">
+                  {{ item.descuento_valor }}% OFF llevando {{ item.descuento_cantidad }} unidades o
+                  mas
+                </span>
               </div>
             </div>
           </div>
@@ -304,15 +314,24 @@
     <div class="filter-pill" (click)="setFiltro('Niño')">Niño</div>
 
     <!-- CATEGORIA -->
-    <div *ngIf="filtroGenero !== 'Todos'" class="mt-4">
-      <p class="fw-bold">CATEGORÍA</p>
-      <div class="filter-pill" (click)="setFiltroPrenda('Todos')">Todos</div>
-      <div
-        *ngFor="let tipo of tiposDePrendaDisponibles()"
-        class="filter-pill"
-        (click)="setFiltroPrenda(tipo)"
-      >
-        {{ tipo }}
+    <div class="accordion-item border-0">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button collapsed fw-bold"
+          data-bs-toggle="collapse"
+          data-bs-target="#categoria2"
+        >
+          TIPO
+        </button>
+      </h2>
+
+      <div id="categoria2" class="accordion-collapse collapse show">
+        <div class="accordion-body">
+          <div class="filter-pill" (click)="filtroCategoria = 'Todos'">Todos</div>
+          <div class="filter-pill" (click)="filtroCategoria = 'Indumentaria'">Indumentaria</div>
+          <div class="filter-pill" (click)="filtroCategoria = 'Calzado'">Calzado</div>
+          <div class="filter-pill" (click)="filtroCategoria = 'Accesorio'">Accesorio</div>
+        </div>
       </div>
     </div>
 
@@ -365,22 +384,67 @@
             </h2>
 
             <p class="text-muted mb-3">
-              {{ productoSeleccionado.descripcion }}
+              {{
+                verMas
+                  ? productoSeleccionado.descripcion
+                  : (productoSeleccionado.descripcion | slice: 0 : 60)
+              }}
+              <span
+                *ngIf="productoSeleccionado.descripcion.length > 60"
+                (click)="verMas = !verMas"
+                style="cursor: pointer; font-weight: bold"
+              >
+                {{ verMas ? 'Ver menos' : 'Ver más' }}
+              </span>
             </p>
 
-            <h3 class="fw-black mb-4">${{ productoSeleccionado.precio | number }}</h3>
-
             <div class="mb-4">
-              <p class="fw-bold mb-2">Talle</p>
+              <span
+                [ngStyle]="{
+                  'text-decoration': productoSeleccionado.tiene_descuento ? 'line-through' : 'none',
+                  color: productoSeleccionado.tiene_descuento ? '#888' : '#000',
+                  'font-size': productoSeleccionado.tiene_descuento ? '1rem' : '1.5rem',
+                }"
+              >
+                ${{ productoSeleccionado.precio | number: '1.0-0' : 'es-AR' }}
+              </span>
 
+              <span
+                *ngIf="productoSeleccionado.tiene_descuento"
+                class="text-danger fw-bold ms-2"
+                style="font-size: 1.5rem"
+              >
+                ${{ productoSeleccionado.precio_final | number: '1.0-0' : 'es-AR' }}
+              </span>
+            </div>
+            <div class="mb-3" *ngIf="productoSeleccionado.tiene_descuento">
+              <span
+                *ngIf="productoSeleccionado.tipo_descuento === 'simple'"
+                class="badge bg-danger"
+              >
+                {{ productoSeleccionado.descuento_valor }}% OFF
+              </span>
+
+              <span
+                *ngIf="productoSeleccionado.tipo_descuento === 'cantidad'"
+                class="badge bg-warning text-dark"
+              >
+                {{ productoSeleccionado.descuento_valor }}% OFF llevando
+                {{ productoSeleccionado.descuento_cantidad }}+
+              </span>
+            </div>
+
+            <div class="mb-4" *ngIf="productoSeleccionado.categoria !== 'Accesorio'">
               <div class="talle-grid-premium">
                 <button
                   *ngFor="let t of productoSeleccionado.talles"
                   class="btn-talle-premium"
-                  [class.selected]="talleElegido === t"
-                  (click)="talleElegido = t"
+                  [class.selected]="talleElegido === t.nombre"
+                  [disabled]="!t.disponible"
+                  [class.disabled]="!t.disponible"
+                  (click)="t.disponible && (talleElegido = t.nombre)"
                 >
-                  {{ t }}
+                  {{ t.nombre }}
                 </button>
               </div>
             </div>
@@ -392,10 +456,12 @@
                 <button
                   *ngFor="let c of productoSeleccionado.colores"
                   class="btn-talle-premium"
-                  [class.selected]="colorElegido === c"
-                  (click)="colorElegido = c"
+                  [class.selected]="colorElegido === c.nombre"
+                  [disabled]="!c.disponible"
+                  [class.disabled]="!c.disponible"
+                  (click)="c.disponible && (colorElegido = c.nombre)"
                 >
-                  {{ c }}
+                  {{ c.nombre }}
                 </button>
               </div>
             </div>
