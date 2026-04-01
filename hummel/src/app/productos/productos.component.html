@@ -64,38 +64,54 @@
             </div>
           </div>
 
-          <!-- CATEGORIA -->
-          <div class="accordion-item border-0" *ngIf="filtroGenero !== 'Todos'">
-            <h2 class="accordion-header">
-              <button
-                class="accordion-button collapsed fw-bold"
-                data-bs-toggle="collapse"
-                data-bs-target="#categoria"
-              >
-                CATEGORÍA
-              </button>
-            </h2>
-            <div id="categoria" class="accordion-collapse collapse show">
-              <div class="accordion-body">
-                <div
-                  class="filter-pill"
-                  [class.active]="filtroPrenda === 'Todos'"
-                  (click)="setFiltroPrenda('Todos')"
-                >
-                  Todos
-                </div>
+         <!-- CATEGORIA GLOBAL (NUEVO) -->
+<div class="accordion-item border-0">
+  <h2 class="accordion-header">
+    <button
+      class="accordion-button collapsed fw-bold"
+      data-bs-toggle="collapse"
+      data-bs-target="#categoriaGlobal"
+    >
+      TIPO PRODUCTO
+    </button>
+  </h2>
 
-                <div
-                  class="filter-pill"
-                  *ngFor="let tipo of tiposDePrendaDisponibles()"
-                  [class.active]="filtroPrenda === tipo"
-                  (click)="setFiltroPrenda(tipo)"
-                >
-                  {{ tipo }}
-                </div>
-              </div>
-            </div>
-          </div>
+  <div id="categoriaGlobal" class="accordion-collapse collapse">
+    <div class="accordion-body">
+      <div
+        class="filter-pill"
+        [class.active]="filtroCategoria === 'Todos'"
+        (click)="filtroCategoria = 'Todos'"
+      >
+        Todos
+      </div>
+
+      <div
+        class="filter-pill"
+        [class.active]="filtroCategoria === 'Indumentaria'"
+        (click)="filtroCategoria = 'Indumentaria'"
+      >
+        Indumentaria
+      </div>
+
+      <div
+        class="filter-pill"
+        [class.active]="filtroCategoria === 'Calzado'"
+        (click)="filtroCategoria = 'Calzado'"
+      >
+        Calzado
+      </div>
+
+      <div
+        class="filter-pill"
+        [class.active]="filtroCategoria === 'Accesorio'"
+        (click)="filtroCategoria = 'Accesorio'"
+      >
+        Accesorio
+      </div>
+    </div>
+  </div>
+</div>
 
           <!-- PRECIO -->
           <div class="accordion-item border-0">

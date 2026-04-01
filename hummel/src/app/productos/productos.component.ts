@@ -59,7 +59,15 @@ export class ProductosComponent implements OnInit {
   }
 
   cargarProductos() {
-    this.productosService.getProductosActivos().subscribe((productos: any[]) => {
+  this.productosService.getProductosActivos().subscribe({
+    next: (productos: any[]) => {
+
+      // 🔥 SI NO HAY DATA → MOCK
+      if (!productos || productos.length === 0) {
+        this.cargarMock();
+        return;
+      }
+
       const nuevosProductos = productos.map((p: any) => {
         let imagenPrincipal = 'assets/no-image.png';
 
@@ -76,12 +84,10 @@ export class ProductosComponent implements OnInit {
           imagenesArray = [imagenPrincipal];
         }
 
-        // Calculamos el precio con descuento si corresponde
         const precioBase = Number(p.precio);
-        const tieneDescuento = !!p.tiene_descuento; // Fuerza booleano
+        const tieneDescuento = !!p.tiene_descuento;
         const valorDescuento = Number(p.descuento_valor || 0);
         const tipoDescuento = p.tipo_descuento || 'simple';
-        const cantidadDescuento = Number(p.descuento_cantidad || 0);
 
         let precioFinal = precioBase;
 
@@ -90,22 +96,11 @@ export class ProductosComponent implements OnInit {
         }
 
         return {
-          id: p.id,
-          nombre: p.nombre,
-          genero: p.genero,
-          tipo: p.tipo || 'Otro',
-          categoria: p.categoria,
-          descripcion: p.descripcion,
+          ...p,
           precio: precioBase,
-          precio_final: precioFinal, // Nueva propiedad para facilitar el HTML
-          tiene_descuento: tieneDescuento,
-          descuento_valor: valorDescuento,
-          tipo_descuento: tipoDescuento,
-          descuento_cantidad: cantidadDescuento,
+          precio_final: precioFinal,
           imagen: imagenPrincipal,
           imagenes: imagenesArray,
-          talles: Array.isArray(p.talles) ? p.talles : [],
-          colores: Array.isArray(p.colores) ? p.colores : [],
           destacado: !!p.destacado,
         };
       });
@@ -113,8 +108,71 @@ export class ProductosComponent implements OnInit {
       this.catalogoCompleto = nuevosProductos;
       this.paginaActual = 1;
       this.cdr.detectChanges();
-    });
-  }
+    },
+
+    error: () => {
+      console.log('🔥 Backend caído → usando MOCK');
+      this.cargarMock(); // 👈 CLAVE
+    },
+  });
+}
+cargarMock() {
+  this.catalogoCompleto = [
+    {
+      id: 1,
+      nombre: 'Remera Oversize',
+      genero: 'Hombre',
+      tipo: 'Remera',
+      categoria: 'Indumentaria',
+      descripcion: 'Remera urbana premium',
+      precio: 25000,
+      precio_final: 25000,
+      tiene_descuento: false,
+      imagen: '../../assets/remera.webp',
+      imagenes: ['../../assets/remera.webp'],
+      talles: [{ nombre: 'M', disponible: true }, { nombre: 'L', disponible: true }],
+      colores: [{ nombre: 'Negro', disponible: true }],
+      destacado: true,
+    },
+    {
+      id: 2,
+      nombre: 'Zapatillas Urban',
+      genero: 'Mujer',
+      tipo: 'Zapatillas',
+      categoria: 'Calzado',
+      descripcion: 'Zapas facheras',
+      precio: 80000,
+      precio_final: 70000,
+      tiene_descuento: true,
+      descuento_valor: 10,
+      tipo_descuento: 'simple',
+      imagen: '../../assets/zapatillas.jpg',
+      imagenes: ['../../assets/zapatillas.jpg'],
+      talles: [{ nombre: '38', disponible: true }],
+      colores: [{ nombre: 'Blanco', disponible: true }],
+      destacado: false,
+    },
+    {
+      id: 3,
+      nombre: 'Gorra Hummel',
+      genero: 'Hombre',
+      tipo: 'Gorra',
+      categoria: 'Accesorio',
+      descripcion: 'Gorra deportiva',
+      precio: 15000,
+      precio_final: 15000,
+      tiene_descuento: false,
+      imagen: '../../assets/gorra.jpg',
+      imagenes: ['../../assets/gorra.jpg'],
+      talles: [],
+      colores: [{ nombre: 'Rojo', disponible: true }],
+      destacado: true,
+    },
+  ];
+
+  this.paginaActual = 1;
+  this.cdr.detectChanges();
+}
 
   tiposDePrendaDisponibles(): string[] {
     const filtradoPorGenero = this.catalogoCompleto.filter((p) =>

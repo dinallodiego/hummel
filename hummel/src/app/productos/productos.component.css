@@ -364,6 +364,32 @@ input[type='number']::placeholder {
   cursor: not-allowed;
   text-decoration: line-through;
 }
+.pagination-modern {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pagination-modern li {
+  list-style: none;
+}
+
+/* --- HEADER MOBILE FIX --- */
+@media (max-width: 768px) {
+  .catalogo-title {
+    font-size: 1.2rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
 /* MOBILE */
 @media (max-width: 991px) {
   .filtros-pro {
