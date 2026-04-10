@@ -3,6 +3,7 @@
     <div class="slide" [class.active]="$index === currentIndex">
       <img [src]="img" class="main-slide-img" />
       <div class="overlay"></div>
+
       <div class="slide-content">
         <h1 class="display-1 fw-black">BIENVENIDOS A <br />ROXBEL</h1>
         <p class="lead mb-4">EQUIPATE PARA GANAR TU PASIÓN</p>
@@ -22,19 +23,15 @@
 </section>
 
 <section class="container my-5 py-5 position-relative">
-  <!-- 🔥 SIN PRODUCTOS -->
   <div *ngIf="destacados.length === 0" class="text-center py-5">
     <h2 class="section-title">PRODUCTOS DESTACADOS</h2>
     <p class="lead mt-3">No hay productos destacados disponibles.</p>
   </div>
 
-  <!-- 🔥 CON PRODUCTOS -->
   <div *ngIf="destacados.length > 0" class="position-relative">
     <h2 class="section-title text-center mb-4">PRODUCTOS DESTACADOS</h2>
 
-    <!-- 🔥 FLECHAS SOLO SI HAY MÁS DE 3 -->
     <button *ngIf="destacados.length > 3" class="arrow left" (click)="prevDestacados()">‹</button>
-
     <button *ngIf="destacados.length > 3" class="arrow right" (click)="nextDestacados()">›</button>
 
     <div class="row g-4 justify-content-center">
@@ -53,7 +50,7 @@
                 <span
                   [ngStyle]="{
                     'text-decoration': prod.tiene_descuento ? 'line-through' : 'none',
-                    color: prod.tiene_descuento ? '#888' : '#fff',
+                    color: prod.tiene_descuento ? '#888' : '#000',
                     'font-size': prod.tiene_descuento ? '0.9rem' : '1.2rem',
                   }"
                 >
@@ -70,7 +67,14 @@
               </div>
 
               <div class="mt-2" *ngIf="prod.tiene_descuento">
-                <span class="badge bg-danger">{{ prod.descuento_valor }}% OFF</span>
+                <span *ngIf="prod.tipo_descuento === 'simple'" class="badge bg-danger">
+                  {{ prod.descuento_valor }}% OFF
+                </span>
+
+                <span *ngIf="prod.tipo_descuento === 'cantidad'" class="badge bg-warning text-dark">
+                  {{ prod.descuento_valor }}% OFF llevando {{ prod.descuento_cantidad }} unidades o
+                  mas
+                </span>
               </div>
             </div>
           </div>
@@ -81,51 +85,53 @@
 </section>
 
 <h2 class="section-title">CATEGORÍAS</h2>
+
 <section class="container-fluid px-lg-5 mb-5 pb-5">
   <div class="row g-3">
     <div class="col-md-4">
-      <div class="category-banner" routerLink="/productos">
+      <div class="category-banner" role="button" (click)="irCategoria('Hombre')">
         <div class="banner-img-container">
           <img src="../../assets/banners-categoria/hombre.png" alt="Hombre" />
         </div>
         <div class="banner-text">
-          <a (click)="irCategoria('Hombre')"> <h3 class="display-1 fw-black">HOMBRES</h3></a>
+          <h3 class="display-1 fw-black">HOMBRES</h3>
         </div>
       </div>
     </div>
+
     <div class="col-md-4">
-      <div class="category-banner" routerLink="/productos">
+      <div class="category-banner" role="button" (click)="irCategoria('Mujer')">
         <div class="banner-img-container">
           <img src="../../assets/banners-categoria/mujer.png" alt="Mujer" />
         </div>
         <div class="banner-text">
-          <a (click)="irCategoria('Mujer')"><h3 class="display-1 fw-black">MUJERES</h3></a>
+          <h3 class="display-1 fw-black">MUJERES</h3>
         </div>
       </div>
     </div>
+
     <div class="col-md-4">
-      <div class="category-banner" routerLink="/productos">
+      <div class="category-banner" role="button" (click)="irCategoria('Niño')">
         <div class="banner-img-container">
           <img src="../../assets/banners-categoria/nenes.png" alt="Niños" />
         </div>
         <div class="banner-text">
-          <a (click)="irCategoria('Niños')"><h3 class="display-1 fw-black">NIÑOS</h3></a>
+          <h3 class="display-1 fw-black">NIÑOS</h3>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 🔥 MODAL DETALLE PRO (SIN CAMBIOS) -->
+<!-- MODAL DETALLE -->
 <div class="modal fade" id="detailModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
       <div class="modal-body p-0" *ngIf="productoSeleccionado">
         <div class="row g-0">
-          <!-- GALERIA -->
           <div class="col-md-7 p-4 bg-light">
             <div class="image-viewer">
-              <button class="arrow left" (click)="anteriorImagen()">‹</button>
+              <button class="modal-arrow left" (click)="anteriorImagen()">‹</button>
 
               <img
                 [src]="productoSeleccionado.imagenes[imagenIndex]"
@@ -134,7 +140,7 @@
                 (click)="toggleZoom()"
               />
 
-              <button class="arrow right" (click)="siguienteImagen()">›</button>
+              <button class="modal-arrow right" (click)="siguienteImagen()">›</button>
             </div>
 
             <div class="thumbs mt-3">
@@ -147,33 +153,78 @@
             </div>
           </div>
 
-          <!-- INFO -->
           <div class="col-md-5 p-5">
             <button type="button" class="btn-close float-end" data-bs-dismiss="modal"></button>
 
             <p class="text-muted small mb-1">{{ productoSeleccionado.genero }}</p>
 
-            <h2 class="fw-black mb-2">
-              {{ productoSeleccionado.nombre }}
-            </h2>
+            <h2 class="fw-black mb-2">{{ productoSeleccionado.nombre }}</h2>
 
             <p class="text-muted mb-3">
-              {{ productoSeleccionado.descripcion }}
+              {{
+                verMas
+                  ? productoSeleccionado.descripcion
+                  : (productoSeleccionado.descripcion | slice: 0 : 60)
+              }}
+              <span
+                *ngIf="productoSeleccionado.descripcion?.length > 60"
+                (click)="verMas = !verMas"
+                style="cursor: pointer; font-weight: bold"
+              >
+                {{ verMas ? 'Ver menos' : 'Ver más' }}
+              </span>
             </p>
 
-            <h3 class="fw-black mb-4">${{ productoSeleccionado.precio | number }}</h3>
-
             <div class="mb-4">
+              <span
+                [ngStyle]="{
+                  'text-decoration': productoSeleccionado.tiene_descuento ? 'line-through' : 'none',
+                  color: productoSeleccionado.tiene_descuento ? '#888' : '#000',
+                  'font-size': productoSeleccionado.tiene_descuento ? '1rem' : '1.5rem',
+                }"
+              >
+                ${{ productoSeleccionado.precio | number: '1.0-0' : 'es-AR' }}
+              </span>
+
+              <span
+                *ngIf="productoSeleccionado.tiene_descuento"
+                class="text-danger fw-bold ms-2"
+                style="font-size: 1.5rem"
+              >
+                ${{ productoSeleccionado.precio_final | number: '1.0-0' : 'es-AR' }}
+              </span>
+            </div>
+
+            <div class="mb-3" *ngIf="productoSeleccionado.tiene_descuento">
+              <span
+                *ngIf="productoSeleccionado.tipo_descuento === 'simple'"
+                class="badge bg-danger"
+              >
+                {{ productoSeleccionado.descuento_valor }}% OFF
+              </span>
+
+              <span
+                *ngIf="productoSeleccionado.tipo_descuento === 'cantidad'"
+                class="badge bg-warning text-dark"
+              >
+                {{ productoSeleccionado.descuento_valor }}% OFF llevando
+                {{ productoSeleccionado.descuento_cantidad }}+
+              </span>
+            </div>
+
+            <div class="mb-4" *ngIf="productoSeleccionado.categoria !== 'Accesorio'">
               <p class="fw-bold mb-2">Talle</p>
 
               <div class="talle-grid-premium">
                 <button
                   *ngFor="let t of productoSeleccionado.talles"
                   class="btn-talle-premium"
-                  [class.selected]="talleElegido === t"
-                  (click)="talleElegido = t"
+                  [class.selected]="talleElegido === t.nombre"
+                  [disabled]="t.disponible === false"
+                  [class.disabled]="t.disponible === false"
+                  (click)="t.disponible !== false && (talleElegido = t.nombre)"
                 >
-                  {{ t }}
+                  {{ t.nombre }}
                 </button>
               </div>
             </div>
@@ -185,10 +236,12 @@
                 <button
                   *ngFor="let c of productoSeleccionado.colores"
                   class="btn-talle-premium"
-                  [class.selected]="colorElegido === c"
-                  (click)="colorElegido = c"
+                  [class.selected]="colorElegido === c.nombre"
+                  [disabled]="c.disponible === false"
+                  [class.disabled]="c.disponible === false"
+                  (click)="c.disponible !== false && (colorElegido = c.nombre)"
                 >
-                  {{ c }}
+                  {{ c.nombre }}
                 </button>
               </div>
             </div>

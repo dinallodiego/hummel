@@ -59,120 +59,133 @@ export class ProductosComponent implements OnInit {
   }
 
   cargarProductos() {
-  this.productosService.getProductosActivos().subscribe({
-    next: (productos: any[]) => {
+    this.productosService.getProductosActivos().subscribe({
+      next: (productos: any[]) => {
+        if (!productos || productos.length === 0) {
+          this.cargarMock();
+          return;
+        }
 
-      // 🔥 SI NO HAY DATA → MOCK
-      if (!productos || productos.length === 0) {
+        const nuevosProductos = productos.map((p: any) => {
+          let imagenPrincipal = 'assets/no-image.png';
+
+          if (p.imagen) {
+            imagenPrincipal = 'http://localhost:3000' + p.imagen;
+          }
+
+          let imagenesArray: string[] = [];
+          if (Array.isArray(p.imagenes) && p.imagenes.length > 0) {
+            imagenesArray = p.imagenes.map((img: string) => {
+              return img.startsWith('http') ? img : 'http://localhost:3000' + img;
+            });
+          } else {
+            imagenesArray = [imagenPrincipal];
+          }
+
+          // ✅ Normalización de descuento (simple + cantidad)
+          const precioBase = Number(p.precio);
+          const tieneDescuento = !!p.tiene_descuento;
+          const valorDescuento = Number(p.descuento_valor || 0);
+          const tipoDescuento = p.tipo_descuento || 'simple';
+          const descuentoCantidad = Number(p.descuento_cantidad || 0);
+
+          let precioFinal = precioBase;
+          if (tieneDescuento && (tipoDescuento === 'simple' || tipoDescuento === 'cantidad')) {
+            precioFinal = precioBase - (precioBase * valorDescuento) / 100;
+          }
+
+          return {
+            ...p,
+            precio: precioBase,
+            precio_final: precioFinal,
+            imagen: imagenPrincipal,
+            imagenes: imagenesArray,
+            destacado: !!p.destacado,
+
+            // ✅ Campos necesarios para que el carrito aplique descuento
+            tiene_descuento: tieneDescuento,
+            descuento_valor: valorDescuento,
+            tipo_descuento: tipoDescuento,
+            descuento_cantidad: descuentoCantidad,
+          };
+        });
+
+        this.catalogoCompleto = nuevosProductos;
+        this.paginaActual = 1;
+        this.cdr.detectChanges();
+      },
+
+      error: () => {
+        console.log('🔥 Backend caído → usando MOCK');
         this.cargarMock();
-        return;
-      }
+      },
+    });
+  }
 
-      const nuevosProductos = productos.map((p: any) => {
-        let imagenPrincipal = 'assets/no-image.png';
+  cargarMock() {
+    // MOCK con ejemplo cantidad incluido
+    this.catalogoCompleto = [
+      {
+        id: 1,
+        nombre: 'Remera Oversize',
+        genero: 'Hombre',
+        tipo: 'Remera',
+        categoria: 'Indumentaria',
+        descripcion: 'Remera urbana premium',
+        precio: 25000,
+        precio_final: 25000,
+        tiene_descuento: false,
+        imagen: '../../assets/remera.webp',
+        imagenes: ['../../assets/remera.webp'],
+        talles: [
+          { nombre: 'M', disponible: true },
+          { nombre: 'L', disponible: true },
+        ],
+        colores: [{ nombre: 'Negro', disponible: true }],
+        destacado: true,
+      },
+      {
+        id: 2,
+        nombre: 'Zapatillas Urban',
+        genero: 'Mujer',
+        tipo: 'Zapatillas',
+        categoria: 'Calzado',
+        descripcion: 'Zapas facheras',
+        precio: 80000,
+        precio_final: 72000,
+        tiene_descuento: true,
+        descuento_valor: 10,
+        tipo_descuento: 'simple',
+        imagen: '../../assets/zapatillas.jpg',
+        imagenes: ['../../assets/zapatillas.jpg'],
+        talles: [{ nombre: '38', disponible: true }],
+        colores: [{ nombre: 'Blanco', disponible: true }],
+        destacado: false,
+      },
+      {
+        id: 3,
+        nombre: 'Medias de juego 3/4',
+        genero: 'Mujer',
+        tipo: 'Accesorio',
+        categoria: 'Accesorio',
+        descripcion: 'Promo por cantidad',
+        precio: 5300,
+        precio_final: 4770,
+        tiene_descuento: true,
+        descuento_valor: 10,
+        tipo_descuento: 'cantidad',
+        descuento_cantidad: 3,
+        imagen: '../../assets/gorra.jpg',
+        imagenes: ['../../assets/gorra.jpg'],
+        talles: [],
+        colores: [{ nombre: 'Negro', disponible: true }],
+        destacado: true,
+      },
+    ];
 
-        if (p.imagen) {
-          imagenPrincipal = 'http://localhost:3000' + p.imagen;
-        }
-
-        let imagenesArray: string[] = [];
-        if (Array.isArray(p.imagenes) && p.imagenes.length > 0) {
-          imagenesArray = p.imagenes.map((img: string) => {
-            return img.startsWith('http') ? img : 'http://localhost:3000' + img;
-          });
-        } else {
-          imagenesArray = [imagenPrincipal];
-        }
-
-        const precioBase = Number(p.precio);
-        const tieneDescuento = !!p.tiene_descuento;
-        const valorDescuento = Number(p.descuento_valor || 0);
-        const tipoDescuento = p.tipo_descuento || 'simple';
-
-        let precioFinal = precioBase;
-
-        if (tieneDescuento && tipoDescuento === 'simple') {
-          precioFinal = precioBase - (precioBase * valorDescuento) / 100;
-        }
-
-        return {
-          ...p,
-          precio: precioBase,
-          precio_final: precioFinal,
-          imagen: imagenPrincipal,
-          imagenes: imagenesArray,
-          destacado: !!p.destacado,
-        };
-      });
-
-      this.catalogoCompleto = nuevosProductos;
-      this.paginaActual = 1;
-      this.cdr.detectChanges();
-    },
-
-    error: () => {
-      console.log('🔥 Backend caído → usando MOCK');
-      this.cargarMock(); // 👈 CLAVE
-    },
-  });
-}
-cargarMock() {
-  this.catalogoCompleto = [
-    {
-      id: 1,
-      nombre: 'Remera Oversize',
-      genero: 'Hombre',
-      tipo: 'Remera',
-      categoria: 'Indumentaria',
-      descripcion: 'Remera urbana premium',
-      precio: 25000,
-      precio_final: 25000,
-      tiene_descuento: false,
-      imagen: '../../assets/remera.webp',
-      imagenes: ['../../assets/remera.webp'],
-      talles: [{ nombre: 'M', disponible: true }, { nombre: 'L', disponible: true }],
-      colores: [{ nombre: 'Negro', disponible: true }],
-      destacado: true,
-    },
-    {
-      id: 2,
-      nombre: 'Zapatillas Urban',
-      genero: 'Mujer',
-      tipo: 'Zapatillas',
-      categoria: 'Calzado',
-      descripcion: 'Zapas facheras',
-      precio: 80000,
-      precio_final: 70000,
-      tiene_descuento: true,
-      descuento_valor: 10,
-      tipo_descuento: 'simple',
-      imagen: '../../assets/zapatillas.jpg',
-      imagenes: ['../../assets/zapatillas.jpg'],
-      talles: [{ nombre: '38', disponible: true }],
-      colores: [{ nombre: 'Blanco', disponible: true }],
-      destacado: false,
-    },
-    {
-      id: 3,
-      nombre: 'Gorra Hummel',
-      genero: 'Hombre',
-      tipo: 'Gorra',
-      categoria: 'Accesorio',
-      descripcion: 'Gorra deportiva',
-      precio: 15000,
-      precio_final: 15000,
-      tiene_descuento: false,
-      imagen: '../../assets/gorra.jpg',
-      imagenes: ['../../assets/gorra.jpg'],
-      talles: [],
-      colores: [{ nombre: 'Rojo', disponible: true }],
-      destacado: true,
-    },
-  ];
-
-  this.paginaActual = 1;
-  this.cdr.detectChanges();
-}
+    this.paginaActual = 1;
+    this.cdr.detectChanges();
+  }
 
   tiposDePrendaDisponibles(): string[] {
     const filtradoPorGenero = this.catalogoCompleto.filter((p) =>
@@ -214,28 +227,15 @@ cargarMock() {
       resultado = resultado.filter((p) => p.tipo === this.filtroPrenda);
     }
 
-    if (this.filtroPrecio === 'Menor') {
-      resultado = resultado.filter((p) => p.precio < 50000);
-    }
+    if (this.filtroPrecio === 'Menor') resultado = resultado.filter((p) => p.precio < 50000);
+    if (this.filtroPrecio === 'Mayor') resultado = resultado.filter((p) => p.precio >= 50000);
 
-    if (this.filtroPrecio === 'Mayor') {
-      resultado = resultado.filter((p) => p.precio >= 50000);
-    }
-
-    if (this.soloDestacados) {
-      resultado = resultado.filter((p) => p.destacado);
-    }
+    if (this.soloDestacados) resultado = resultado.filter((p) => p.destacado);
 
     if (this.ordenActual === 'Menor Precio') resultado.sort((a, b) => a.precio - b.precio);
     if (this.ordenActual === 'Mayor Precio') resultado.sort((a, b) => b.precio - a.precio);
 
-    // PRECIO
     resultado = resultado.filter((p) => p.precio >= this.precioMin && p.precio <= this.precioMax);
-
-    // DESTACADOS
-    if (this.soloDestacados) {
-      resultado = resultado.filter((p) => p.destacado);
-    }
 
     return resultado;
   }
@@ -296,10 +296,7 @@ cargarMock() {
 
   validarPrecio() {
     if (this.precioMin < 0) this.precioMin = 0;
-
-    if (this.precioMax < this.precioMin) {
-      this.precioMax = this.precioMin;
-    }
+    if (this.precioMax < this.precioMin) this.precioMax = this.precioMin;
   }
 
   resetPrecio() {
@@ -308,10 +305,16 @@ cargarMock() {
   }
 
   agregarAlCarrito() {
-    if (this.productoSeleccionado.categoria !== 'Accesorio' && !this.talleElegido) {
+    const categoria = String(this.productoSeleccionado?.categoria || '')
+      .trim()
+      .toLowerCase();
+    const esAccesorio = categoria === 'accesorio';
+
+    if (!esAccesorio && !this.talleElegido) {
       Swal.fire({ title: 'Selecciona el talle', icon: 'warning', confirmButtonColor: '#000' });
       return;
     }
+
     if (!this.colorElegido) {
       Swal.fire({ title: 'Selecciona el color', icon: 'warning', confirmButtonColor: '#000' });
       return;
@@ -319,7 +322,7 @@ cargarMock() {
 
     this.carritoService.agregarProducto({
       ...this.productoSeleccionado,
-      talle: this.talleElegido,
+      talle: esAccesorio ? '' : this.talleElegido,
       color: this.colorElegido,
       cantidad: 1,
     });
@@ -340,6 +343,7 @@ cargarMock() {
     }
   }
 
+  // Estos métodos los usás en el offcanvas (si lo tenés en esta página)
   cambiarCantidad(uuid: string, operacion: 'sumar' | 'restar') {
     this.carritoService.cambiarCantidad(uuid, operacion);
   }

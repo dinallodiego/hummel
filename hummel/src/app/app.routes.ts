@@ -19,11 +19,14 @@ export const routes: Routes = [
     component: PedidoDetalleComponent,
     runGuardsAndResolvers: 'always',
   },
-  { path: 'admin/login', component: LoginComponent },
   {
     path: 'admin',
-    component: AdminComponent,
     canActivate: [authGuard],
+    loadComponent: () => import('./admin/admin.component').then((m) => m.AdminComponent),
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('../app/admin/login/login').then((m) => m.LoginComponent),
   },
   {
     path: 'finalizar-compra',

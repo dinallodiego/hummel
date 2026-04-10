@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -35,6 +35,7 @@ export class AppComponent implements AfterViewInit {
     private router: Router,
     private http: HttpClient,
     public carritoService: CarritoService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngAfterViewInit() {
@@ -56,13 +57,11 @@ export class AppComponent implements AfterViewInit {
   }
 
   ngOnInit() {
-
     this.verificarYMostrarBienvenida();
-
   }
 
   private verificarYMostrarBienvenida() {
-    // sessionStorage persiste mientras la pestaña esté abierta. 
+    // sessionStorage persiste mientras la pestaña esté abierta.
     // Al cerrar el sitio y volver a entrar, se reinicia.
     const haVistoBienvenida = sessionStorage.getItem('bienvenida_visto');
 
@@ -71,12 +70,12 @@ export class AppComponent implements AfterViewInit {
       sessionStorage.setItem('bienvenida_visto', 'true');
     }
   }
- private ejecutarModalBienvenida() {
-  this.reproducirSonidoBienvenida();
+  private ejecutarModalBienvenida() {
+    this.reproducirSonidoBienvenida();
 
-  Swal.fire({
-    ...this.swalBase,
-    title: `
+    Swal.fire({
+      ...this.swalBase,
+      title: `
       <div style="display:flex; flex-direction:column; align-items:center; gap:8px; padding-top: 10px;">
         <span style="font-size: 13px; font-weight: 600; color: #aaa; letter-spacing: 5px; text-transform: uppercase;">Bienvenido a</span>
         <div style="display:flex; align-items:center; gap:15px;">
@@ -86,7 +85,7 @@ export class AppComponent implements AfterViewInit {
         </div>
       </div>
     `,
-    html: `
+      html: `
       <div style="padding: 10px 0; text-align: center;">
         
         <div class="distribuidor-badge">
@@ -117,27 +116,31 @@ export class AppComponent implements AfterViewInit {
            </div>
         </div>
       </div>`,
-    confirmButtonText: 'Cerrar'
-  });
-}
-
-private reproducirSonidoBienvenida() {
-  const audio = new Audio('../assets/sonidos/welcome.mp3');
-  audio.volume = 0.4;
-  
-  const playPromise = audio.play();
-
-  if (playPromise !== undefined) {
-    playPromise.catch(error => {
-      // Auto-play fue preventido. 
-      // Podemos intentar sonar cuando el usuario haga su primer click en la pantalla
-      console.log("Esperando interacción para sonido...");
-      document.addEventListener('click', () => {
-        audio.play();
-      }, { once: true }); // 'once' hace que se ejecute una sola vez
+      confirmButtonText: 'Cerrar',
     });
   }
-}
+
+  private reproducirSonidoBienvenida() {
+    const audio = new Audio('../assets/sonidos/welcome.mp3');
+    audio.volume = 0.4;
+
+    const playPromise = audio.play();
+
+    if (playPromise !== undefined) {
+      playPromise.catch((error) => {
+        // Auto-play fue preventido.
+        // Podemos intentar sonar cuando el usuario haga su primer click en la pantalla
+        console.log('Esperando interacción para sonido...');
+        document.addEventListener(
+          'click',
+          () => {
+            audio.play();
+          },
+          { once: true },
+        ); // 'once' hace que se ejecute una sola vez
+      });
+    }
+  }
 
   toggleMenu() {
     this.menuAbierto = !this.menuAbierto;
@@ -149,12 +152,80 @@ private reproducirSonidoBienvenida() {
     document.body.classList.remove('menu-open');
   }
 
-  cambiarCantidad(uuid: string, operacion: 'sumar' | 'restar') {
+  async cambiarCantidad(uuid: string, operacion: 'sumar' | 'restar') {
+    const carrito = this.carritoService.getCarrito();
+    const item = carrito.find((i) => i.uuid === uuid);
+    if (!item) return;
+
+    // Si es restar y está en 1, eso implicaría eliminar
+    if (operacion === 'restar' && Number(item.cantidad) === 1) {
+      await this.confirmarQuitarItem(item);
+      return;
+    }
+
     this.carritoService.cambiarCantidad(uuid, operacion);
   }
 
-  eliminarDelCarrito(uuid: string) {
-    this.carritoService.eliminarProducto(uuid);
+  async eliminarDelCarrito(uuid: string) {
+    const carrito = this.carritoService.getCarrito();
+    const item = carrito.find((i) => i.uuid === uuid);
+    if (!item) return;
+
+    await this.confirmarQuitarItem(item);
+  }
+
+  /**
+   * Confirma quitar un item. Si es el último, confirma vaciar carrito.
+   */
+  private async confirmarQuitarItem(item: any) {
+    const carrito = this.carritoService.getCarrito();
+    const esUltimo = carrito.length === 1;
+
+    const result = await Swal.fire({
+      title: esUltimo ? '¿Vaciar carrito?' : '¿Quitar producto?',
+      html: esUltimo
+        ? `
+        <div style="text-align:left">
+          <div style="font-weight:800; margin-bottom:6px;">Vas a vaciar el carrito por completo.</div>
+          <div style="color:#555; font-size:14px;">
+            Se eliminará: <b>${item.nombre}</b>
+          </div>
+        </div>
+      `
+        : `
+        <div style="text-align:left">
+          <div style="font-weight:800; margin-bottom:6px;">¿Seguro querés quitar este producto?</div>
+          <div style="color:#555; font-size:14px;">
+            Se eliminará: <b>${item.nombre}</b>
+          </div>
+        </div>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: esUltimo ? 'Sí, vaciar' : 'Sí, quitar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#000',
+      cancelButtonColor: '#e9ecef',
+    });
+
+    if (!result.isConfirmed) return;
+
+    if (esUltimo) {
+      this.carritoService.limpiarCarrito();
+    } else {
+      this.carritoService.eliminarProducto(item.uuid);
+    }
+
+    this.cdr.detectChanges();
+
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: esUltimo ? 'Carrito vaciado' : 'Producto eliminado',
+      showConfirmButton: false,
+      timer: 1400,
+    });
   }
 
   finalizarCompra() {
@@ -178,12 +249,12 @@ private reproducirSonidoBienvenida() {
     this.router.navigate(['/finalizar-compra']);
   }
 
- mostrarLocales() {
-  Swal.fire({
-    ...this.swalBase,
-    width: '420px', 
-    padding: '1.5rem',
-    title: `
+  mostrarLocales() {
+    Swal.fire({
+      ...this.swalBase,
+      width: '420px',
+      padding: '1.5rem',
+      title: `
       <div style="display:flex; align-items:center; justify-content:center; gap:15px; padding-top: 5px;">
         <div style="background: #20c997; width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(32,201,151,0.3);">
           <i class="bi bi-geo-alt-fill" style="font-size: 22px; color: #000;"></i>
@@ -191,7 +262,7 @@ private reproducirSonidoBienvenida() {
         <h2 style="font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 20px; color: #111; text-transform: uppercase; letter-spacing: 1px; margin: 0;">Encontranos</h2>
       </div>
     `,
-    html: `
+      html: `
       <div style="display:flex; flex-direction:column; gap:12px; margin-top: 15px; overflow: hidden;">
         
         <div style="background: #f8f9fa; border: 2px solid #20c997; border-radius: 15px; padding: 12px; text-align: center;">
@@ -222,10 +293,9 @@ private reproducirSonidoBienvenida() {
            Lunes y feriados cerrado
         </div>
       </div>`,
-    confirmButtonText: 'Cerrar',
-    
-  });
-}
+      confirmButtonText: 'Cerrar',
+    });
+  }
 
   misCompras() {
     Swal.fire({

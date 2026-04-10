@@ -1,9 +1,7 @@
 <section class="container-fluid px-lg-5 my-5">
   <div class="row">
     <!-- SIDEBAR -->
-    <!-- 🔥 SIDEBAR / FILTROS PRO -->
     <aside class="col-lg-2">
-      <!-- BOTON MOBILE -->
       <div class="d-lg-none mb-3">
         <button
           class="btn btn-dark w-100 rounded-pill fw-bold"
@@ -14,7 +12,6 @@
         </button>
       </div>
 
-      <!-- DESKTOP -->
       <div class="sticky-top d-none d-lg-block filtros-pro" style="top: 110px">
         <h5 class="fw-black mb-4 border-bottom pb-2">FILTRAR</h5>
 
@@ -64,54 +61,51 @@
             </div>
           </div>
 
-         <!-- CATEGORIA GLOBAL (NUEVO) -->
-<div class="accordion-item border-0">
-  <h2 class="accordion-header">
-    <button
-      class="accordion-button collapsed fw-bold"
-      data-bs-toggle="collapse"
-      data-bs-target="#categoriaGlobal"
-    >
-      TIPO PRODUCTO
-    </button>
-  </h2>
+          <!-- CATEGORIA -->
+          <div class="accordion-item border-0">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                data-bs-toggle="collapse"
+                data-bs-target="#categoriaGlobal"
+              >
+                TIPO PRODUCTO
+              </button>
+            </h2>
 
-  <div id="categoriaGlobal" class="accordion-collapse collapse">
-    <div class="accordion-body">
-      <div
-        class="filter-pill"
-        [class.active]="filtroCategoria === 'Todos'"
-        (click)="filtroCategoria = 'Todos'"
-      >
-        Todos
-      </div>
-
-      <div
-        class="filter-pill"
-        [class.active]="filtroCategoria === 'Indumentaria'"
-        (click)="filtroCategoria = 'Indumentaria'"
-      >
-        Indumentaria
-      </div>
-
-      <div
-        class="filter-pill"
-        [class.active]="filtroCategoria === 'Calzado'"
-        (click)="filtroCategoria = 'Calzado'"
-      >
-        Calzado
-      </div>
-
-      <div
-        class="filter-pill"
-        [class.active]="filtroCategoria === 'Accesorio'"
-        (click)="filtroCategoria = 'Accesorio'"
-      >
-        Accesorio
-      </div>
-    </div>
-  </div>
-</div>
+            <div id="categoriaGlobal" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <div
+                  class="filter-pill"
+                  [class.active]="filtroCategoria === 'Todos'"
+                  (click)="filtroCategoria = 'Todos'"
+                >
+                  Todos
+                </div>
+                <div
+                  class="filter-pill"
+                  [class.active]="filtroCategoria === 'Indumentaria'"
+                  (click)="filtroCategoria = 'Indumentaria'"
+                >
+                  Indumentaria
+                </div>
+                <div
+                  class="filter-pill"
+                  [class.active]="filtroCategoria === 'Calzado'"
+                  (click)="filtroCategoria = 'Calzado'"
+                >
+                  Calzado
+                </div>
+                <div
+                  class="filter-pill"
+                  [class.active]="filtroCategoria === 'Accesorio'"
+                  (click)="filtroCategoria = 'Accesorio'"
+                >
+                  Accesorio
+                </div>
+              </div>
+            </div>
+          </div>
 
           <!-- PRECIO -->
           <div class="accordion-item border-0">
@@ -128,7 +122,6 @@
             <div id="precio" class="accordion-collapse collapse">
               <div class="accordion-body">
                 <div class="d-flex gap-2">
-                  <!-- MIN -->
                   <div class="w-50">
                     <label class="small text-muted">Mín</label>
                     <input
@@ -140,7 +133,6 @@
                     />
                   </div>
 
-                  <!-- MAX -->
                   <div class="w-50">
                     <label class="small text-muted">Máx</label>
                     <input
@@ -153,7 +145,6 @@
                   </div>
                 </div>
 
-                <!-- BOTON LIMPIAR -->
                 <button class="btn btn-light w-100 mt-3 rounded-pill small" (click)="resetPrecio()">
                   Limpiar filtro
                 </button>
@@ -190,7 +181,6 @@
 
     <!-- CONTENIDO -->
     <div class="col-lg-10">
-      <!-- HEADER -->
       <div
         class="d-flex justify-content-between align-items-center mb-5 border-bottom pb-3 px-2 bg-white sticky-top shadow-sm rounded-3 p-3"
         style="top: 70px; z-index: 100"
@@ -200,7 +190,6 @@
         </h1>
 
         <div class="d-flex align-items-center gap-3">
-          <!-- ORDEN -->
           <div class="dropdown">
             <button
               class="btn btn-light rounded-pill fw-bold dropdown-toggle shadow-sm text-uppercase"
@@ -228,7 +217,6 @@
             </ul>
           </div>
 
-          <!-- CARRITO BTN (SIGUE FUNCIONANDO) -->
           <button
             class="btn btn-dark rounded-pill px-4 shadow cart-btn-anim"
             data-bs-toggle="offcanvas"
@@ -253,7 +241,6 @@
 
             <div class="product-info-premium text-center">
               <p class="p-category">{{ item.genero }} • {{ item.categoria }}</p>
-
               <h3 class="p-name">{{ item.nombre }}</h3>
 
               <div class="d-flex align-items-center justify-content-center gap-2">
@@ -277,12 +264,10 @@
               </div>
 
               <div class="mt-2" *ngIf="item.tiene_descuento">
-                <!-- DESCUENTO SIMPLE -->
                 <span *ngIf="item.tipo_descuento === 'simple'" class="badge bg-danger">
                   {{ item.descuento_valor }}% OFF
                 </span>
 
-                <!-- DESCUENTO POR CANTIDAD -->
                 <span *ngIf="item.tipo_descuento === 'cantidad'" class="badge bg-warning text-dark">
                   {{ item.descuento_valor }}% OFF llevando {{ item.descuento_cantidad }} unidades o
                   mas
@@ -293,12 +278,10 @@
         </div>
       </div>
 
-      <!-- SIN PRODUCTOS -->
       <div *ngIf="productosFiltrados.length === 0" class="text-center py-5">
         No hay productos disponibles
       </div>
 
-      <!-- PAGINACION -->
       <nav class="mt-5 d-flex justify-content-center">
         <ul class="pagination-modern shadow-sm p-2 bg-white rounded-pill">
           <li
@@ -314,57 +297,12 @@
   </div>
 </section>
 
-<!-- 🔥 FILTROS MOBILE -->
-<div class="offcanvas offcanvas-start" id="filtrosMobile">
-  <div class="offcanvas-header">
-    <h5 class="fw-black">FILTRAR</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-  </div>
-
-  <div class="offcanvas-body">
-    <!-- GENERO -->
-    <p class="fw-bold">GÉNERO</p>
-    <div class="filter-pill" (click)="setFiltro('Todos')">Todos</div>
-    <div class="filter-pill" (click)="setFiltro('Hombre')">Hombre</div>
-    <div class="filter-pill" (click)="setFiltro('Mujer')">Mujer</div>
-    <div class="filter-pill" (click)="setFiltro('Niño')">Niño</div>
-
-    <!-- CATEGORIA -->
-    <div class="accordion-item border-0">
-      <h2 class="accordion-header">
-        <button
-          class="accordion-button collapsed fw-bold"
-          data-bs-toggle="collapse"
-          data-bs-target="#categoria2"
-        >
-          TIPO
-        </button>
-      </h2>
-
-      <div id="categoria2" class="accordion-collapse collapse show">
-        <div class="accordion-body">
-          <div class="filter-pill" (click)="filtroCategoria = 'Todos'">Todos</div>
-          <div class="filter-pill" (click)="filtroCategoria = 'Indumentaria'">Indumentaria</div>
-          <div class="filter-pill" (click)="filtroCategoria = 'Calzado'">Calzado</div>
-          <div class="filter-pill" (click)="filtroCategoria = 'Accesorio'">Accesorio</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- DESTACADOS -->
-    <div class="mt-4">
-      <p class="fw-bold">DESTACADOS</p>
-      <div class="filter-pill" (click)="soloDestacados = !soloDestacados">⭐ Solo destacados</div>
-    </div>
-  </div>
-</div>
-<!-- 🔥 MODAL DETALLE PRO (SIN CAMBIOS) -->
+<!-- MODAL -->
 <div class="modal fade" id="detailModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
       <div class="modal-body p-0" *ngIf="productoSeleccionado">
         <div class="row g-0">
-          <!-- GALERIA -->
           <div class="col-md-7 p-4 bg-light">
             <div class="image-viewer">
               <button class="arrow left" (click)="anteriorImagen()">‹</button>
@@ -389,15 +327,12 @@
             </div>
           </div>
 
-          <!-- INFO -->
           <div class="col-md-5 p-5">
             <button type="button" class="btn-close float-end" data-bs-dismiss="modal"></button>
 
             <p class="text-muted small mb-1">{{ productoSeleccionado.genero }}</p>
 
-            <h2 class="fw-black mb-2">
-              {{ productoSeleccionado.nombre }}
-            </h2>
+            <h2 class="fw-black mb-2">{{ productoSeleccionado.nombre }}</h2>
 
             <p class="text-muted mb-3">
               {{
@@ -406,7 +341,7 @@
                   : (productoSeleccionado.descripcion | slice: 0 : 60)
               }}
               <span
-                *ngIf="productoSeleccionado.descripcion.length > 60"
+                *ngIf="productoSeleccionado.descripcion?.length > 60"
                 (click)="verMas = !verMas"
                 style="cursor: pointer; font-weight: bold"
               >
@@ -433,6 +368,7 @@
                 ${{ productoSeleccionado.precio_final | number: '1.0-0' : 'es-AR' }}
               </span>
             </div>
+
             <div class="mb-3" *ngIf="productoSeleccionado.tiene_descuento">
               <span
                 *ngIf="productoSeleccionado.tipo_descuento === 'simple'"

@@ -97,20 +97,57 @@
   <div class="offcanvas-body p-4">
     <div *ngFor="let c of carritoService.getCarrito()" class="cart-item">
       <img [src]="c.imagen" />
+
       <div class="cart-info">
         <h6>{{ c.nombre }}</h6>
-        <p>Talle: {{ c.talle }} • Color: {{ c.color }} • ${{ c.precio | number }} c/u</p>
-        <div class="quantity-control">
+
+        <p class="cart-meta">
+          <span *ngIf="c.talle">Talle: {{ c.talle }} • </span>
+          Color: {{ c.color }}
+        </p>
+
+        <!-- PRECIO UNITARIO (con descuento si aplica) -->
+        <div class="cart-price-row">
+          <!-- precio base -->
+          <span class="price-old" *ngIf="c.tiene_descuento">
+            ${{ c.precio | number: '1.0-0' : 'es-AR' }}
+          </span>
+
+          <!-- precio efectivo -->
+          <span class="price-current" [class.price-discount]="c.tiene_descuento">
+            ${{ carritoService.getPrecioUnitario(c) | number: '1.0-0' : 'es-AR' }}
+            <span class="unit">c/u</span>
+          </span>
+        </div>
+
+        <!-- BADGES -->
+        <div class="mt-2" *ngIf="c.tiene_descuento">
+          <span *ngIf="c.tipo_descuento === 'simple'" class="badge bg-danger">
+            {{ c.descuento_valor }}% OFF
+          </span>
+
+          <span *ngIf="c.tipo_descuento === 'cantidad'" class="badge bg-warning text-dark">
+            {{ c.descuento_valor }}% OFF llevando {{ c.descuento_cantidad }}+
+          </span>
+        </div>
+
+        <!-- CANTIDAD -->
+        <div class="quantity-control mt-2">
           <button (click)="cambiarCantidad(c.uuid, 'restar')" class="btn-qty">-</button>
           <span class="qty-num">{{ c.cantidad }}</span>
           <button (click)="cambiarCantidad(c.uuid, 'sumar')" class="btn-qty">+</button>
         </div>
       </div>
+
       <div class="text-end">
-        <p class="cart-price">${{ c.precio * c.cantidad | number }}</p>
+        <!-- SUBTOTAL ITEM -->
+        <p class="cart-price">
+          ${{ carritoService.getSubtotalItem(c) | number: '1.0-0' : 'es-AR' }}
+        </p>
         <button class="cart-remove" (click)="eliminarDelCarrito(c.uuid)">Quitar</button>
       </div>
     </div>
+
     <div
       *ngIf="carritoService.getCarrito().length === 0"
       class="text-center py-5 text-muted bg-light rounded-3 mt-4"

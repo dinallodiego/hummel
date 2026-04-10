@@ -27,6 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   imagenIndex = 0;
   zoomActivo = false;
+  verMas = false;
 
   images = ['/assets/slider1.png', '/assets/slider2.png', '/assets/slider3.png'];
   destacados: any[] = [];
@@ -70,7 +71,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   irCategoria(genero: string) {
-    this.router.navigate(['/productos'], { queryParams: { genero } });
+    const generoNormalizado = genero === 'Niños' ? 'Niño' : genero;
+    this.router.navigate(['/productos'], { queryParams: { genero: generoNormalizado } });
   }
 
   cargarDestacados() {
@@ -86,13 +88,17 @@ export class HomeComponent implements OnInit, OnDestroy {
               ? p.imagenes.map((img: string) => (img.startsWith('http') ? img : base + img))
               : [imagen];
 
-          // Lógica de descuento
+          // ✅ Normalización de descuento (simple + cantidad)
           const precioBase = Number(p.precio);
           const tieneDescuento = !!p.tiene_descuento;
           const valorDescuento = Number(p.descuento_valor || 0);
-          const precioFinal = tieneDescuento
-            ? precioBase - (precioBase * valorDescuento) / 100
-            : precioBase;
+          const tipoDescuento = p.tipo_descuento || 'simple';
+          const descuentoCantidad = Number(p.descuento_cantidad || 0);
+
+          let precioFinal = precioBase;
+          if (tieneDescuento && (tipoDescuento === 'simple' || tipoDescuento === 'cantidad')) {
+            precioFinal = precioBase - (precioBase * valorDescuento) / 100;
+          }
 
           return {
             ...p,
@@ -100,8 +106,13 @@ export class HomeComponent implements OnInit, OnDestroy {
             imagenes,
             precio: precioBase,
             precio_final: precioFinal,
+
+            // ✅ Campos necesarios para que el carrito aplique descuento
             tiene_descuento: tieneDescuento,
             descuento_valor: valorDescuento,
+            tipo_descuento: tipoDescuento,
+            descuento_cantidad: descuentoCantidad,
+
             talles: p.talles || [],
             colores: p.colores || [],
           };
@@ -132,30 +143,41 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.colorElegido = '';
     this.imagenIndex = 0;
     this.zoomActivo = false;
+    this.verMas = false;
 
     this.cdr.detectChanges();
 
     setTimeout(() => {
-      const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+      const el = document.getElementById('detailModal');
+      if (!el) return;
+      const modal = new bootstrap.Modal(el);
       modal.show();
     });
   }
 
   agregarAlCarrito() {
-    if (!this.talleElegido) {
+    const categoria = String(this.productoSeleccionado?.categoria || '')
+      .trim()
+      .toLowerCase();
+    const esAccesorio = categoria === 'accesorio';
+
+    if (!esAccesorio && !this.talleElegido) {
       Swal.fire({ title: 'Selecciona el talle', icon: 'warning', confirmButtonColor: '#000' });
       return;
     }
+
     if (!this.colorElegido) {
       Swal.fire({ title: 'Selecciona el color', icon: 'warning', confirmButtonColor: '#000' });
       return;
     }
+
     this.carritoService.agregarProducto({
       ...this.productoSeleccionado,
-      talle: this.talleElegido,
+      talle: esAccesorio ? '' : this.talleElegido,
       color: this.colorElegido,
       cantidad: 1,
     });
+
     Swal.fire({
       toast: true,
       position: 'top-end',
@@ -164,7 +186,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       showConfirmButton: false,
       timer: 1500,
     });
-    // 🔥 CERRAR MODAL
+
     const modalElement = document.getElementById('detailModal');
     if (modalElement) {
       const modal = bootstrap.Modal.getInstance(modalElement);

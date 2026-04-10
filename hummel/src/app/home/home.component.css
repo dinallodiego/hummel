@@ -1,4 +1,4 @@
-/* --- HERO SLIDER --- */
+/* ============ HERO SLIDER ============ */
 .hero-viewport {
   position: relative;
   width: 100%;
@@ -20,11 +20,11 @@
   z-index: 2;
 }
 
-.slide img {
+.main-slide-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top; /* 🔥 clave */
+  object-position: center top;
 }
 
 .overlay {
@@ -47,6 +47,7 @@
   font-weight: 900;
   letter-spacing: -2px;
   line-height: 0.9;
+  text-transform: uppercase;
 }
 
 .btn-modern {
@@ -65,105 +66,7 @@
   transform: translateY(-3px);
 }
 
-/* --- PRODUCTOS DESTACADOS --- */
-.section-title {
-  text-align: center;
-  font-weight: 900;
-  margin-bottom: 50px;
-  text-transform: uppercase;
-}
-
-.product-card {
-  cursor: pointer;
-}
-.img-wrapper {
-  background: #f7f7f7;
-  height: 450px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-.img-wrapper img {
-  max-height: 90%;
-  transition: 0.8s cubic-bezier(0.2, 1, 0.3, 1);
-}
-
-.quick-add {
-  position: absolute;
-  bottom: -60px;
-  width: 100%;
-  background: #000;
-  color: #fff;
-  text-align: center;
-  padding: 18px;
-  transition: 0.4s;
-  font-weight: 800;
-}
-.product-card:hover .quick-add {
-  bottom: 0;
-}
-.product-card:hover img {
-  transform: scale(1.1);
-}
-
-/* --- CATEGORÍAS (PANCARTAS) --- */
-.category-banner {
-  position: relative;
-  height: 600px;
-  overflow: hidden;
-  cursor: pointer;
-  background: #000;
-}
-
-.banner-img-container {
-  width: 100%;
-  height: 100%;
-  transition: transform 1.2s cubic-bezier(0.15, 1, 0.3, 1);
-}
-
-.banner-img-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.8;
-  transition: opacity 0.5s;
-  filter: brightness(0.6); /* 0 = negro, 1 = normal, >1 = más brillante */
-}
-
-/* Efecto de expansión al pasar el mouse */
-.category-banner:hover .banner-img-container {
-  transform: scale(1.1);
-  filter: brightness(1);
-}
-
-.category-banner:hover .banner-img-container img {
-  opacity: 1;
-}
-
-.banner-text {
-  position: absolute;
-  bottom: 40px;
-  left: 40px;
-  color: #fff;
-  z-index: 5;
-}
-
-.banner-text h3 {
-  font-weight: 900;
-  font-size: 2.5rem;
-  margin-bottom: 5px;
-}
-
-.banner-text span {
-  font-weight: 700;
-  font-size: 0.9rem;
-  text-decoration: underline;
-  text-underline-offset: 5px;
-}
-
-/* --- INDICADORES --- */
+/* ============ INDICADORES Y NAV HERO ============ */
 .indicators {
   position: absolute;
   bottom: 30px;
@@ -173,6 +76,7 @@
   gap: 10px;
   z-index: 10;
 }
+
 .indicators span {
   width: 8px;
   height: 8px;
@@ -181,6 +85,7 @@
   cursor: pointer;
   transition: 0.3s;
 }
+
 .indicators span.active {
   background: #fff;
   width: 30px;
@@ -200,48 +105,22 @@
   z-index: 10;
   transition: 0.3s;
 }
+
 .nav-btn:hover {
   background: #fff;
   color: #000;
   border-color: #fff;
 }
-.prev {
+
+.nav-btn.prev {
   left: 30px;
 }
-.next {
+
+.nav-btn.next {
   right: 30px;
 }
 
-.product-card {
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: 0.3s;
-  border-radius: 12px;
-}
-
-/* 🔥 EFECTO DORADO */
-.product-card:hover {
-  border: 2px solid #d4af37;
-  box-shadow: 0 10px 40px rgba(212, 175, 55, 0.3);
-}
-
-/* 🔥 OPCIONAL: siempre dorado en destacados */
-.product-card {
-  border: 1.5px solid #d4af37;
-}
-
-.price {
-  font-weight: 800;
-  color: #000;
-}
-
-.category {
-  font-size: 0.7rem;
-  color: #999;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
+/* ============ SECCIONES ============ */
 .section-title {
   text-align: center;
   font-weight: 900;
@@ -249,7 +128,7 @@
   text-transform: uppercase;
 }
 
-/* Flechas bien posicionadas */
+/* ============ FLECHAS DESTACADOS + MODAL ============ */
 .arrow {
   position: absolute;
   top: 55%;
@@ -268,114 +147,59 @@
 .arrow.left {
   left: -10px;
 }
+
 .arrow.right {
   right: -10px;
 }
 
-/* Reutilizamos estilo PRO */
-.nike-card-premium {
-  cursor: pointer;
-  background: #fff;
-  border-radius: 12px;
+/* ============ CATEGORÍAS ============ */
+.category-banner {
+  position: relative;
+  height: 600px;
   overflow: hidden;
-  transition: 0.4s;
-}
-
-.nike-card-premium:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-.img-container-premium {
-  background: #f7f7f7;
-  aspect-ratio: 1/1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.product-img-main {
-  max-height: 85%;
-  transition: 0.4s;
-}
-
-.nike-card-premium:hover .product-img-main {
-  transform: scale(1.05);
-}
-
-.product-info-premium {
-  padding: 15px;
-}
-
-.p-category {
-  font-size: 0.8rem;
-  color: #888;
-}
-
-.p-name {
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.p-price {
-  font-weight: 800;
-}
-
-/* 🔥 SOLO DIFERENCIA: BORDE DORADO EN DESTACADOS */
-.destacado-card {
-  border: 1.5px solid #d4af37;
-}
-
-.destacado-card:hover {
-  border: 2px solid #d4af37;
-  box-shadow: 0 10px 40px rgba(212, 175, 55, 0.3);
-}
-/* --- MODAL DETALLE PREMIUM --- */
-.main-modal-img {
-  max-height: 480px;
-  mix-blend-mode: multiply;
-  transition: transform 0.5s ease;
-}
-.main-modal-img:hover {
-  transform: scale(1.05);
-}
-
-.talle-grid-premium {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-  gap: 10px;
-}
-.btn-talle-premium {
-  border: 1px solid #e5e5e5;
-  background: white;
-  padding: 15px;
-  font-weight: 700;
-  border-radius: 8px;
-  transition: 0.2s;
-  font-size: 0.95rem;
-}
-.btn-talle-premium:hover,
-.btn-talle-premium.selected {
-  border-color: #000;
-  background: #f8f8f8;
-}
-.btn-talle-premium.selected {
-  box-shadow: inset 0 0 0 2px #000;
-}
-
-.btn-black-premium {
+  cursor: pointer;
   background: #000;
-  color: #fff;
-  border: none;
-  transition: 0.3s;
-}
-.btn-black-premium:hover {
-  background: #333;
-  transform: translateY(-3px);
+  border-radius: 12px;
 }
 
-/* GALERIA */
+.banner-img-container {
+  width: 100%;
+  height: 100%;
+  transition: transform 1.2s cubic-bezier(0.15, 1, 0.3, 1);
+}
+
+.banner-img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.8;
+  transition: opacity 0.5s;
+  filter: brightness(0.6);
+}
+
+.category-banner:hover .banner-img-container {
+  transform: scale(1.1);
+}
+
+.category-banner:hover .banner-img-container img {
+  opacity: 1;
+  filter: brightness(0.9);
+}
+
+.banner-text {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  color: #fff;
+  z-index: 5;
+}
+
+.banner-text h3 {
+  font-weight: 900;
+  font-size: 2.5rem;
+  margin-bottom: 5px;
+}
+
 .image-viewer {
   position: relative;
   width: 100%;
@@ -384,45 +208,47 @@
   align-items: center;
 }
 
-.arrow {
+/* Flechas SOLO del modal */
+.modal-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   background: #fff;
   border: none;
-  width: 45px;
-  height: 45px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   font-size: 22px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
   cursor: pointer;
-  z-index: 10;
+  z-index: 20;
+  display: grid;
+  place-items: center;
 }
 
-.arrow.left {
-  left: -10px;
+.modal-arrow.left {
+  left: 12px;
+}
+.modal-arrow.right {
+  right: 12px;
 }
 
-.arrow.right {
-  right: -10px;
-}
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+  .slide-content {
+    left: 6%;
+    right: 6%;
+  }
 
-/* MINIATURAS */
-.thumbs {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
+  .nav-btn.prev {
+    left: 12px;
+  }
 
-.thumbs img {
-  width: 70px;
-  height: 70px;
-  object-fit: cover;
-  border-radius: 8px;
-  cursor: pointer;
-  border: 2px solid transparent;
-}
+  .nav-btn.next {
+    right: 12px;
+  }
 
-.thumbs img.active {
-  border: 2px solid black;
+  .category-banner {
+    height: 420px;
+  }
 }

@@ -2,18 +2,23 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { CarritoService } from '../services/carrito';
+import { catchError, map, of } from 'rxjs';
 import Swal from 'sweetalert2';
 
 export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  if (auth.isLogged()) {
-    return true;
-  }
-
-  router.navigate(['/admin/login']);
-  return false;
+  return auth.isLogged().pipe(
+    map((ok) => {
+      if (!ok) router.navigate(['/login']);
+      return ok;
+    }),
+    catchError(() => {
+      router.navigate(['/login']);
+      return of(false);
+    }),
+  );
 };
 
 export const carritoGuard: CanActivateFn = () => {
