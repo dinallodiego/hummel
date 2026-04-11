@@ -377,6 +377,77 @@ input[type='number']::placeholder {
   list-style: none;
 }
 
+/* Botón Limpiar Dinámico */
+.btn-limpiar-filtros {
+  background: none;
+  border: none;
+  color: #dc3545; /* Rojo de acento */
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-limpiar-filtros:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+  transform: scale(1.05);
+}
+
+/* Estilo para las Filter Pills (Botones de género/categoría) */
+.filter-pill {
+  padding: 8px 16px;
+  margin-bottom: 8px;
+  border-radius: 50px;
+  background: #f4f4f4;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  display: block;
+  text-align: center;
+}
+
+.filter-pill:hover {
+  background: #ebebeb;
+}
+
+.filter-pill.active {
+  background: #000; /* Fondo oscuro */
+  color: #fff; /* Texto blanco */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Acordeón Estilo Minimalista */
+.accordion-button:not(.collapsed) {
+  background-color: transparent;
+  color: #000;
+  box-shadow: none;
+}
+
+.accordion-button {
+  font-size: 0.9rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee !important;
+}
+
+/* Color de la flecha cuando el filtro está abierto */
+.accordion-button:not(.collapsed)::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23dc3545'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+/* Transición suave para el cierre */
+.accordion-collapse {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accordion-button::after {
+  background-size: 1rem;
+  transition: transform 0.3s ease;
+}
 /* --- HEADER MOBILE FIX --- */
 @media (max-width: 768px) {
   .catalogo-title {
@@ -409,5 +480,152 @@ input[type='number']::placeholder {
 
   .p-name {
     font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-info-premium {
+    padding: 10px;
+  }
+
+  .p-name {
+    font-size: 0.8rem;
+    line-height: 1.2;
+  }
+
+  .p-category {
+    font-size: 0.7rem;
+  }
+
+  .p-price {
+    font-size: 0.95rem;
+  }
+
+  .nike-card-premium {
+    box-shadow: none;
+    border: 1px solid #eee;
+  }
+}
+
+@media (max-width: 768px) {
+  .catalogo-title {
+    font-size: 1rem;
+  }
+
+  .sticky-top {
+    padding: 10px !important;
+  }
+
+  .cart-btn-anim span {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-modal-img {
+    max-height: 300px;
+  }
+
+  .thumbs img {
+    width: 50px;
+    height: 50px;
+  }
+}
+@media (max-width: 768px) {
+  .row.g-4 {
+    gap: 10px !important;
+  }
+}
+.nike-card-premium:active {
+  transform: scale(0.97);
+}
+/* OFFCANVAS PREMIUM */
+.offcanvas {
+  border-radius: 0 20px 20px 0;
+}
+
+.offcanvas-header {
+  padding: 16px;
+}
+
+.offcanvas-body {
+  padding: 16px;
+}
+
+/* Pills más táctiles */
+@media (max-width: 768px) {
+  .filter-pill {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+
+  .accordion-button {
+    font-size: 0.95rem;
+  }
+}
+/* FIX OFFCANVAS MOBILE */
+.filtros-mobile {
+  display: block !important;
+}
+
+/* opcional: mejor scroll */
+.offcanvas-body {
+  overflow-y: auto;
+}
+@media (max-width: 768px) {
+  .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+/* === FIX GRILLA MÓVILES === */
+@media (max-width: 991px) {
+  .row.g-4 {
+    --bs-gutter-x: 1rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* FORZAR 2 COLUMNAS EN MÓVILES */
+  .col-lg-4.col-md-6.col-6 {
+    flex: 0 0 48.5% !important;
+    max-width: 48.5% !important;
+  }
+
+  /* RESET MARGINS NEGATIVOS */
+  .row.g-4 {
+    --bs-gutter-x: 1.5rem !important;
+    margin-left: -0.75rem !important;
+    margin-right: -0.75rem !important;
+  }
+
+  .col-lg-4.col-md-6.col-6 {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  /* EVITAR APILAMIENTO */
+  .nike-card-premium {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  /* EN PANTALLAS MUY PEQUEÑAS, 1 COLUMNA */
+  .col-lg-4.col-md-6.col-6 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* FIX ESPECÍFICO PARA LA ROW DE PRODUCTOS */
+.productos-row {
+  --bs-gutter-x: 1rem;
+}
+
+@media (max-width: 768px) {
+  .productos-row > * {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
   }
 }

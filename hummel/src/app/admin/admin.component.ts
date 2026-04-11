@@ -197,8 +197,14 @@ export class AdminComponent implements OnInit {
       cancelButtonColor: '#aaa',
     }).then((res) => {
       if (res.isConfirmed) {
-        this.auth.logout();
-        this.router.navigate(['/admin/login']);
+        this.auth.logout().subscribe({
+          next: () => {
+            this.router.navigate(['/admin/login']);
+          },
+          error: () => {
+            this.router.navigate(['/admin/login']);
+          },
+        });
       }
     });
   }

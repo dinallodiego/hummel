@@ -320,7 +320,6 @@ app.post("/admin/login", async (req, res) => {
       httpOnly: true,
       sameSite: "lax",
       secure: false,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return res.json({
@@ -334,7 +333,12 @@ app.post("/admin/login", async (req, res) => {
 });
 /* ADMIN LOGOUT */
 app.post("/admin/logout", (req, res) => {
-  res.clearCookie("admin_token");
+  res.clearCookie("admin_token", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+  });
+
   res.json({ ok: true });
 });
 

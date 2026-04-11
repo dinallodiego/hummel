@@ -208,6 +208,46 @@ export class ProductosComponent implements OnInit {
     this.paginaActual = 1;
   }
 
+  limpiarTodosLosFiltros() {
+    // 1. Reset de variables
+    this.filtroGenero = 'Todos';
+    this.filtroCategoria = 'Todos';
+    this.filtroPrenda = 'Todos';
+    this.precioMin = 0;
+    this.precioMax = 100000;
+    this.soloDestacados = false;
+    this.ordenActual = 'Relevancia';
+    this.paginaActual = 1;
+
+    // 2. Cerrar los accordions de Bootstrap manualmente
+    const accordionElements = document.querySelectorAll('.accordion-collapse.show');
+    accordionElements.forEach((el) => {
+      // Usamos la instancia global de bootstrap que ya tenés declarada arriba
+      const bsCollapse = bootstrap.Collapse.getInstance(el);
+      if (bsCollapse) {
+        bsCollapse.hide();
+      } else {
+        // Si no existe instancia iniciada, creamos una nueva para ocultar
+        new bootstrap.Collapse(el).hide();
+      }
+    });
+
+    // 3. Feedback visual y scroll
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  hayFiltrosActivos(): boolean {
+    return (
+      this.filtroGenero !== 'Todos' ||
+      this.filtroCategoria !== 'Todos' ||
+      this.filtroPrenda !== 'Todos' ||
+      this.soloDestacados === true ||
+      this.precioMin > 0 ||
+      this.precioMax !== 100000 ||
+      this.ordenActual !== 'Relevancia'
+    );
+  }
+
   get productosFiltrados() {
     let resultado = [...this.catalogoCompleto];
 

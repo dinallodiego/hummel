@@ -1,20 +1,36 @@
-<section class="container-fluid px-lg-5 my-5">
+<section class="container-fluid px-2 px-lg-5 my-5">
   <div class="row">
     <!-- SIDEBAR -->
     <aside class="col-lg-2">
-      <div class="d-lg-none mb-3">
+      <div class="d-lg-none mb-3 d-flex gap-2">
         <button
-          class="btn btn-dark w-100 rounded-pill fw-bold"
+          class="btn btn-dark w-100 rounded-pill fw-bold py-2"
           data-bs-toggle="offcanvas"
           data-bs-target="#filtrosMobile"
         >
           FILTRAR
         </button>
+
+        <button
+          *ngIf="hayFiltrosActivos()"
+          (click)="limpiarTodosLosFiltros()"
+          class="btn btn-outline-danger rounded-pill px-3 fw-bold"
+        >
+          Limpiar
+        </button>
       </div>
 
       <div class="sticky-top d-none d-lg-block filtros-pro" style="top: 110px">
-        <h5 class="fw-black mb-4 border-bottom pb-2">FILTRAR</h5>
-
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+          <h5 class="fw-black m-0">FILTRAR</h5>
+          <button
+            class="btn-limpiar-filtros"
+            (click)="limpiarTodosLosFiltros()"
+            *ngIf="hayFiltrosActivos()"
+          >
+            LIMPIAR
+          </button>
+        </div>
         <div class="accordion" id="filtrosAccordion">
           <!-- GENERO -->
           <div class="accordion-item border-0">
@@ -49,6 +65,13 @@
                   (click)="setFiltro('Mujer')"
                 >
                   Mujer
+                </div>
+                <div
+                  class="filter-pill"
+                  [class.active]="filtroGenero === 'Unisex'"
+                  (click)="setFiltro('Unisex')"
+                >
+                  Unisex
                 </div>
                 <div
                   class="filter-pill"
@@ -222,13 +245,16 @@
             data-bs-toggle="offcanvas"
             data-bs-target="#cartSide"
           >
-            <span> Carrito ({{ carritoService.getCarrito().length }}) </span>
+            <i class="bi bi-bag"></i>
+            <span class="d-none d-md-inline">
+              Carrito ({{ carritoService.getCarrito().length }})
+            </span>
           </button>
         </div>
       </div>
 
       <!-- PRODUCTOS -->
-      <div class="row g-4" *ngIf="productosFiltrados.length > 0">
+      <div class="row g-4 productos-row" *ngIf="productosFiltrados.length > 0">
         <div *ngFor="let item of productosPaginados" class="col-lg-4 col-md-6 col-6">
           <div
             class="nike-card-premium"
@@ -299,7 +325,7 @@
 
 <!-- MODAL -->
 <div class="modal fade" id="detailModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-xl">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-sm-down">
     <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
       <div class="modal-body p-0" *ngIf="productoSeleccionado">
         <div class="row g-0">
@@ -428,5 +454,198 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+<!-- OFFCANVAS FILTROS MOBILE -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="filtrosMobile">
+  <div class="offcanvas-header border-bottom">
+    <h5 class="fw-black m-0">FILTRAR</h5>
+
+    <button
+      *ngIf="hayFiltrosActivos()"
+      class="btn-limpiar-filtros"
+      (click)="limpiarTodosLosFiltros()"
+    >
+      LIMPIAR
+    </button>
+
+    <button type="button" class="btn-close ms-2" data-bs-dismiss="offcanvas"></button>
+  </div>
+
+  <div class="offcanvas-body filtros-mobile">
+    <div class="accordion" id="filtrosAccordionMobile">
+      <!-- GENERO -->
+      <div class="accordion-item border-0">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button fw-bold"
+            data-bs-toggle="collapse"
+            data-bs-target="#generoMobile"
+          >
+            GÉNERO
+          </button>
+        </h2>
+
+        <div id="generoMobile" class="accordion-collapse collapse show">
+          <div class="accordion-body">
+            <div
+              class="filter-pill"
+              [class.active]="filtroGenero === 'Todos'"
+              (click)="setFiltro('Todos')"
+            >
+              Todos
+            </div>
+
+            <div
+              class="filter-pill"
+              [class.active]="filtroGenero === 'Hombre'"
+              (click)="setFiltro('Hombre')"
+            >
+              Hombre
+            </div>
+
+            <div
+              class="filter-pill"
+              [class.active]="filtroGenero === 'Mujer'"
+              (click)="setFiltro('Mujer')"
+            >
+              Mujer
+            </div>
+
+            <div
+              class="filter-pill"
+              [class.active]="filtroGenero === 'Unisex'"
+              (click)="setFiltro('Unisex')"
+            >
+              Unisex
+            </div>
+
+            <div
+              class="filter-pill"
+              [class.active]="filtroGenero === 'Niño'"
+              (click)="setFiltro('Niño')"
+            >
+              Niño
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATEGORIA -->
+      <div class="accordion-item border-0">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button collapsed fw-bold"
+            data-bs-toggle="collapse"
+            data-bs-target="#categoriaMobile"
+          >
+            TIPO PRODUCTO
+          </button>
+        </h2>
+
+        <div id="categoriaMobile" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            <div
+              class="filter-pill"
+              [class.active]="filtroCategoria === 'Todos'"
+              (click)="filtroCategoria = 'Todos'"
+            >
+              Todos
+            </div>
+            <div
+              class="filter-pill"
+              [class.active]="filtroCategoria === 'Indumentaria'"
+              (click)="filtroCategoria = 'Indumentaria'"
+            >
+              Indumentaria
+            </div>
+            <div
+              class="filter-pill"
+              [class.active]="filtroCategoria === 'Calzado'"
+              (click)="filtroCategoria = 'Calzado'"
+            >
+              Calzado
+            </div>
+            <div
+              class="filter-pill"
+              [class.active]="filtroCategoria === 'Accesorio'"
+              (click)="filtroCategoria = 'Accesorio'"
+            >
+              Accesorio
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRECIO -->
+      <div class="accordion-item border-0">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button collapsed fw-bold"
+            data-bs-toggle="collapse"
+            data-bs-target="#precioMobile"
+          >
+            PRECIO
+          </button>
+        </h2>
+
+        <div id="precioMobile" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            <div class="d-flex gap-2">
+              <input
+                type="number"
+                class="form-control form-control-sm rounded-pill"
+                [(ngModel)]="precioMin"
+                placeholder="Mín"
+              />
+
+              <input
+                type="number"
+                class="form-control form-control-sm rounded-pill"
+                [(ngModel)]="precioMax"
+                placeholder="Máx"
+              />
+            </div>
+
+            <button class="btn btn-light w-100 mt-3 rounded-pill small" (click)="resetPrecio()">
+              Limpiar precio
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DESTACADOS -->
+      <div class="accordion-item border-0">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button collapsed fw-bold"
+            data-bs-toggle="collapse"
+            data-bs-target="#destacadosMobile"
+          >
+            DESTACADOS
+          </button>
+        </h2>
+
+        <div id="destacadosMobile" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            <div
+              class="filter-pill"
+              [class.active]="soloDestacados"
+              (click)="soloDestacados = !soloDestacados"
+            >
+              ⭐ Solo destacados
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTÓN APLICAR -->
+    <button
+      class="btn btn-black-premium w-100 mt-4 py-3 rounded-pill fw-bold"
+      data-bs-dismiss="offcanvas"
+    >
+      APLICAR FILTROS
+    </button>
   </div>
 </div>
