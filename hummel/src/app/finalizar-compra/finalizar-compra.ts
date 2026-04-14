@@ -85,8 +85,8 @@ export class FinalizarCompraComponent {
       return;
     }
 
-    if (!/^\d{8,15}$/.test(this.formData.telefono)) {
-      Swal.fire('Teléfono inválido', 'Solo números (8 a 15 dígitos)', 'error');
+    if (!/^11\d{8}$/.test(this.formData.telefono)) {
+      Swal.fire('Teléfono inválido', 'Debe ser formato: 11XXXXXXXX (sin 54 ni 9)', 'error');
       return;
     }
 
@@ -143,18 +143,24 @@ export class FinalizarCompraComponent {
             Swal.fire({
               title: '✅ Compra confirmada',
               html: `
-              <p>Tu pedido fue registrado correctamente.</p>
-              <p><strong>ID de pedido: ${data.id_pedido}</strong></p>
-              <p>Es <strong>muy importante que lo guardes</strong> para cualquier consulta o seguimiento.</p>
-            `,
+    <p>Tu pedido fue registrado correctamente.</p>
+    <p><strong>ID de pedido: ${data.id_pedido}</strong></p>
+    <p style="color:#d4af37; font-weight:600;">
+      Serás redirigido a WhatsApp para notificar el pedido 📲
+    </p>
+  `,
               icon: 'success',
-              confirmButtonText: 'Lo guardé',
+              confirmButtonText: 'Continuar',
               allowOutsideClick: false,
-              allowEscapeKey: false,
             }).then(() => {
+              const link = this.generarLinkWhatsapp(data.id_pedido);
+
+              window.open(link, '_blank');
+
               this.carritoService.limpiarCarrito();
               this.carrito = [];
               this.total = 0;
+
               this.router.navigate(['/productos']);
             });
           })
@@ -212,5 +218,61 @@ export class FinalizarCompraComponent {
         this.router.navigate(['/productos']);
       }
     });
+  }
+
+  generarLinkWhatsapp(idPedido: string) {
+    const telefono = '5491151643373';
+
+    // 🛍️ DETALLE PRODUCTOS
+    const detalleProductos = this.carrito
+      .map((p) => {
+        return `• ${p.nombre}
+  Cantidad: ${p.cantidad}
+  Talle: ${p.talle}
+  Color: ${p.color}
+  Subtotal: $${(p.precio * p.cantidad).toLocaleString()}`;
+      })
+      .join('\n\n');
+
+    const direccionTexto =
+      this.formData.envio === 'domicilio' ? this.formData.direccion : 'Retiro en local';
+
+    const mensaje = `
+    🛍️ *Nuevo pedido desde la web*
+
+    Hola! ¿Cómo estás? 😊  
+    Acabo de realizar un pedido a través del sitio web.
+
+    🧾 *ID del pedido:* ${idPedido}
+
+    ━━━━━━━━━━━━━━━━━━━
+
+    👤 *Mis datos*
+    • Nombre: ${this.formData.nombre}
+    • DNI: ${this.formData.dni}
+    • Teléfono: ${this.formData.telefono}
+    • Email: ${this.formData.correo}
+
+    ━━━━━━━━━━━━━━━━━━━
+
+    🚚 *Entrega*
+    • Tipo: ${this.formData.envio}
+    • Dirección: ${direccionTexto}
+
+    ━━━━━━━━━━━━━━━━━━━
+
+    📦 *Mi pedido: *
+    ${detalleProductos}
+
+    ━━━━━━━━━━━━━━━━━━━
+
+    💰 *TOTAL: $${this.total.toLocaleString()}*
+
+    Quedo atento a la confirmación. Muchas gracias 🙌
+    `;
+
+    const mensajeEncoded = encodeURIComponent(mensaje);
+
+    return `https://api.whatsapp.com/send?phone=${telefono}&text=${mensajeEncoded}`;
   }
 }

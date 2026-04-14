@@ -128,31 +128,31 @@ export class PedidosComponent implements OnInit {
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Aceptar',
-      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (!result.isConfirmed) return;
 
       this.http.put(`${this.apiUrl}/pedidos/${pedido.id}/aceptar`, {}).subscribe({
         next: () => {
+          const link = this.generarLinkWhatsappAceptado(pedido);
+
+          // 🔥 1. MOSTRAR CONFIRMACIÓN
           Swal.fire({
             ...this.swalBase,
             icon: 'success',
             title: 'Pedido aceptado',
-            text: 'Se actualizó correctamente',
-            timer: 1500,
-            showConfirmButton: false,
+            html: `
+            <p>El pedido fue aprobado correctamente.</p>
+            <p>Ahora podés informar al cliente por WhatsApp.</p>
+          `,
+            confirmButtonText: 'Notificar cliente',
+            allowOutsideClick: false,
+          }).then(() => {
+            // 🔥 2. RECIÉN ACÁ REDIRECCIONA
+            window.open(link, '_blank');
           });
 
           this.cargarPedidos();
           this.cambios.emit();
-        },
-        error: () => {
-          Swal.fire({
-            ...this.swalBase,
-            icon: 'error',
-            title: 'Error',
-            text: 'No se pudo aceptar el pedido',
-          });
         },
       });
     });
@@ -169,7 +169,6 @@ export class PedidosComponent implements OnInit {
       inputPlaceholder: 'Ej: comprobante inválido...',
       showCancelButton: true,
       confirmButtonText: 'Continuar',
-      cancelButtonText: 'Cancelar',
 
       inputValidator: (value) => {
         if (!value) return 'El motivo es obligatorio';
@@ -181,42 +180,31 @@ export class PedidosComponent implements OnInit {
 
       const motivo = inputResult.value.trim();
 
-      Swal.fire({
-        ...this.swalBase,
-        title: '¿Confirmar rechazo?',
-        text: `Cliente: ${pedido.nombre}`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Rechazar',
-        cancelButtonText: 'Cancelar',
-      }).then((result) => {
-        if (!result.isConfirmed) return;
+      this.http.put(`${this.apiUrl}/pedidos/${pedido.id}/rechazar`, { mensaje: motivo }).subscribe({
+        next: () => {
+          pedido.mensaje = motivo;
 
-        this.http
-          .put(`${this.apiUrl}/pedidos/${pedido.id}/rechazar`, { mensaje: motivo })
-          .subscribe({
-            next: () => {
-              Swal.fire({
-                ...this.swalBase,
-                icon: 'success',
-                title: 'Pedido rechazado',
-                text: 'Se guardó el motivo correctamente',
-                timer: 1500,
-                showConfirmButton: false,
-              });
+          const link = this.generarLinkWhatsappRechazado(pedido);
 
-              this.cargarPedidos();
-              this.cambios.emit();
-            },
-            error: () => {
-              Swal.fire({
-                ...this.swalBase,
-                icon: 'error',
-                title: 'Error',
-                text: 'No se pudo rechazar el pedido',
-              });
-            },
+          // 🔥 1. CONFIRMACIÓN
+          Swal.fire({
+            ...this.swalBase,
+            icon: 'success',
+            title: 'Pedido rechazado',
+            html: `
+              <p>El pedido fue rechazado correctamente.</p>
+              <p>Ahora podés informar al cliente por WhatsApp.</p>
+            `,
+            confirmButtonText: 'Notificar cliente',
+            allowOutsideClick: false,
+          }).then(() => {
+            // 🔥 2. REDIRECCIÓN
+            window.open(link, '_blank');
           });
+
+          this.cargarPedidos();
+          this.cambios.emit();
+        },
       });
     });
   }
@@ -275,5 +263,79 @@ export class PedidosComponent implements OnInit {
         Swal.fire('Error', 'No se pudo actualizar', 'error');
       },
     });
+  }
+
+  generarLinkWhatsappAceptado(pedido: any) {
+    const telefono = '549' + pedido.telefono; // 🔥 usamos el teléfono del cliente
+
+    const detalleProductos = pedido.productos
+      .map((p: any) => {
+        return `• ${p.nombre}
+  Cantidad: ${p.cantidad}
+  Talle: ${p.talle || '-'}
+  Color: ${p.color || '-'}
+  Subtotal: $${p.precio * p.cantidad}`;
+      })
+      .join('\n\n');
+
+    const esDomicilio = pedido.envio?.toLowerCase() === 'domicilio';
+
+    const mensaje = `
+    Hola ${pedido.nombre}, ¿cómo estás? 😊
+
+    Queríamos confirmarte que tu pedido *${pedido.id_pedido}* fue *APROBADO correctamente* ✅
+
+    🛍️ *Detalle del pedido:*
+    ${detalleProductos}
+
+    💰 *Total abonado:* $${pedido.total}
+
+    🚚 *Entrega:*
+    ${
+      esDomicilio
+        ? `Tu pedido será enviado a la dirección indicada y puede demorar hasta *72 horas*.`
+        : `Podés retirar tu pedido en el local dentro de los próximos *10 días*.`
+    }
+
+    📩 Ante cualquier duda, podés responder este mensaje.
+
+    ¡Muchas gracias por tu compra. Te esperamos pronto! 🙌
+    `;
+
+    return `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`;
+  }
+
+  generarLinkWhatsappRechazado(pedido: any) {
+    const telefono = '549' + pedido.telefono;
+
+    const detalleProductos = pedido.productos
+      .map((p: any) => {
+        return `• ${p.nombre}
+  Cantidad: ${p.cantidad}
+  Talle: ${p.talle || '-'}
+  Color: ${p.color || '-'}
+  Subtotal: $${p.precio * p.cantidad}`;
+      })
+      .join('\n\n');
+
+    const mensaje = `
+    Hola ${pedido.nombre}, ¿cómo estás?
+
+    Lamentablemente tu pedido *${pedido.id_pedido}* fue *RECHAZADO* ❌
+
+    📌 *Motivo:*
+    ${pedido.mensaje || 'Sin especificar'}
+
+    🛍️ *Detalle del pedido:*
+    ${detalleProductos}
+
+    💰 *Total:* $${pedido.total}
+
+    👉 Si crees que es un error, podés responder este mensaje para ayudarte a solucionarlo o generar un nuevo pedido.
+
+    Gracias por tu comprensión 🙏
+    `;
+
+    return `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`;
   }
 }

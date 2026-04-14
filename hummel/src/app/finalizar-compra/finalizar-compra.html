@@ -6,7 +6,10 @@
     Para finalizar tu compra deberás realizar una transferencia por el monto total del pedido.
   </p>
 
-  <p class="text-muted">Luego deberás subir el comprobante de pago para validar tu pedido.</p>
+  <p class="text-muted">
+    Luego deberás subir el comprobante de pago para validar tu pedido. Por ultimo te
+    redireccionaremos a nuestro Whatsapp para informarnos de tu pedido.
+  </p>
 
   <button class="btn-confirm mt-3 px-4" (click)="mostrarCheckout = true">
     Entendido, continuar
@@ -119,7 +122,7 @@
               required
               #tel="ngModel"
             />
-            <label>Teléfono</label>
+            <label>Teléfono </label>
             <small class="text-danger" *ngIf="tel.invalid && tel.touched">
               Teléfono inválido
             </small>
