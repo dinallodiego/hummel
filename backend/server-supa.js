@@ -133,7 +133,85 @@ app.post("/admin/logout", (req, res) => {
   res.json({ ok: true });
 });
 
+app.get("/admin/me", requireAdmin, (req, res) => {
+  res.json({
+    ok: true,
+    admin: req.admin,
+  });
+});
 /* ================== PRODUCTOS ================== */
+
+app.get("/productos-activos-destacados", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("productos")
+      .select(
+        `
+        *,
+        categorias(nombre),
+        generos(nombre),
+        producto_imagenes(url),
+        producto_talles(talles(id,nombre)),
+        producto_colores(colores(id,nombre))
+      `,
+      )
+      .eq("disponible", true)
+      .eq("destacado", true);
+
+    if (error) throw error;
+
+    const productos = data.map((p) => ({
+      ...p,
+      categoria: p.categorias?.nombre,
+      genero: p.generos?.nombre,
+      imagen: p.producto_imagenes?.[0]?.url || null,
+      imagenes: p.producto_imagenes?.map((i) => i.url) || [],
+
+      talles: p.producto_talles?.map((t) => t.talles.nombre) || [],
+      talles_ids: p.producto_talles?.map((t) => t.talles.id) || [],
+
+      colores: p.producto_colores?.map((c) => c.colores.nombre) || [],
+      colores_ids: p.producto_colores?.map((c) => c.colores.id) || [],
+    }));
+
+    res.json(productos);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+app.get("/productos", async (req, res) => {
+  try {
+    const { data, error } = await supabase.from("productos").select(`
+        *,
+        categorias(nombre),
+        generos(nombre),
+        producto_imagenes(url),
+        producto_talles(talles(id,nombre)),
+        producto_colores(colores(id,nombre))
+      `);
+
+    if (error) throw error;
+
+    const productos = data.map((p) => ({
+      ...p,
+      categoria: p.categorias?.nombre,
+      genero: p.generos?.nombre,
+      imagen: p.producto_imagenes?.[0]?.url || null,
+      imagenes: p.producto_imagenes?.map((i) => i.url) || [],
+
+      talles: p.producto_talles?.map((t) => t.talles.nombre) || [],
+      talles_ids: p.producto_talles?.map((t) => t.talles.id) || [],
+
+      colores: p.producto_colores?.map((c) => c.colores.nombre) || [],
+      colores_ids: p.producto_colores?.map((c) => c.colores.id) || [],
+    }));
+
+    res.json(productos);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
 app.get("/productos-activos", async (req, res) => {
   try {
@@ -169,7 +247,6 @@ app.get("/productos-activos", async (req, res) => {
   }
 });
 
-/* CREAR PRODUCTO (CON IMÁGENES EN SUPABASE) */
 app.post("/productos", upload.array("imagenes", 10), async (req, res) => {
   try {
     const { nombre, descripcion, precio, categoria_id, genero_id } = req.body;
@@ -193,7 +270,7 @@ app.post("/productos", upload.array("imagenes", 10), async (req, res) => {
 
     const productoId = data[0].id;
 
-    // 2. Subir imágenes a Supabase Storage
+    // 2. Subir imágenes
     if (req.files) {
       for (const file of req.files) {
         const url = await subirImagenSupabase(file);
@@ -207,13 +284,31 @@ app.post("/productos", upload.array("imagenes", 10), async (req, res) => {
       }
     }
 
+    // 🔥 3. INSERTAR TALLES (ACÁ VA)
+    const tallesParsed = JSON.parse(req.body.talles || "[]");
+    for (const t of tallesParsed) {
+      await supabase.from("producto_talles").insert({
+        producto_id: productoId,
+        talle_id: t,
+      });
+    }
+
+    // 🔥 4. INSERTAR COLORES (ACÁ VA)
+    const coloresParsed = JSON.parse(req.body.colores || "[]");
+    for (const c of coloresParsed) {
+      await supabase.from("producto_colores").insert({
+        producto_id: productoId,
+        color_id: c,
+      });
+    }
+
+    // 5. RESPUESTA FINAL
     res.json({ ok: true, id: productoId });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "error_creando_producto" });
   }
 });
-
 /* ================== PEDIDOS ================== */
 
 app.post("/pedidos", async (req, res) => {
@@ -291,6 +386,83 @@ app.get("/pedidos", async (req, res) => {
   } catch (err) {
     res.status(500).json(err);
   }
+});
+
+app.put("/productos/:id", upload.array("imagenes", 10), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      nombre,
+      descripcion,
+      precio,
+      categoria_id,
+      genero_id,
+      talles,
+      colores,
+    } = req.body;
+
+    await supabase
+      .from("productos")
+      .update({
+        nombre,
+        descripcion,
+        precio,
+        categoria_id,
+        genero_id,
+      })
+      .eq("id", id);
+
+    // borrar relaciones
+    await supabase.from("producto_talles").delete().eq("producto_id", id);
+    await supabase.from("producto_colores").delete().eq("producto_id", id);
+
+    // insertar nuevas
+    const tallesParsed = JSON.parse(talles || "[]");
+    for (const t of tallesParsed) {
+      await supabase.from("producto_talles").insert({
+        producto_id: id,
+        talle_id: t,
+      });
+    }
+
+    const coloresParsed = JSON.parse(colores || "[]");
+    for (const c of coloresParsed) {
+      await supabase.from("producto_colores").insert({
+        producto_id: id,
+        color_id: c,
+      });
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+app.put("/productos/:id/destacar", async (req, res) => {
+  const { id } = req.params;
+  const { destacado } = req.body;
+
+  await supabase.from("productos").update({ destacado }).eq("id", id);
+
+  res.json({ ok: true });
+});
+
+app.put("/productos/:id/desactivar", async (req, res) => {
+  await supabase
+    .from("productos")
+    .update({ disponible: false })
+    .eq("id", req.params.id);
+
+  res.json({ ok: true });
+});
+
+app.put("/productos/:id/activar", async (req, res) => {
+  await supabase
+    .from("productos")
+    .update({ disponible: true })
+    .eq("id", req.params.id);
+
+  res.json({ ok: true });
 });
 
 app.put("/pedidos/:id/aceptar", async (req, res) => {
