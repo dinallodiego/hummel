@@ -261,6 +261,26 @@
   overflow-y: auto;
 }
 
+.btn-limpiar-filtros {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-transform: uppercase;
+}
+
+.btn-limpiar-filtros:hover {
+  color: #000;
+  transform: translateY(-1px);
+}
+
+.btn-limpiar-filtros:active {
+  transform: scale(0.95);
+}
 /* ================== RESPONSIVE ================== */
 
 /* TABLET */
