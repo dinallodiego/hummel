@@ -1142,7 +1142,7 @@ app.get("/ventas", (req, res) => {
     SELECT 
       p.id,
       p.nombre AS cliente_nombre,
-      p.correo AS cliente_email,
+      p.telefono AS cliente_telefono,
       p.total,
       p.fecha
     FROM pedidos p

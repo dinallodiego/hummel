@@ -221,7 +221,7 @@ export class FinalizarCompraComponent {
   }
 
   generarLinkWhatsapp(idPedido: string) {
-    const telefono = '5491151643373';
+    const telefono = '5491122474072';
 
     // 🛍️ DETALLE PRODUCTOS
     const detalleProductos = this.carrito

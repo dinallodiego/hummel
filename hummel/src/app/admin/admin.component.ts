@@ -37,6 +37,8 @@ export class AdminComponent implements OnInit {
   mostrarTalles = true;
   tallesFiltrados: any[] = [];
   dropdownTalles = true;
+  paginaProductos: number = 1;
+  productosPorPagina: number = 10;
 
   @ViewChild(PedidosComponent) pedidosComp!: PedidosComponent;
 
@@ -170,6 +172,7 @@ export class AdminComponent implements OnInit {
           : 'assets/no-image.png',
         disponible: p.disponible ?? true,
       }));
+      this.paginaProductos = 1;
       this.cdr.detectChanges();
     });
   }
@@ -446,65 +449,73 @@ export class AdminComponent implements OnInit {
   cargarVentas() {
     this.http.get<any[]>('http://localhost:3000/ventas').subscribe((data) => {
       this.ventas = data;
+      console.log('VENTAS:', data); // 👈 CLAVE
       this.ventasOriginal = data;
-    });
-  }
-
-  filtrarVentas() {
-    this.ventas = this.ventasOriginal.filter((v) => {
-      const fecha = new Date(v.fecha).getTime();
-      const desde = this.fechaDesde ? new Date(this.fechaDesde).getTime() : null;
-      const hasta = this.fechaHasta ? new Date(this.fechaHasta).getTime() : null;
-      return (!desde || fecha >= desde) && (!hasta || fecha <= hasta);
     });
   }
 
   resetFiltros() {
     this.ventas = [...this.ventasOriginal];
+    this.fechaDesde = '';
+    this.fechaHasta = '';
+    this.paginaActual = 1;
   }
 
   descargarExcel() {
     let data: any[] = [];
+
     this.ventas.forEach((v) => {
+      let detalle = '';
+
       if (v.productos_detalle && v.productos_detalle.length) {
-        v.productos_detalle.forEach((p: any) => {
-          data.push({
-            Cliente: v.cliente_nombre,
-            Email: v.cliente_email,
-            Producto: p.nombre,
-            Cantidad: p.cantidad,
-            PrecioUnitario: p.precio,
-            TotalProducto: p.precio * p.cantidad,
-            TotalVenta: v.total,
-            Fecha: new Date(v.fecha).toLocaleDateString(),
-          });
-        });
+        detalle = v.productos_detalle.map((p: any) => `• ${p.nombre} x${p.cantidad}`).join('\n');
       } else {
-        data.push({
-          Cliente: v.cliente_nombre,
-          Email: v.cliente_email,
-          TotalVenta: v.total,
-          Fecha: new Date(v.fecha).toLocaleDateString(),
-        });
+        detalle = 'Sin detalle';
       }
+
+      data.push({
+        Cliente: v.cliente_nombre,
+        Telefono: v.cliente_telefono || '-',
+        'Detalle del pedido': detalle,
+        Total: v.total,
+        Fecha: new Date(v.fecha).toLocaleDateString(),
+      });
     });
 
-    data.push({ Fecha: 'TOTAL', TotalVenta: this.totalVentas });
+    // TOTAL FINAL
+    data.push({
+      Cliente: 'TOTAL',
+      Telefono: '',
+      'Detalle del pedido': '',
+      Total: this.totalVentas,
+      Fecha: '',
+    });
 
     const worksheet = XLSX.utils.json_to_sheet(data);
+    worksheet['!rows'] = data.map(() => ({ hpt: 40 }));
+
     worksheet['!cols'] = [
-      { wch: 20 },
-      { wch: 25 },
-      { wch: 25 },
-      { wch: 10 },
-      { wch: 15 },
-      { wch: 18 },
-      { wch: 15 },
-      { wch: 15 },
+      { wch: 25 }, // Cliente
+      { wch: 20 }, // Teléfono
+      { wch: 50 }, // Detalle
+      { wch: 15 }, // Total
+      { wch: 15 }, // Fecha
     ];
-    const workbook = { Sheets: { Ventas: worksheet }, SheetNames: ['Ventas'] };
-    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([buffer], { type: 'application/octet-stream' });
+
+    const workbook = {
+      Sheets: { Ventas: worksheet },
+      SheetNames: ['Ventas'],
+    };
+
+    const buffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([buffer], {
+      type: 'application/octet-stream',
+    });
+
     saveAs(blob, `ventas-${new Date().toISOString().split('T')[0]}.xlsx`);
   }
 
@@ -514,6 +525,29 @@ export class AdminComponent implements OnInit {
   }
 
   get totalPaginas() {
-    return Math.ceil(this.ventas.length / this.itemsPorPagina);
+    return Math.ceil(this.ventas.length / this.itemsPorPagina) || 1;
+  }
+
+  get productosPaginados() {
+    const inicio = (this.paginaProductos - 1) * this.productosPorPagina;
+    return this.productos.slice(inicio, inicio + this.productosPorPagina);
+  }
+
+  get totalPaginasProductos() {
+    return Math.ceil(this.productos.length / this.productosPorPagina);
+  }
+
+  filtrarVentas() {
+    this.paginaActual = 1;
+
+    this.ventas = this.ventasOriginal.filter((v) => {
+      const fecha = new Date(v.fecha).getTime();
+
+      const desde = this.fechaDesde ? new Date(this.fechaDesde + 'T00:00:00').getTime() : null;
+
+      const hasta = this.fechaHasta ? new Date(this.fechaHasta + 'T23:59:59').getTime() : null;
+
+      return (!desde || fecha >= desde) && (!hasta || fecha <= hasta);
+    });
   }
 }

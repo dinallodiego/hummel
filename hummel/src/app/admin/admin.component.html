@@ -15,8 +15,8 @@
   <main class="main">
     <div *ngIf="vista === 'dashboard'">
       <div class="welcome">
-        <h1>Bienvenido al panel</h1>
-        <p>Gestioná tu marca de forma profesional.</p>
+        <h1>Bienvenidas al panel</h1>
+        <p>Gestioná productos,pedidos y ventas.</p>
       </div>
 
       <div class="stats">
@@ -30,7 +30,7 @@
         </div>
         <div class="stat-card" (click)="vista = 'ventas'">
           <h3>Ventas</h3>
-          <span>${{ totalVentas }}</span>
+          <span>${{ totalVentas | number: '1.0-0' }}</span>
         </div>
       </div>
     </div>
@@ -49,7 +49,7 @@
       </div>
 
       <div class="productos-grid">
-        <div class="producto-card" *ngFor="let p of productos">
+        <div class="producto-card" *ngFor="let p of productosPaginados">
           <img [src]="p.imagen" />
 
           <button
@@ -124,6 +124,27 @@
           </div>
         </div>
       </div>
+      <div class="paginacion d-flex justify-content-center mt-4 gap-2">
+        <button
+          class="btn btn-dark btn-sm"
+          [disabled]="paginaProductos === 1"
+          (click)="paginaProductos = paginaProductos - 1"
+        >
+          ←
+        </button>
+
+        <span class="align-self-center">
+          Página {{ paginaProductos }} de {{ totalPaginasProductos }}
+        </span>
+
+        <button
+          class="btn btn-dark btn-sm"
+          [disabled]="paginaProductos === totalPaginasProductos"
+          (click)="paginaProductos = paginaProductos + 1"
+        >
+          →
+        </button>
+      </div>
     </div>
 
     <div *ngIf="vista === 'pedidos'">
@@ -131,218 +152,265 @@
     </div>
 
     <div *ngIf="vista === 'ventas'">
-      <div class="productos-header">
-        <div class="filtros">
+      <div class="ventas-header">
+        <div class="filtros-ventas">
           <input type="date" [(ngModel)]="fechaDesde" />
           <input type="date" [(ngModel)]="fechaHasta" />
+
           <button class="btn btn-dark" (click)="filtrarVentas()">Filtrar</button>
-          <button class="btn btn-secondary" (click)="resetFiltros()">Reset</button>
+
+          <button class="btn btn-outline-secondary" (click)="resetFiltros()">Reset</button>
         </div>
-        <h3>Total: ${{ totalVentas }}</h3>
-        <button class="btn btn-success" (click)="descargarExcel()">Excel</button>
+
+        <div class="ventas-stats">
+          <span
+            >Total: <b>${{ totalVentas }}</b></span
+          >
+          <span
+            >Cantidad: <b>{{ ventas.length }}</b></span
+          >
+        </div>
+
+        <button class="btn btn-success" (click)="descargarExcel()">Exportar Excel</button>
       </div>
 
       <div class="tabla-ventas">
-        <table class="table table-bordered">
+        <table class="table table-hover">
           <thead>
             <tr>
               <th>Cliente</th>
-              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Detalle</th>
               <th>Total</th>
               <th>Fecha</th>
             </tr>
           </thead>
+
           <tbody>
             <tr *ngFor="let v of ventasPaginadas">
               <td>{{ v.cliente_nombre }}</td>
-              <td>{{ v.cliente_email }}</td>
-              <td>${{ v.total }}</td>
-              <td>{{ v.fecha | date: 'shortDate' }}</td>
+              <td>{{ v.cliente_telefono || '-' }}</td>
+
+              <td>
+                <div class="detalle-pedido">
+                  <span *ngFor="let p of v.productos_detalle">
+                    {{ p.nombre }} x{{ p.cantidad }}
+                  </span>
+                </div>
+              </td>
+
+              <td class="fw-bold">${{ v.total }}</td>
+              <td>{{ v.fecha | date: 'dd/MM/yyyy' }}</td>
             </tr>
           </tbody>
         </table>
       </div>
-    </div>
-  </main>
-</div>
 
-<div class="modal fade" id="modalProducto">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content form-modal">
-      <div class="modal-header">
-        <h5>{{ producto.id ? 'Editar producto' : 'Crear producto' }}</h5>
+      <!-- PAGINACIÓN PRO -->
+      <div class="paginacion-pro">
         <button
-          id="cerrarModalProducto"
-          type="button"
-          class="btn-close btn-close-white"
-          data-bs-dismiss="modal"
-        ></button>
+          class="btn btn-dark btn-sm"
+          [disabled]="paginaActual === 1"
+          (click)="paginaActual = paginaActual - 1"
+        >
+          ←
+        </button>
+
+        <span> Página {{ paginaActual }} de {{ totalPaginas }} </span>
+
+        <button
+          class="btn btn-dark btn-sm"
+          [disabled]="paginaActual === totalPaginas"
+          (click)="paginaActual = paginaActual + 1"
+        >
+          →
+        </button>
       </div>
+    </div>
 
-      <div class="modal-body">
-        <form (ngSubmit)="confirmarGuardado()" class="producto-form">
-          <div class="form-grid">
-            <div class="form-section">
-              <h6 class="form-title">Información básica</h6>
+    <div class="modal fade" id="modalProducto">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content form-modal">
+          <div class="modal-header">
+            <h5>{{ producto.id ? 'Editar producto' : 'Crear producto' }}</h5>
+            <button
+              id="cerrarModalProducto"
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
 
-              <div class="form-group">
-                <label>Nombre</label>
-                <input type="text" [(ngModel)]="producto.nombre" name="nombre" required />
-              </div>
+          <div class="modal-body">
+            <form (ngSubmit)="confirmarGuardado()" class="producto-form">
+              <div class="form-grid">
+                <div class="form-section">
+                  <h6 class="form-title">Información básica</h6>
 
-              <div class="form-group">
-                <label>Precio Base</label>
-                <input
-                  type="text"
-                  [ngModel]="producto.precio | number: '1.0-0' : 'es-AR'"
-                  (input)="onPrecioInput($event)"
-                  name="precio"
-                  placeholder="Ej: 10.000"
-                  required
-                />
-              </div>
-
-              <div class="form-group">
-                <label class="d-flex align-items-center gap-2">
-                  <input
-                    type="checkbox"
-                    [(ngModel)]="producto.tiene_descuento"
-                    name="tiene_descuento"
-                  />
-                  ¿Aplicar descuento?
-                </label>
-              </div>
-
-              <div *ngIf="producto.tiene_descuento">
-                <!-- TIPO -->
-                <div class="form-group">
-                  <label>Tipo de descuento</label>
-                  <select [(ngModel)]="producto.tipo_descuento" name="tipo_descuento">
-                    <option value="simple">Descuento simple (%)</option>
-                    <option value="cantidad">Por cantidad</option>
-                  </select>
-                </div>
-
-                <!-- POR CANTIDAD -->
-                <div *ngIf="producto.tipo_descuento === 'cantidad'" class="form-group">
-                  <label>Cantidad mínima</label>
-                  <input
-                    type="number"
-                    [(ngModel)]="producto.descuento_cantidad"
-                    name="descuento_cantidad"
-                    min="1"
-                  />
-                </div>
-              </div>
-
-              <div class="form-group" *ngIf="producto.tiene_descuento">
-                <label>Porcentaje (%)</label>
-                <input
-                  type="number"
-                  [(ngModel)]="producto.descuento_valor"
-                  name="descuento_valor"
-                  min="1"
-                  max="100"
-                />
-                <small class="text-success fw-bold" *ngIf="producto.precio > 0">
-                  Precio final: ${{
-                    producto.precio - (producto.precio * producto.descuento_valor) / 100
-                  }}
-                </small>
-              </div>
-
-              <div class="form-group">
-                <label>Categoría</label>
-                <select
-                  [(ngModel)]="producto.categoria_id"
-                  name="categoria_id"
-                  (change)="onCategoriaChange()"
-                >
-                  <option value="">Seleccionar</option>
-                  <option value="1">Indumentaria</option>
-                  <option value="2">Calzado</option>
-                  <option value="3">Accesorio</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label>Género</label>
-                <select [(ngModel)]="producto.genero_id" name="genero_id">
-                  <option value="">Seleccionar</option>
-                  <option *ngFor="let g of generos" [value]="g.id">{{ g.nombre }}</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label>Descripción</label>
-                <textarea rows="3" [(ngModel)]="producto.descripcion" name="descripcion"></textarea>
-              </div>
-            </div>
-
-            <div class="form-section">
-              <div class="form-group">
-                <div class="dropdown-talles-header" (click)="dropdownTalles = !dropdownTalles">
-                  <span>Talles / Medidas</span>
-                  <span>{{ dropdownTalles ? '▲' : '▼' }}</span>
-                </div>
-
-                <div class="dropdown-talles-body" [class.open]="dropdownTalles">
-                  <div *ngIf="!producto.categoria_id" class="no-category-msg">
-                    <p>
-                      <i class="bi bi-exclamation-circle"></i> Seleccioná una categoría para ver los
-                      talles disponibles.
-                    </p>
+                  <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" [(ngModel)]="producto.nombre" name="nombre" required />
                   </div>
 
-                  <div class="checkbox-grid" *ngIf="producto.categoria_id && mostrarTalles">
-                    <label *ngFor="let t of tallesFiltrados">
+                  <div class="form-group">
+                    <label>Precio Base</label>
+                    <input
+                      type="text"
+                      [ngModel]="producto.precio | number: '1.0-0' : 'es-AR'"
+                      (input)="onPrecioInput($event)"
+                      name="precio"
+                      placeholder="Ej: 10.000"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label class="d-flex align-items-center gap-2">
                       <input
                         type="checkbox"
-                        [checked]="tallesSeleccionados.includes(t.id)"
-                        (change)="toggleTalle(t.id, $event)"
+                        [(ngModel)]="producto.tiene_descuento"
+                        name="tiene_descuento"
                       />
-                      {{ t.nombre }}
+                      ¿Aplicar descuento?
                     </label>
                   </div>
 
-                  <div class="no-talles-msg" *ngIf="producto.categoria_id && !mostrarTalles">
-                    <p><i class="bi bi-info-circle"></i> Talle Único / No aplica</p>
+                  <div *ngIf="producto.tiene_descuento">
+                    <!-- TIPO -->
+                    <div class="form-group">
+                      <label>Tipo de descuento</label>
+                      <select [(ngModel)]="producto.tipo_descuento" name="tipo_descuento">
+                        <option value="simple">Descuento simple (%)</option>
+                        <option value="cantidad">Por cantidad</option>
+                      </select>
+                    </div>
+
+                    <!-- POR CANTIDAD -->
+                    <div *ngIf="producto.tipo_descuento === 'cantidad'" class="form-group">
+                      <label>Cantidad mínima</label>
+                      <input
+                        type="number"
+                        [(ngModel)]="producto.descuento_cantidad"
+                        name="descuento_cantidad"
+                        min="1"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="form-group" *ngIf="producto.tiene_descuento">
+                    <label>Porcentaje (%)</label>
+                    <input
+                      type="number"
+                      [(ngModel)]="producto.descuento_valor"
+                      name="descuento_valor"
+                      min="1"
+                      max="100"
+                    />
+                    <small class="text-success fw-bold" *ngIf="producto.precio > 0">
+                      Precio final: ${{
+                        producto.precio - (producto.precio * producto.descuento_valor) / 100
+                      }}
+                    </small>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Categoría</label>
+                    <select
+                      [(ngModel)]="producto.categoria_id"
+                      name="categoria_id"
+                      (change)="onCategoriaChange()"
+                    >
+                      <option value="">Seleccionar</option>
+                      <option value="1">Indumentaria</option>
+                      <option value="2">Calzado</option>
+                      <option value="3">Accesorio</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Género</label>
+                    <select [(ngModel)]="producto.genero_id" name="genero_id">
+                      <option value="">Seleccionar</option>
+                      <option *ngFor="let g of generos" [value]="g.id">{{ g.nombre }}</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea
+                      rows="3"
+                      [(ngModel)]="producto.descripcion"
+                      name="descripcion"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div class="form-section">
+                  <div class="form-group">
+                    <div class="dropdown-talles-header" (click)="dropdownTalles = !dropdownTalles">
+                      <span>Talles / Medidas</span>
+                      <span>{{ dropdownTalles ? '▲' : '▼' }}</span>
+                    </div>
+
+                    <div class="dropdown-talles-body" [class.open]="dropdownTalles">
+                      <div *ngIf="!producto.categoria_id" class="no-category-msg">
+                        <p>
+                          <i class="bi bi-exclamation-circle"></i> Seleccioná una categoría para ver
+                          los talles disponibles.
+                        </p>
+                      </div>
+
+                      <div class="checkbox-grid" *ngIf="producto.categoria_id && mostrarTalles">
+                        <label *ngFor="let t of tallesFiltrados">
+                          <input
+                            type="checkbox"
+                            [checked]="tallesSeleccionados.includes(t.id)"
+                            (change)="toggleTalle(t.id, $event)"
+                          />
+                          {{ t.nombre }}
+                        </label>
+                      </div>
+
+                      <div class="no-talles-msg" *ngIf="producto.categoria_id && !mostrarTalles">
+                        <p><i class="bi bi-info-circle"></i> Talle Único / No aplica</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <h6 class="form-title small">Colores</h6>
+                    <div class="color-grid">
+                      <label *ngFor="let c of colores" class="color-item">
+                        <input
+                          type="checkbox"
+                          [checked]="coloresSeleccionados.includes(c.id)"
+                          (change)="toggleColor(c.id, $event)"
+                        />
+                        <span>{{ c.nombre }}</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <h6 class="form-title small">Imágenes</h6>
+                    <label class="upload-box">
+                      <input type="file" multiple (change)="onFilesSelected($event)" hidden />
+                      <span>+ Subir imágenes</span>
+                    </label>
+                    <div class="preview-images" *ngIf="imagenes.length">
+                      <span *ngFor="let img of imagenes">{{ img.name }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div class="form-group">
-                <h6 class="form-title small">Colores</h6>
-                <div class="color-grid">
-                  <label *ngFor="let c of colores" class="color-item">
-                    <input
-                      type="checkbox"
-                      [checked]="coloresSeleccionados.includes(c.id)"
-                      (change)="toggleColor(c.id, $event)"
-                    />
-                    <span>{{ c.nombre }}</span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <h6 class="form-title small">Imágenes</h6>
-                <label class="upload-box">
-                  <input type="file" multiple (change)="onFilesSelected($event)" hidden />
-                  <span>+ Subir imágenes</span>
-                </label>
-                <div class="preview-images" *ngIf="imagenes.length">
-                  <span *ngFor="let img of imagenes">{{ img.name }}</span>
-                </div>
-              </div>
-            </div>
+              <button type="submit" class="btn-save">
+                {{ producto.id ? 'Guardar cambios' : 'Crear producto' }}
+              </button>
+            </form>
           </div>
-
-          <button type="submit" class="btn-save">
-            {{ producto.id ? 'Guardar cambios' : 'Crear producto' }}
-          </button>
-        </form>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
 </div>

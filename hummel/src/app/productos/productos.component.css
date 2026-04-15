@@ -1,413 +1,24 @@
-/* --- GLOBALES Y UTILIDADES --- */
+/* ================== BASE ================== */
 .fw-black {
   font-weight: 900;
   letter-spacing: -1.5px;
   text-transform: uppercase;
 }
+
 .letter-spacing-1 {
   letter-spacing: 1px;
 }
 
-/* --- SIDEBAR REFINADO --- */
-.filter-link {
-  font-size: 0.95rem;
-  padding: 8px 0;
-  cursor: pointer;
-  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  color: #555;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-}
-.filter-link:hover {
-  padding-left: 10px;
-  color: #000;
-  background-color: #f8f8f8;
-  border-radius: 8px;
-}
-.filter-link.active {
-  color: #000;
-  font-weight: 800;
-}
-.filter-link.active::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: #000;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-/* Pretty Radio Buttons */
-.pretty-check {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-.pretty-check input {
-  cursor: pointer;
-  accent-color: #000;
-  width: 16px;
-  height: 16px;
-}
-.pretty-check label {
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #333;
-}
-
-/* --- NIKE CARD PREMIUM (FEEDBACK DE TOCAR) --- */
-.nike-card-premium {
-  cursor: pointer;
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  border: 1px solid transparent;
-}
-
-/* EFECTO DE ELEVACIÓN Y SOMBRA AL TOCAR */
-.nike-card-premium:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-  border-color: #eee;
-}
-
-.img-container-premium {
-  background: #f7f7f7;
-  aspect-ratio: 1 / 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  padding: 20px;
-}
-
-.product-img-main {
-  max-height: 85%;
-  transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1);
-  mix-blend-mode: multiply; /* Para fondos blancos de imagen */
-}
-
-.nike-card-premium:hover .product-img-main {
-  transform: scale(1.08);
-}
-
-/* Icono de lupa sutil al hover */
-.card-overlay-icon {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.03);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: 0.3s;
-  color: #fff;
-  font-size: 2rem;
-  z-index: 2;
-}
-.nike-card-premium:hover .card-overlay-icon {
-  opacity: 1;
-}
-
-.nike-badge-premium {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  background: #000;
-  color: #fff;
-  padding: 5px 12px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  border-radius: 4px;
-  letter-spacing: 1px;
-  z-index: 3;
-}
-
-.product-info-premium {
-  padding: 20px;
-}
-.p-category {
-  color: #888;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-}
-.p-name {
-  font-weight: 700;
-  font-size: 1.05rem;
-  color: #111;
-  margin-bottom: 6px;
-}
-.p-price {
-  font-weight: 800;
-  font-size: 1.1rem;
-  color: #000;
-  margin: 0;
-}
-
-/* --- MODAL DETALLE PREMIUM --- */
-.main-modal-img {
-  max-height: 480px;
-  mix-blend-mode: multiply;
-  transition: transform 0.5s ease;
-}
-.main-modal-img:hover {
-  transform: scale(1.05);
-}
-
-.talle-grid-premium {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-  gap: 10px;
-}
-.btn-talle-premium {
-  border: 1px solid #e5e5e5;
-  background: white;
-  padding: 15px;
-  font-weight: 700;
-  border-radius: 8px;
-  transition: 0.2s;
-  font-size: 0.95rem;
-}
-.btn-talle-premium:hover,
-.btn-talle-premium.selected {
-  border-color: #000;
-  background: #f8f8f8;
-}
-.btn-talle-premium.selected {
-  box-shadow: inset 0 0 0 2px #000;
-}
-
-.btn-black-premium {
-  background: #000;
-  color: #fff;
-  border: none;
-  transition: 0.3s;
-}
-.btn-black-premium:hover {
-  background: #333;
-  transform: translateY(-3px);
-}
-
-/* --- PAGINACIÓN MINIMALISTA --- */
-.pagination-modern li {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-weight: 700;
-  color: #555;
-  transition: 0.3s;
-  margin: 0 3px;
-}
-.pagination-modern li:hover:not(.active) {
-  background: #f0f0f0;
-  color: #000;
-}
-.pagination-modern li.active {
-  background: #000;
-  color: #fff;
-}
-
-/* --- SWEETALERT CUSTOM --- */
-.premium-toast {
-  border-radius: 12px !important;
-  font-family: 'Inter', sans-serif !important;
-}
-.premium-swal {
-  border-radius: 16px !important;
-}
-
-/* GALERIA DE IMAGENES */
-.image-viewer {
-  position: relative;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: #fff;
-  border: none;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  font-size: 22px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
-  z-index: 10;
-}
-
-.arrow.left {
-  left: -10px;
-}
-
-.arrow.right {
-  right: -10px;
-}
-
-.main-modal-img {
-  max-height: 450px;
-  transition: 0.3s;
-  cursor: zoom-in;
-}
-
-.main-modal-img.zoom {
-  transform: scale(1.6);
-  cursor: zoom-out;
-}
-
-/* MINIATURAS */
-.thumbs {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.thumbs img {
-  width: 70px;
-  height: 70px;
-  object-fit: cover;
-  border-radius: 8px;
-  cursor: pointer;
-  border: 2px solid transparent;
-}
-
-.thumbs img.active {
-  border: 2px solid black;
-}
-
-/* DESTACADO DORADO */
-.nike-card-premium.destacado {
-  border: 2px solid gold;
-  box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
-}
-
-/* FILTROS MODERNOS */
-.filters-box {
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-}
-
-/* FILTROS PRO */
-.filtros-pro .accordion-button {
-  background: transparent;
-  box-shadow: none;
-  font-size: 0.9rem;
-}
-
-.filtros-pro .accordion-body {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-/* PILLS */
+/* ================== FILTROS ================== */
 .filter-pill {
-  padding: 8px 14px;
-  border-radius: 50px;
-  border: 1px solid #ddd;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.filter-pill:hover {
-  border-color: #000;
-}
-
-.filter-pill.active {
-  background: #000;
-  color: #fff;
-  border-color: #000;
-}
-
-input[type='number'] {
-  font-weight: 600;
-  text-align: center;
-}
-
-input[type='number']::placeholder {
-  color: #aaa;
-}
-.precio-base {
-  color: #000;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.precio-base.con-descuento {
-  color: #888;
-  text-decoration: line-through;
-  font-size: 0.9rem;
-}
-
-.btn-talle-premium.disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  text-decoration: line-through;
-}
-.pagination-modern {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.pagination-modern li {
-  list-style: none;
-}
-
-/* Botón Limpiar Dinámico */
-.btn-limpiar-filtros {
-  background: none;
-  border: none;
-  color: #dc3545; /* Rojo de acento */
-  font-size: 0.75rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-.btn-limpiar-filtros:hover {
-  background-color: rgba(220, 53, 69, 0.1);
-  transform: scale(1.05);
-}
-
-/* Estilo para las Filter Pills (Botones de género/categoría) */
-.filter-pill {
-  padding: 8px 16px;
+  padding: 10px 16px;
   margin-bottom: 8px;
   border-radius: 50px;
   background: #f4f4f4;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid transparent;
-  display: block;
+  transition: 0.3s;
   text-align: center;
 }
 
@@ -416,52 +27,243 @@ input[type='number']::placeholder {
 }
 
 .filter-pill.active {
-  background: #000; /* Fondo oscuro */
-  color: #fff; /* Texto blanco */
+  background: #000;
+  color: #fff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Acordeón Estilo Minimalista */
-.accordion-button:not(.collapsed) {
-  background-color: transparent;
-  color: #000;
-  box-shadow: none;
+/* ================== BOTÓN FILTRAR MOBILE ================== */
+.btn-filtrar-mobile {
+  background: #000 !important;
+  color: #fff !important;
+  border-radius: 50px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  border: none;
+  transition: all 0.3s ease;
 }
 
-.accordion-button {
+.btn-filtrar-mobile:hover {
+  background: #222 !important;
+  transform: translateY(-2px);
+}
+
+.btn-filtrar-mobile:active {
+  transform: scale(0.96);
+}
+
+/* ================== CARD ================== */
+.nike-card-premium {
+  cursor: pointer;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.nike-card-premium:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.nike-card-premium:active {
+  transform: scale(0.97);
+}
+
+.img-container-premium {
+  background: #f7f7f7;
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+}
+
+.product-img-main {
+  max-height: 85%;
+  transition: 0.5s;
+  mix-blend-mode: multiply;
+}
+
+.nike-card-premium:hover .product-img-main {
+  transform: scale(1.05);
+}
+
+/* ================== INFO ================== */
+.product-info-premium {
+  padding: 15px;
+}
+
+.p-category {
+  color: #888;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+.p-name {
+  font-weight: 700;
   font-size: 0.9rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid #eee !important;
 }
 
-/* Color de la flecha cuando el filtro está abierto */
-.accordion-button:not(.collapsed)::after {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23dc3545'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+.p-price {
+  font-weight: 800;
 }
 
-/* Transición suave para el cierre */
-.accordion-collapse {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+/* ================== MODAL (FIX REAL PRO) ================== */
+.modal-dialog {
+  max-width: 900px;
 }
 
-.accordion-button::after {
-  background-size: 1rem;
-  transition: transform 0.3s ease;
+.modal-content {
+  border-radius: 16px;
+  overflow: hidden;
 }
-/* --- HEADER MOBILE FIX --- */
-@media (max-width: 768px) {
-  .catalogo-title {
-    font-size: 1.2rem;
-    text-align: center;
-    width: 100%;
-  }
 
-  .d-flex.justify-content-between {
-    flex-direction: column;
-    gap: 10px;
-  }
+/* 🔥 FIX IMPORTANTE DEL BUG DE TU SCREENSHOT */
+.modal-body .row {
+  display: flex;
+  flex-wrap: nowrap;
 }
-/* MOBILE */
+
+/* COLUMNA IMAGEN */
+.modal-body .col-md-7 {
+  flex: 0 0 55%;
+  max-width: 55%;
+}
+
+/* COLUMNA INFO */
+.modal-body .col-md-5 {
+  flex: 0 0 45%;
+  max-width: 45%;
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+/* ================== IMAGEN ================== */
+.image-viewer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.main-modal-img {
+  max-width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  transition: 0.3s;
+}
+
+.main-modal-img.zoom {
+  transform: scale(1.5);
+}
+
+/* ================== FLECHAS (FIX REAL) ================== */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  font-size: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🔥 CLAVE: ahora no quedan en el medio */
+.arrow.left {
+  left: 10px;
+}
+
+.arrow.right {
+  right: 10px;
+}
+
+/* ================== MINIATURAS ================== */
+.thumbs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.thumbs img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.thumbs img.active {
+  border: 2px solid black;
+}
+
+/* ================== TALLES ================== */
+.talle-grid-premium {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+  gap: 8px;
+}
+
+.btn-talle-premium {
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.btn-talle-premium.selected {
+  border-color: #000;
+}
+
+/* ================== PAGINACIÓN ================== */
+.pagination-modern {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pagination-modern li {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.pagination-modern li.active {
+  background: #000;
+  color: #fff;
+}
+
+/* ================== OFFCANVAS ================== */
+.offcanvas {
+  border-radius: 0 20px 20px 0;
+}
+
+.offcanvas-body {
+  overflow-y: auto;
+}
+
+/* ================== RESPONSIVE ================== */
+
+/* TABLET */
 @media (max-width: 991px) {
   .filtros-pro {
     display: none;
@@ -470,162 +272,102 @@ input[type='number']::placeholder {
 
 /* MOBILE */
 @media (max-width: 768px) {
-  .nike-card-premium {
-    border-radius: 8px;
+  /* 🔥 BOTÓN FILTRAR */
+  .btn.btn-dark {
+    background: #000 !important;
+    border-radius: 50px !important;
+    font-weight: 800;
   }
 
+  /* HEADER */
+  .catalogo-title {
+    font-size: 1rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* GRID */
+  .col-lg-4.col-md-6.col-6 {
+    flex: 0 0 48%;
+    max-width: 48%;
+    padding: 0 5px;
+  }
+
+  .productos-row {
+    margin: 0;
+  }
+
+  /* CARD */
   .product-img-main {
     max-height: 120px;
   }
 
-  .p-name {
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 768px) {
   .product-info-premium {
     padding: 10px;
   }
 
   .p-name {
     font-size: 0.8rem;
-    line-height: 1.2;
   }
 
-  .p-category {
-    font-size: 0.7rem;
+  /* 🔥 MODAL MOBILE FIX */
+  .modal-dialog {
+    margin: 0;
+    max-width: 100%;
   }
 
-  .p-price {
-    font-size: 0.95rem;
+  .modal-content {
+    border-radius: 0;
+    height: 100vh;
   }
 
-  .nike-card-premium {
-    box-shadow: none;
-    border: 1px solid #eee;
-  }
-}
-
-@media (max-width: 768px) {
-  .catalogo-title {
-    font-size: 1rem;
+  .modal-body {
+    overflow-y: auto;
   }
 
-  .sticky-top {
-    padding: 10px !important;
+  .modal-body .row {
+    flex-direction: column;
   }
 
-  .cart-btn-anim span {
-    font-size: 0.8rem;
+  .modal-body .col-md-7,
+  .modal-body .col-md-5 {
+    max-width: 100%;
+    flex: 0 0 100%;
   }
-}
 
-@media (max-width: 768px) {
   .main-modal-img {
-    max-height: 300px;
+    max-height: 250px;
   }
 
   .thumbs img {
-    width: 50px;
-    height: 50px;
-  }
-}
-@media (max-width: 768px) {
-  .row.g-4 {
-    gap: 10px !important;
-  }
-}
-.nike-card-premium:active {
-  transform: scale(0.97);
-}
-/* OFFCANVAS PREMIUM */
-.offcanvas {
-  border-radius: 0 20px 20px 0;
-}
-
-.offcanvas-header {
-  padding: 16px;
-}
-
-.offcanvas-body {
-  padding: 16px;
-}
-
-/* Pills más táctiles */
-@media (max-width: 768px) {
-  .filter-pill {
-    padding: 10px 14px;
-    font-size: 0.9rem;
+    width: 45px;
+    height: 45px;
   }
 
-  .accordion-button {
-    font-size: 0.95rem;
-  }
-}
-/* FIX OFFCANVAS MOBILE */
-.filtros-mobile {
-  display: block !important;
-}
-
-/* opcional: mejor scroll */
-.offcanvas-body {
-  overflow-y: auto;
-}
-@media (max-width: 768px) {
-  .row {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-}
-/* === FIX GRILLA MÓVILES === */
-@media (max-width: 991px) {
-  .row.g-4 {
-    --bs-gutter-x: 1rem !important;
+  .arrow {
+    width: 35px;
+    height: 35px;
   }
 }
 
-@media (max-width: 768px) {
-  /* FORZAR 2 COLUMNAS EN MÓVILES */
-  .col-lg-4.col-md-6.col-6 {
-    flex: 0 0 48.5% !important;
-    max-width: 48.5% !important;
-  }
-
-  /* RESET MARGINS NEGATIVOS */
-  .row.g-4 {
-    --bs-gutter-x: 1.5rem !important;
-    margin-left: -0.75rem !important;
-    margin-right: -0.75rem !important;
-  }
-
-  .col-lg-4.col-md-6.col-6 {
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-  }
-
-  /* EVITAR APILAMIENTO */
-  .nike-card-premium {
-    margin-bottom: 1rem;
-  }
-}
-
+/* CELULARES CHICOS */
 @media (max-width: 480px) {
-  /* EN PANTALLAS MUY PEQUEÑAS, 1 COLUMNA */
   .col-lg-4.col-md-6.col-6 {
-    flex: 0 0 100% !important;
-    max-width: 100% !important;
+    flex: 0 0 100%;
+    max-width: 100%;
   }
-}
 
-/* FIX ESPECÍFICO PARA LA ROW DE PRODUCTOS */
-.productos-row {
-  --bs-gutter-x: 1rem;
-}
+  .main-modal-img {
+    max-height: 200px;
+  }
 
-@media (max-width: 768px) {
-  .productos-row > * {
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
+  .btn-talle-premium {
+    padding: 8px;
+    font-size: 0.75rem;
   }
 }
