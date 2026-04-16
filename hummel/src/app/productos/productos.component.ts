@@ -39,6 +39,8 @@ export class ProductosComponent implements OnInit {
   precioMaxGlobal = 100000;
   verMas = false;
   soloDestacados = false;
+  todosLosTalles: any[] = [];
+  todosLosColores: any[] = [];
 
   constructor(
     private router: Router,
@@ -55,7 +57,17 @@ export class ProductosComponent implements OnInit {
       }
     });
 
-    this.cargarProductos();
+    // 🔥 primero cargamos talles y colores
+    this.productosService.getTalles().subscribe((t) => {
+      this.todosLosTalles = t;
+
+      this.productosService.getColores().subscribe((c) => {
+        this.todosLosColores = c;
+
+        // 🔥 recién ahora cargamos productos
+        this.cargarProductos();
+      });
+    });
   }
 
   cargarProductos() {
@@ -67,22 +79,16 @@ export class ProductosComponent implements OnInit {
         }
 
         const nuevosProductos = productos.map((p: any) => {
-          let imagenPrincipal = 'assets/no-image.png';
-
-          if (p.imagen) {
-            imagenPrincipal = 'http://localhost:3000' + p.imagen;
-          }
+          let imagenPrincipal = p.imagen || 'assets/no-image.png';
 
           let imagenesArray: string[] = [];
           if (Array.isArray(p.imagenes) && p.imagenes.length > 0) {
-            imagenesArray = p.imagenes.map((img: string) => {
-              return img.startsWith('http') ? img : 'http://localhost:3000' + img;
-            });
+            imagenesArray = p.imagenes;
           } else {
             imagenesArray = [imagenPrincipal];
           }
 
-          // ✅ Normalización de descuento (simple + cantidad)
+          // 🔥 DESCUENTOS
           const precioBase = Number(p.precio);
           const tieneDescuento = !!p.tiene_descuento;
           const valorDescuento = Number(p.descuento_valor || 0);
@@ -90,9 +96,41 @@ export class ProductosComponent implements OnInit {
           const descuentoCantidad = Number(p.descuento_cantidad || 0);
 
           let precioFinal = precioBase;
-          if (tieneDescuento && (tipoDescuento === 'simple' || tipoDescuento === 'cantidad')) {
+          if (tieneDescuento) {
             precioFinal = precioBase - (precioBase * valorDescuento) / 100;
           }
+
+          // 🔥 DISPONIBLES del producto
+          const tallesDisponibles = (p.talles || []).map((t: any) =>
+            typeof t === 'string' ? t : t.nombre,
+          );
+
+          const coloresDisponibles = (p.colores || []).map((c: any) =>
+            typeof c === 'string' ? c : c.nombre,
+          );
+
+          // 🔥 TODOS los talles de la DB (con flag disponible)
+          let tallesFiltrados: any[] = [];
+
+          // 🔥 SI ES ACCESORIO → NO HAY TALLES
+          if (p.categoria?.toLowerCase() === 'accesorio') {
+            tallesFiltrados = [];
+          } else {
+            const tipoTalle = p.categoria?.toLowerCase() === 'calzado' ? 'calzado' : 'indumentaria';
+
+            tallesFiltrados = this.todosLosTalles
+              .filter((t: any) => t.tipo === tipoTalle)
+              .map((t: any) => ({
+                nombre: t.nombre,
+                disponible: tallesDisponibles.includes(t.nombre),
+              }));
+          }
+
+          // 🔥 TODOS los colores de la DB
+          const coloresCompletos = this.todosLosColores.map((c: any) => ({
+            nombre: c.nombre,
+            disponible: coloresDisponibles.includes(c.nombre),
+          }));
 
           return {
             ...p,
@@ -102,7 +140,10 @@ export class ProductosComponent implements OnInit {
             imagenes: imagenesArray,
             destacado: !!p.destacado,
 
-            // ✅ Campos necesarios para que el carrito aplique descuento
+            // 👇 clave
+            talles: tallesFiltrados,
+            colores: coloresCompletos,
+
             tiene_descuento: tieneDescuento,
             descuento_valor: valorDescuento,
             tipo_descuento: tipoDescuento,

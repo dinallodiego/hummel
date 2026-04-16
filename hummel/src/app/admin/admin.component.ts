@@ -165,12 +165,9 @@ export class AdminComponent implements OnInit {
         precio: Number(p.precio),
         descuento_valor: Number(p.descuento_valor || 0),
         tiene_descuento: !!p.tiene_descuento,
-        descuento_cantidad: Number(p.descuento_cantidad || 0), // 👈 AGREGAR
-        tipo_descuento: p.tipo_descuento || 'simple', // 👈 AGREGAR
-        imagen: p.imagen?.startsWith('/uploads')
-          ? 'http://localhost:3000' + p.imagen
-          : 'assets/no-image.png',
-        disponible: p.disponible ?? true,
+        descuento_cantidad: Number(p.descuento_cantidad || 0),
+        tipo_descuento: p.tipo_descuento || 'simple',
+        imagen: p.imagen || 'assets/no-image.png',
       }));
       this.paginaProductos = 1;
       this.cdr.detectChanges();

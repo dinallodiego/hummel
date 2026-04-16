@@ -28,6 +28,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   imagenIndex = 0;
   zoomActivo = false;
   verMas = false;
+  todosLosTalles: any[] = [];
+  todosLosColores: any[] = [];
 
   images = ['/assets/slider1.png', '/assets/slider2.png', '/assets/slider3.png'];
   destacados: any[] = [];
@@ -41,7 +43,17 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.startAutoPlay();
-    this.cargarDestacados();
+
+    this.http.get<any[]>('http://localhost:3000/talles').subscribe((t) => {
+      this.todosLosTalles = t;
+
+      this.http.get<any[]>('http://localhost:3000/colores').subscribe((c) => {
+        this.todosLosColores = c;
+
+        // 🔥 recién ahora cargamos destacados
+        this.cargarDestacados();
+      });
+    });
   }
 
   ngOnDestroy() {
@@ -80,15 +92,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       .get<any[]>('http://localhost:3000/productos-activos-destacados')
       .subscribe((productos) => {
         this.destacados = productos.map((p) => {
-          const base = 'http://localhost:3000';
-          const imagen = p.imagen ? base + p.imagen : 'assets/no-image.png';
+          const imagen = p.imagen || 'assets/no-image.png';
+          const imagenes = Array.isArray(p.imagenes) && p.imagenes.length ? p.imagenes : [imagen];
 
-          const imagenes =
-            Array.isArray(p.imagenes) && p.imagenes.length
-              ? p.imagenes.map((img: string) => (img.startsWith('http') ? img : base + img))
-              : [imagen];
-
-          // ✅ Normalización de descuento (simple + cantidad)
+          // 🔥 DESCUENTO
           const precioBase = Number(p.precio);
           const tieneDescuento = !!p.tiene_descuento;
           const valorDescuento = Number(p.descuento_valor || 0);
@@ -96,9 +103,46 @@ export class HomeComponent implements OnInit, OnDestroy {
           const descuentoCantidad = Number(p.descuento_cantidad || 0);
 
           let precioFinal = precioBase;
-          if (tieneDescuento && (tipoDescuento === 'simple' || tipoDescuento === 'cantidad')) {
+          if (tieneDescuento) {
             precioFinal = precioBase - (precioBase * valorDescuento) / 100;
           }
+
+          // 🔥 NORMALIZAR DISPONIBLES
+          const tallesDisponibles = (p.talles || []).map((t: any) =>
+            typeof t === 'string' ? t : t.nombre,
+          );
+
+          const coloresDisponibles = (p.colores || []).map((c: any) =>
+            typeof c === 'string' ? c : c.nombre,
+          );
+
+          // 🔥 FILTRAR TALLES SEGÚN CATEGORÍA
+          let tallesFiltrados: any[] = [];
+
+          if (p.categoria?.toLowerCase() === 'accesorio') {
+            tallesFiltrados = [];
+          } else {
+            const tipoTalle = p.categoria?.toLowerCase() === 'calzado' ? 'calzado' : 'indumentaria';
+
+            tallesFiltrados = this.todosLosTalles
+              .filter((t: any) => t.tipo === tipoTalle)
+              .map((t: any) => ({
+                nombre: t.nombre,
+                disponible: tallesDisponibles.includes(t.nombre),
+              }));
+          }
+
+          // 🔥 ARMAR TALLES CON DISPONIBLE
+          const tallesCompletos = tallesFiltrados.map((t: any) => ({
+            nombre: t.nombre,
+            disponible: tallesDisponibles.includes(t.nombre),
+          }));
+
+          // 🔥 COLORES
+          const coloresCompletos = this.todosLosColores.map((c: any) => ({
+            nombre: c.nombre,
+            disponible: coloresDisponibles.includes(c.nombre),
+          }));
 
           return {
             ...p,
@@ -107,14 +151,14 @@ export class HomeComponent implements OnInit, OnDestroy {
             precio: precioBase,
             precio_final: precioFinal,
 
-            // ✅ Campos necesarios para que el carrito aplique descuento
             tiene_descuento: tieneDescuento,
             descuento_valor: valorDescuento,
             tipo_descuento: tipoDescuento,
             descuento_cantidad: descuentoCantidad,
 
-            talles: p.talles || [],
-            colores: p.colores || [],
+            // 🔥 CLAVE
+            talles: tallesCompletos,
+            colores: coloresCompletos,
           };
         });
 

@@ -249,9 +249,18 @@ app.get("/productos-activos", async (req, res) => {
 
 app.post("/productos", upload.array("imagenes", 10), async (req, res) => {
   try {
-    const { nombre, descripcion, precio, categoria_id, genero_id } = req.body;
+    const {
+      nombre,
+      descripcion,
+      precio,
+      categoria_id,
+      genero_id,
+      tiene_descuento,
+      descuento_valor,
+      tipo_descuento,
+      descuento_cantidad,
+    } = req.body;
 
-    // 1. Crear producto
     const { data, error } = await supabase
       .from("productos")
       .insert([
@@ -262,6 +271,10 @@ app.post("/productos", upload.array("imagenes", 10), async (req, res) => {
           categoria_id,
           genero_id,
           disponible: true,
+          tiene_descuento: tiene_descuento === "1",
+          descuento_valor: Number(descuento_valor || 0),
+          tipo_descuento: tipo_descuento || "simple",
+          descuento_cantidad: Number(descuento_cantidad || 0),
         },
       ])
       .select();
@@ -311,7 +324,7 @@ app.post("/productos", upload.array("imagenes", 10), async (req, res) => {
 });
 /* ================== PEDIDOS ================== */
 
-app.post("/pedidos", async (req, res) => {
+app.post("/pedidos", upload.single("comprobante"), async (req, res) => {
   try {
     const {
       nombre,
@@ -327,6 +340,28 @@ app.post("/pedidos", async (req, res) => {
     const idPedido = generarIdPedido();
     const productosParsed = JSON.parse(productos);
 
+    let comprobanteUrl = null;
+
+    // 🔥 SUBIR IMAGEN A SUPABASE
+    if (req.file) {
+      const fileName = `comprobantes/${Date.now()}-${req.file.originalname}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("comprobantes")
+        .upload(fileName, req.file.buffer, {
+          contentType: req.file.mimetype,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from("comprobantes")
+        .getPublicUrl(fileName);
+
+      comprobanteUrl = data.publicUrl;
+    }
+
+    // 🔥 INSERTAR PEDIDO
     const { data, error } = await supabase
       .from("pedidos")
       .insert([
@@ -340,6 +375,7 @@ app.post("/pedidos", async (req, res) => {
           direccion,
           total,
           estado: "pendiente",
+          comprobante: comprobanteUrl, // 👈 ACA SE GUARDA
         },
       ])
       .select();
@@ -348,18 +384,23 @@ app.post("/pedidos", async (req, res) => {
 
     const pedidoId = data[0].id;
 
+    // 🔥 INSERTAR PRODUCTOS
     for (const p of productosParsed) {
-      await supabase.from("pedido_productos").insert([
-        {
-          pedido_id: pedidoId,
-          producto_id: p.id,
-          nombre: p.nombre,
-          precio: p.precio,
-          cantidad: p.cantidad,
-          talle: p.talle,
-          color: p.color,
-        },
-      ]);
+      const { error: prodError } = await supabase
+        .from("pedido_productos")
+        .insert([
+          {
+            pedido_id: pedidoId,
+            producto_id: p.id,
+            nombre: p.nombre,
+            precio: p.precio,
+            cantidad: p.cantidad,
+            talle: p.talle,
+            color: p.color,
+          },
+        ]);
+
+      if (prodError) throw prodError;
     }
 
     res.json({
@@ -367,7 +408,12 @@ app.post("/pedidos", async (req, res) => {
       id_pedido: idPedido,
     });
   } catch (err) {
-    res.status(500).json(err);
+    console.error("ERROR PEDIDO:", err);
+
+    res.status(500).json({
+      error: err.message,
+      stack: err.stack,
+    });
   }
 });
 
@@ -399,6 +445,10 @@ app.put("/productos/:id", upload.array("imagenes", 10), async (req, res) => {
       genero_id,
       talles,
       colores,
+      tiene_descuento,
+      descuento_valor,
+      tipo_descuento,
+      descuento_cantidad,
     } = req.body;
 
     await supabase
@@ -409,12 +459,29 @@ app.put("/productos/:id", upload.array("imagenes", 10), async (req, res) => {
         precio,
         categoria_id,
         genero_id,
+
+        // 👇 AGREGAR ESTO
+        tiene_descuento: tiene_descuento === "1",
+        descuento_valor: Number(descuento_valor || 0),
+        tipo_descuento: tipo_descuento || "simple",
+        descuento_cantidad: Number(descuento_cantidad || 0),
       })
       .eq("id", id);
 
     // borrar relaciones
     await supabase.from("producto_talles").delete().eq("producto_id", id);
     await supabase.from("producto_colores").delete().eq("producto_id", id);
+
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const url = await subirImagenSupabase(file);
+
+        await supabase.from("producto_imagenes").insert({
+          producto_id: id,
+          url,
+        });
+      }
+    }
 
     // insertar nuevas
     const tallesParsed = JSON.parse(talles || "[]");
@@ -503,6 +570,133 @@ app.get("/talles", async (req, res) => {
 app.get("/colores", async (req, res) => {
   const { data } = await supabase.from("colores").select("*");
   res.json(data);
+});
+
+app.get("/pedidos/estado/:estado", async (req, res) => {
+  const { estado } = req.params;
+
+  const { data } = await supabase
+    .from("pedidos")
+    .select(`*, pedido_productos(*)`)
+    .eq("estado", estado)
+    .order("id", { ascending: false });
+
+  res.json(data);
+});
+
+app.get("/pedidos-pendientes/count", async (req, res) => {
+  try {
+    const { count, error } = await supabase
+      .from("pedidos")
+      .select("*", { count: "exact", head: true })
+      .eq("estado", "pendiente");
+
+    if (error) throw error;
+
+    res.json({ pendientes: count });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+app.put("/pedidos/:id/entregado", async (req, res) => {
+  await supabase
+    .from("pedidos")
+    .update({ entregado: true })
+    .eq("id", req.params.id);
+
+  res.json({ ok: true });
+});
+app.put("/pedidos/:id/no-entregado", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await supabase
+      .from("pedidos")
+      .update({ entregado: false })
+      .eq("id_pedido", id);
+
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: "error_no_entregado" });
+  }
+});
+
+app.get("/ventas", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("pedidos")
+      .select(
+        `
+        id,
+        nombre,
+        telefono,
+        total,
+        fecha,
+        pedido_productos(nombre, cantidad)
+      `,
+      )
+      .eq("estado", "aceptado")
+      .order("id", { ascending: false });
+
+    if (error) throw error;
+
+    const ventas = data.map((v) => ({
+      id: v.id,
+      cliente_nombre: v.nombre,
+      cliente_telefono: v.telefono,
+      total: v.total,
+      fecha: v.fecha,
+      productos_detalle: v.pedido_productos || [],
+      productos: (v.pedido_productos || [])
+        .map((p) => `${p.nombre} x${p.cantidad}`)
+        .join(", "),
+    }));
+
+    res.json(ventas);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "error_ventas" });
+  }
+});
+
+// 🔍 BUSCAR PEDIDOS (MIS COMPRAS)
+app.get("/pedidos/buscar/:dato", async (req, res) => {
+  try {
+    const { dato } = req.params;
+
+    const esDni = /^\d+$/.test(dato);
+
+    let query = supabase
+      .from("pedidos")
+      .select(`*, pedido_productos(*)`)
+      .order("id", { ascending: false });
+
+    if (esDni) {
+      query = query.eq("dni", dato);
+    } else {
+      query = query.eq("id_pedido", dato);
+    }
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.json({ encontrado: false });
+    }
+
+    res.json({
+      encontrado: true,
+      pedidos: data.map((p) => ({
+        ...p,
+        productos: p.pedido_productos || [],
+      })),
+    });
+  } catch (err) {
+    console.error("ERROR BUSCAR PEDIDO:", err);
+    res.status(500).json({ error: "error_busqueda" });
+  }
 });
 
 /* ================== SERVER ================== */

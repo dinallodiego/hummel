@@ -71,7 +71,7 @@
           <!-- PRODUCTOS -->
           <td>
             <div class="productos">
-              <div *ngFor="let p of pedido.productos" class="producto">
+              <div *ngFor="let p of pedido.pedido_productos" class="producto">
                 <div>{{ p.nombre }}</div>
                 <small>{{ p.cantidad }} x {{ p.precio | currency: 'ARS' }}</small>
               </div>
@@ -154,7 +154,7 @@
       </div>
 
       <div class="productos">
-        <div *ngFor="let p of pedido.productos" class="producto">
+        <div *ngFor="let p of pedido.pedido_productos" class="producto">
           {{ p.nombre }} ({{ p.cantidad }})
         </div>
       </div>

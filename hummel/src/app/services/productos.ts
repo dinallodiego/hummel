@@ -14,6 +14,14 @@ export class ProductosService {
   }
 
   getProductosActivos() {
-    return this.http.get<any[]>(`${this.api}/productos-activos`);
+    return this.http.get<any[]>('http://localhost:3000/productos-activos');
+  }
+
+  getTalles() {
+    return this.http.get<any[]>(`${this.api}/talles`);
+  }
+
+  getColores() {
+    return this.http.get<any[]>(`${this.api}/colores`);
   }
 }

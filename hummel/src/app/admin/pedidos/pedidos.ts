@@ -53,18 +53,14 @@ export class PedidosComponent implements OnInit {
      🔥 CARGAR PEDIDOS
   ========================= */
   cargarPedidos() {
-    this.http.get<any[]>(`${this.apiUrl}/pedidos/${this.estadoSeleccionado}`).subscribe({
+    this.http.get<any[]>(`${this.apiUrl}/pedidos/estado/${this.estadoSeleccionado}`).subscribe({
       next: (data) => {
-        this.pedidos = data.sort((a, b) => b.id - a.id);
+        this.pedidos = data || [];
+        this.pedidosFiltrados = [...this.pedidos];
         this.aplicarFiltro();
       },
       error: () => {
-        Swal.fire({
-          ...this.swalBase,
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudieron cargar los pedidos',
-        });
+        Swal.fire('Error', 'No se pudieron cargar los pedidos', 'error');
       },
     });
   }
@@ -122,36 +118,36 @@ export class PedidosComponent implements OnInit {
   ========================= */
   aceptarPedido(pedido: any) {
     Swal.fire({
-      ...this.swalBase,
       title: '¿Aceptar pedido?',
-      text: `Cliente: ${pedido.nombre}`,
+      text: pedido.nombre,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Aceptar',
-    }).then((result) => {
-      if (!result.isConfirmed) return;
+    }).then((res) => {
+      if (!res.isConfirmed) return;
 
       this.http.put(`${this.apiUrl}/pedidos/${pedido.id}/aceptar`, {}).subscribe({
         next: () => {
+          this.pedidos = this.pedidos.filter((p) => p.id !== pedido.id);
+          this.aplicarFiltro();
+          pedido.estado = 'aceptado'; // 👈 update local inmediato
           const link = this.generarLinkWhatsappAceptado(pedido);
 
-          // 🔥 1. MOSTRAR CONFIRMACIÓN
           Swal.fire({
             ...this.swalBase,
             icon: 'success',
             title: 'Pedido aceptado',
             html: `
-            <p>El pedido fue aprobado correctamente.</p>
-            <p>Ahora podés informar al cliente por WhatsApp.</p>
-          `,
+              <p>El pedido fue aprobado correctamente.</p>
+              <p>Ahora podés informar al cliente por WhatsApp.</p>
+            `,
             confirmButtonText: 'Notificar cliente',
             allowOutsideClick: false,
           }).then(() => {
-            // 🔥 2. RECIÉN ACÁ REDIRECCIONA
-            window.open(link, '_blank');
+            setTimeout(() => {
+              window.open(link, '_blank');
+            }, 300);
           });
 
-          this.cargarPedidos();
           this.cambios.emit();
         },
       });
@@ -180,32 +176,38 @@ export class PedidosComponent implements OnInit {
 
       const motivo = inputResult.value.trim();
 
-      this.http.put(`${this.apiUrl}/pedidos/${pedido.id}/rechazar`, { mensaje: motivo }).subscribe({
-        next: () => {
-          pedido.mensaje = motivo;
+      this.http
+        .put(`${this.apiUrl}/pedidos/${pedido.id}/rechazar`, {
+          mensaje: motivo,
+        })
+        .subscribe({
+          next: () => {
+            this.pedidos = this.pedidos.filter((p) => p.id !== pedido.id);
+            this.aplicarFiltro();
+            pedido.estado = 'rechazado';
+            pedido.mensaje = motivo;
 
-          const link = this.generarLinkWhatsappRechazado(pedido);
+            const link = this.generarLinkWhatsappRechazado(pedido);
 
-          // 🔥 1. CONFIRMACIÓN
-          Swal.fire({
-            ...this.swalBase,
-            icon: 'success',
-            title: 'Pedido rechazado',
-            html: `
+            Swal.fire({
+              ...this.swalBase,
+              icon: 'success',
+              title: 'Pedido rechazado',
+              html: `
               <p>El pedido fue rechazado correctamente.</p>
               <p>Ahora podés informar al cliente por WhatsApp.</p>
             `,
-            confirmButtonText: 'Notificar cliente',
-            allowOutsideClick: false,
-          }).then(() => {
-            // 🔥 2. REDIRECCIÓN
-            window.open(link, '_blank');
-          });
+              confirmButtonText: 'Notificar cliente',
+              allowOutsideClick: false,
+            }).then(() => {
+              setTimeout(() => {
+                window.open(link, '_blank');
+              }, 300);
+            });
 
-          this.cargarPedidos();
-          this.cambios.emit();
-        },
-      });
+            this.cambios.emit();
+          },
+        });
     });
   }
 
@@ -213,42 +215,52 @@ export class PedidosComponent implements OnInit {
      🔥 DESCARGAR COMPROBANTE
   ========================= */
   descargarComprobante(path: string) {
-    const url = this.apiUrl + path;
+    const url = path;
 
-    this.http.get(url, { responseType: 'blob' }).subscribe((blob) => {
-      const blobUrl = window.URL.createObjectURL(blob);
-
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = path.split('/').pop() || 'comprobante';
-      a.click();
-
-      window.URL.revokeObjectURL(blobUrl);
-    });
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = path.split('/').pop() || 'comprobante';
+    a.target = '_blank';
+    a.click();
   }
 
   marcarEntregado(pedido: any) {
-    this.http.put(`${this.apiUrl}/pedidos/${pedido.id_pedido}/entregado`, {}).subscribe({
-      next: () => {
-        Swal.fire({
-          ...this.swalBase,
-          icon: 'success',
-          title: 'Pedido entregado',
-          timer: 1200,
-          showConfirmButton: false,
-        });
+    Swal.fire({
+      title: '¿Marcar como entregado?',
+      text: pedido.nombre,
+      icon: 'question',
+      showCancelButton: true,
+    }).then((res) => {
+      if (!res.isConfirmed) return;
 
-        this.cargarPedidos();
-      },
-      error: () => {
-        Swal.fire('Error', 'No se pudo actualizar', 'error');
-      },
+      this.http.put(`${this.apiUrl}/pedidos/${pedido.id}/entregado`, {}).subscribe({
+        next: () => {
+          // 🔥 lo sacás de la lista actual (como aceptar)
+
+          // 🔥 update local
+          pedido.entregado = true;
+          this.cdr.detectChanges();
+
+          Swal.fire({
+            ...this.swalBase,
+            icon: 'success',
+            title: 'Pedido entregado',
+            text: 'El pedido fue marcado como completado',
+            timer: 1500,
+            showConfirmButton: false,
+          });
+
+          this.cambios.emit();
+        },
+      });
     });
   }
 
   marcarNoEntregado(pedido: any) {
-    this.http.put(`${this.apiUrl}/pedidos/${pedido.id}/no-entregado`, {}).subscribe({
+    this.http.put(`${this.apiUrl}/pedidos/${pedido.id_pedido}/entregado`, {}).subscribe({
       next: () => {
+        pedido.entregado = true;
+
         Swal.fire({
           ...this.swalBase,
           icon: 'info',
@@ -257,10 +269,7 @@ export class PedidosComponent implements OnInit {
           showConfirmButton: false,
         });
 
-        this.cargarPedidos();
-      },
-      error: () => {
-        Swal.fire('Error', 'No se pudo actualizar', 'error');
+        this.cambios.emit();
       },
     });
   }
@@ -268,7 +277,7 @@ export class PedidosComponent implements OnInit {
   generarLinkWhatsappAceptado(pedido: any) {
     const telefono = '549' + pedido.telefono; // 🔥 usamos el teléfono del cliente
 
-    const detalleProductos = pedido.productos
+    const detalleProductos = pedido.pedido_productos
       .map((p: any) => {
         return `• ${p.nombre}
   Cantidad: ${p.cantidad}
@@ -308,7 +317,7 @@ export class PedidosComponent implements OnInit {
   generarLinkWhatsappRechazado(pedido: any) {
     const telefono = '549' + pedido.telefono;
 
-    const detalleProductos = pedido.productos
+    const detalleProductos = pedido.pedido_productos
       .map((p: any) => {
         return `• ${p.nombre}
   Cantidad: ${p.cantidad}

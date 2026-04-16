@@ -41,41 +41,40 @@
             <div class="img-container-premium">
               <img [src]="prod.imagen" class="product-img-main" />
             </div>
+          </div>
+          <div class="product-info-premium text-center">
+            <p class="p-category">{{ prod.genero }} • {{ prod.categoria }}</p>
+            <h3 class="p-name">{{ prod.nombre }}</h3>
 
-            <div class="product-info-premium text-center">
-              <p class="p-category">{{ prod.genero }}</p>
-              <h3 class="p-name">{{ prod.nombre }}</h3>
+            <div class="d-flex align-items-center justify-content-center gap-2">
+              <span
+                [ngStyle]="{
+                  'text-decoration': prod.tiene_descuento ? 'line-through' : 'none',
+                  color: prod.tiene_descuento ? '#888' : '#000',
+                  'font-size': prod.tiene_descuento ? '0.9rem' : '1.2rem',
+                }"
+              >
+                ${{ prod.precio | number: '1.0-0' : 'es-AR' }}
+              </span>
 
-              <div class="d-flex align-items-center justify-content-center gap-2">
-                <span
-                  [ngStyle]="{
-                    'text-decoration': prod.tiene_descuento ? 'line-through' : 'none',
-                    color: prod.tiene_descuento ? '#888' : '#000',
-                    'font-size': prod.tiene_descuento ? '0.9rem' : '1.2rem',
-                  }"
-                >
-                  ${{ prod.precio | number: '1.0-0' : 'es-AR' }}
-                </span>
+              <span
+                *ngIf="prod.tiene_descuento"
+                class="text-danger fw-bold"
+                style="font-size: 1.2rem"
+              >
+                ${{ prod.precio_final | number: '1.0-0' : 'es-AR' }}
+              </span>
+            </div>
 
-                <span
-                  *ngIf="prod.tiene_descuento"
-                  class="text-danger fw-bold"
-                  style="font-size: 1.2rem"
-                >
-                  ${{ prod.precio_final | number: '1.0-0' : 'es-AR' }}
-                </span>
-              </div>
+            <div class="mt-2" *ngIf="prod.tiene_descuento">
+              <span *ngIf="prod.tipo_descuento === 'simple'" class="badge bg-danger">
+                {{ prod.descuento_valor }}% OFF
+              </span>
 
-              <div class="mt-2" *ngIf="prod.tiene_descuento">
-                <span *ngIf="prod.tipo_descuento === 'simple'" class="badge bg-danger">
-                  {{ prod.descuento_valor }}% OFF
-                </span>
-
-                <span *ngIf="prod.tipo_descuento === 'cantidad'" class="badge bg-warning text-dark">
-                  {{ prod.descuento_valor }}% OFF llevando {{ prod.descuento_cantidad }} unidades o
-                  mas
-                </span>
-              </div>
+              <span *ngIf="prod.tipo_descuento === 'cantidad'" class="badge bg-warning text-dark">
+                {{ prod.descuento_valor }}% OFF llevando {{ prod.descuento_cantidad }} unidades o
+                mas
+              </span>
             </div>
           </div>
         </div>
@@ -157,7 +156,6 @@
             <button type="button" class="btn-close float-end" data-bs-dismiss="modal"></button>
 
             <p class="text-muted small mb-1">{{ productoSeleccionado.genero }}</p>
-
             <h2 class="fw-black mb-2">{{ productoSeleccionado.nombre }}</h2>
 
             <p class="text-muted mb-3">
@@ -195,24 +193,8 @@
               </span>
             </div>
 
-            <div class="mb-3" *ngIf="productoSeleccionado.tiene_descuento">
-              <span
-                *ngIf="productoSeleccionado.tipo_descuento === 'simple'"
-                class="badge bg-danger"
-              >
-                {{ productoSeleccionado.descuento_valor }}% OFF
-              </span>
-
-              <span
-                *ngIf="productoSeleccionado.tipo_descuento === 'cantidad'"
-                class="badge bg-warning text-dark"
-              >
-                {{ productoSeleccionado.descuento_valor }}% OFF llevando
-                {{ productoSeleccionado.descuento_cantidad }}+
-              </span>
-            </div>
-
-            <div class="mb-4" *ngIf="productoSeleccionado.categoria !== 'Accesorio'">
+            <!-- TALLES -->
+            <div class="mb-4" *ngIf="productoSeleccionado.categoria?.toLowerCase() !== 'accesorio'">
               <p class="fw-bold mb-2">Talle</p>
 
               <div class="talle-grid-premium">
@@ -220,15 +202,14 @@
                   *ngFor="let t of productoSeleccionado.talles"
                   class="btn-talle-premium"
                   [class.selected]="talleElegido === t.nombre"
-                  [disabled]="t.disponible === false"
-                  [class.disabled]="t.disponible === false"
-                  (click)="t.disponible !== false && (talleElegido = t.nombre)"
+                  [disabled]="!t.disponible"
+                  (click)="t.disponible && (talleElegido = t.nombre)"
                 >
                   {{ t.nombre }}
                 </button>
               </div>
             </div>
-
+            <!-- COLORES -->
             <div class="mb-4">
               <p class="fw-bold mb-2">Color</p>
 
@@ -237,9 +218,8 @@
                   *ngFor="let c of productoSeleccionado.colores"
                   class="btn-talle-premium"
                   [class.selected]="colorElegido === c.nombre"
-                  [disabled]="c.disponible === false"
-                  [class.disabled]="c.disponible === false"
-                  (click)="c.disponible !== false && (colorElegido = c.nombre)"
+                  [disabled]="!c.disponible"
+                  (click)="c.disponible && (colorElegido = c.nombre)"
                 >
                   {{ c.nombre }}
                 </button>

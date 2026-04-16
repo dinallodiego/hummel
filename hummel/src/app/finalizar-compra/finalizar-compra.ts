@@ -137,18 +137,27 @@ export class FinalizarCompraComponent {
           method: 'POST',
           body: formDataToSend,
         })
-          .then((res) => res.json())
+          .then(async (res) => {
+            const data = await res.json();
+
+            // 🔥 SI EL BACKEND FALLA → ENTRA ACÁ
+            if (!res.ok) {
+              console.error('ERROR BACKEND:', data);
+              throw new Error(data.error || 'Error al crear pedido');
+            }
+
+            return data;
+          })
           .then((data) => {
-            // Mostramos el ID de pedido con alerta importante
             Swal.fire({
               title: '✅ Compra confirmada',
               html: `
-    <p>Tu pedido fue registrado correctamente.</p>
-    <p><strong>ID de pedido: ${data.id_pedido}</strong></p>
-    <p style="color:#d4af37; font-weight:600;">
-      Serás redirigido a WhatsApp para notificar el pedido 📲
-    </p>
-  `,
+        <p>Tu pedido fue registrado correctamente.</p>
+        <p><strong>ID de pedido: ${data.id_pedido}</strong></p>
+        <p style="color:#d4af37; font-weight:600;">
+          Serás redirigido a WhatsApp para notificar el pedido 📲
+        </p>
+      `,
               icon: 'success',
               confirmButtonText: 'Continuar',
               allowOutsideClick: false,
@@ -165,8 +174,9 @@ export class FinalizarCompraComponent {
             });
           })
           .catch((err) => {
-            console.error(err);
-            Swal.fire('Error', 'No se pudo completar la compra', 'error');
+            console.error('ERROR FRONT:', err);
+
+            Swal.fire('Error', err.message || 'No se pudo completar la compra', 'error');
           });
       }
     });
