@@ -15,7 +15,7 @@ declare var bootstrap: any;
   styleUrls: ['./app.css'],
 })
 export class AppComponent implements AfterViewInit {
-  apiUrl = 'http://localhost:3000';
+  apiUrl = 'https://raxnktjhjyfvqajgffkf.supabase.co';
   menuAbierto = false;
   swalBase = {
     customClass: {

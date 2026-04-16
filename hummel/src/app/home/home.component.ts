@@ -44,10 +44,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.startAutoPlay();
 
-    this.http.get<any[]>('http://localhost:3000/talles').subscribe((t) => {
+    this.http.get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/talles').subscribe((t) => {
       this.todosLosTalles = t;
 
-      this.http.get<any[]>('http://localhost:3000/colores').subscribe((c) => {
+      this.http.get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/colores').subscribe((c) => {
         this.todosLosColores = c;
 
         // 🔥 recién ahora cargamos destacados
@@ -89,7 +89,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   cargarDestacados() {
     this.http
-      .get<any[]>('http://localhost:3000/productos-activos-destacados')
+      .get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/productos-activos-destacados')
       .subscribe((productos) => {
         this.destacados = productos.map((p) => {
           const imagen = p.imagen || 'assets/no-image.png';

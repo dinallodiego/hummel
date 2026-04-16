@@ -12,9 +12,14 @@ const app = express();
 
 /* ================== CONFIG ================== */
 
+const allowedOrigins = [
+  "http://localhost:4200",
+  "https://hummel-roxbel.vercel.app/home",
+];
+
 app.use(
   cors({
-    origin: ["http://localhost:4200"],
+    origin: allowedOrigins,
     credentials: true,
   }),
 );

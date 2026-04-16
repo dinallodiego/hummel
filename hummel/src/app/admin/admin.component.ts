@@ -52,14 +52,22 @@ export class AdminComponent implements OnInit {
   ngOnInit() {
     this.cargarProductos();
     this.cargarVentas();
-    this.http.get('http://localhost:3000/generos').subscribe((data: any) => (this.generos = data));
     this.http
-      .get('http://localhost:3000/categorias')
+      .get('https://raxnktjhjyfvqajgffkf.supabase.co/generos')
+      .subscribe((data: any) => (this.generos = data));
+    this.http
+      .get('https://raxnktjhjyfvqajgffkf.supabase.co/categorias')
       .subscribe((data: any) => (this.categorias = data));
-    this.http.get('http://localhost:3000/talles').subscribe((data: any) => (this.talles = data));
-    this.http.get('http://localhost:3000/colores').subscribe((data: any) => (this.colores = data));
     this.http
-      .get<{ pendientes: number }>('http://localhost:3000/pedidos-pendientes/count')
+      .get('https://raxnktjhjyfvqajgffkf.supabase.co/talles')
+      .subscribe((data: any) => (this.talles = data));
+    this.http
+      .get('https://raxnktjhjyfvqajgffkf.supabase.co/colores')
+      .subscribe((data: any) => (this.colores = data));
+    this.http
+      .get<{
+        pendientes: number;
+      }>('https://raxnktjhjyfvqajgffkf.supabase.co/pedidos-pendientes/count')
       .subscribe((res) => (this.pedidosPendientes = res.pendientes));
   }
 
@@ -159,19 +167,21 @@ export class AdminComponent implements OnInit {
   }
 
   cargarProductos() {
-    this.http.get<any[]>('http://localhost:3000/productos').subscribe((productos) => {
-      this.productos = productos.map((p: any) => ({
-        ...p,
-        precio: Number(p.precio),
-        descuento_valor: Number(p.descuento_valor || 0),
-        tiene_descuento: !!p.tiene_descuento,
-        descuento_cantidad: Number(p.descuento_cantidad || 0),
-        tipo_descuento: p.tipo_descuento || 'simple',
-        imagen: p.imagen || 'assets/no-image.png',
-      }));
-      this.paginaProductos = 1;
-      this.cdr.detectChanges();
-    });
+    this.http
+      .get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/productos')
+      .subscribe((productos) => {
+        this.productos = productos.map((p: any) => ({
+          ...p,
+          precio: Number(p.precio),
+          descuento_valor: Number(p.descuento_valor || 0),
+          tiene_descuento: !!p.tiene_descuento,
+          descuento_cantidad: Number(p.descuento_cantidad || 0),
+          tipo_descuento: p.tipo_descuento || 'simple',
+          imagen: p.imagen || 'assets/no-image.png',
+        }));
+        this.paginaProductos = 1;
+        this.cdr.detectChanges();
+      });
   }
 
   calcularPrecioAdmin(p: any): number {
@@ -355,7 +365,7 @@ export class AdminComponent implements OnInit {
       formData.append('imagenes', this.imagenes[i]);
     }
 
-    const url = 'http://localhost:3000/productos';
+    const url = 'https://raxnktjhjyfvqajgffkf.supabase.co/productos';
 
     if (this.producto.id) {
       this.http.put(`${url}/${this.producto.id}`, formData).subscribe(() => {
@@ -391,10 +401,12 @@ export class AdminComponent implements OnInit {
       cancelButtonText: 'Cancelar',
     }).then((res) => {
       if (res.isConfirmed) {
-        this.http.put(`http://localhost:3000/productos/${p.id}/desactivar`, {}).subscribe(() => {
-          Swal.fire('Producto desactivado', '', 'success');
-          this.cargarProductos();
-        });
+        this.http
+          .put(`https://raxnktjhjyfvqajgffkf.supabase.co/productos/${p.id}/desactivar`, {})
+          .subscribe(() => {
+            Swal.fire('Producto desactivado', '', 'success');
+            this.cargarProductos();
+          });
       }
     });
   }
@@ -408,10 +420,12 @@ export class AdminComponent implements OnInit {
       cancelButtonText: 'Cancelar',
     }).then((res) => {
       if (res.isConfirmed) {
-        this.http.put(`http://localhost:3000/productos/${p.id}/activar`, {}).subscribe(() => {
-          Swal.fire('Producto activado', '', 'success');
-          this.cargarProductos();
-        });
+        this.http
+          .put(`https://raxnktjhjyfvqajgffkf.supabase.co/productos/${p.id}/activar`, {})
+          .subscribe(() => {
+            Swal.fire('Producto activado', '', 'success');
+            this.cargarProductos();
+          });
       }
     });
   }
@@ -429,7 +443,7 @@ export class AdminComponent implements OnInit {
       producto.destacado = !producto.destacado;
       this.cdr.detectChanges();
       this.http
-        .put(`http://localhost:3000/productos/${producto.id}/destacar`, {
+        .put(`https://raxnktjhjyfvqajgffkf.supabase.co/productos/${producto.id}/destacar`, {
           destacado: producto.destacado,
         })
         .subscribe(() => {
@@ -444,7 +458,7 @@ export class AdminComponent implements OnInit {
   }
 
   cargarVentas() {
-    this.http.get<any[]>('http://localhost:3000/ventas').subscribe((data) => {
+    this.http.get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/ventas').subscribe((data) => {
       this.ventas = data;
       console.log('VENTAS:', data); // 👈 CLAVE
       this.ventasOriginal = data;

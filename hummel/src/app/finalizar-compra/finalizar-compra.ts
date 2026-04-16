@@ -133,7 +133,7 @@ export class FinalizarCompraComponent {
           formDataToSend.append('comprobante', this.comprobante);
         }
 
-        fetch('http://localhost:3000/pedidos', {
+        fetch('https://raxnktjhjyfvqajgffkf.supabase.co/pedidos', {
           method: 'POST',
           body: formDataToSend,
         })

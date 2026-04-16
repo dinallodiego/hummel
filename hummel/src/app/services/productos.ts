@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class ProductosService {
-  api = 'http://localhost:3000';
+  api = 'https://raxnktjhjyfvqajgffkf.supabase.co';
 
   constructor(private http: HttpClient) {}
 
@@ -14,7 +14,7 @@ export class ProductosService {
   }
 
   getProductosActivos() {
-    return this.http.get<any[]>('http://localhost:3000/productos-activos');
+    return this.http.get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/productos-activos');
   }
 
   getTalles() {
