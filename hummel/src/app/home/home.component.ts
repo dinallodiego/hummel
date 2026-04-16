@@ -44,16 +44,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.startAutoPlay();
 
-    this.http.get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/talles').subscribe((t) => {
-      this.todosLosTalles = t;
+    this.http
+      .get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/talles')
+      .subscribe((t) => {
+        this.todosLosTalles = t;
 
-      this.http.get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/colores').subscribe((c) => {
-        this.todosLosColores = c;
+        this.http
+          .get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/colores')
+          .subscribe((c) => {
+            this.todosLosColores = c;
 
-        // 🔥 recién ahora cargamos destacados
-        this.cargarDestacados();
+            // 🔥 recién ahora cargamos destacados
+            this.cargarDestacados();
+          });
       });
-    });
   }
 
   ngOnDestroy() {
@@ -89,7 +93,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   cargarDestacados() {
     this.http
-      .get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/productos-activos-destacados')
+      .get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/productos-activos-destacados')
       .subscribe((productos) => {
         this.destacados = productos.map((p) => {
           const imagen = p.imagen || 'assets/no-image.png';

@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class ProductosService {
-  api = 'https://raxnktjhjyfvqajgffkf.supabase.co';
+  api = 'https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1';
 
   constructor(private http: HttpClient) {}
 
@@ -14,7 +14,9 @@ export class ProductosService {
   }
 
   getProductosActivos() {
-    return this.http.get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/productos-activos');
+    return this.http.get<any[]>(
+      'https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/productos-activos',
+    );
   }
 
   getTalles() {

@@ -6,7 +6,7 @@ import { Observable, map } from 'rxjs';
   providedIn: 'root',
 })
 export class PedidoService {
-  private baseUrl = 'https://raxnktjhjyfvqajgffkf.supabase.co/pedidos';
+  private baseUrl = 'https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/pedidos';
 
   constructor(private http: HttpClient) {}
 

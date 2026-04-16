@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./pedidos.css'],
 })
 export class PedidosComponent implements OnInit {
-  apiUrl = 'https://raxnktjhjyfvqajgffkf.supabase.co';
+  apiUrl = 'https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1';
 
   pedidos: any[] = [];
   pedidosFiltrados: any[] = [];

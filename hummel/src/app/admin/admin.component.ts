@@ -53,21 +53,21 @@ export class AdminComponent implements OnInit {
     this.cargarProductos();
     this.cargarVentas();
     this.http
-      .get('https://raxnktjhjyfvqajgffkf.supabase.co/generos')
+      .get('https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/generos')
       .subscribe((data: any) => (this.generos = data));
     this.http
-      .get('https://raxnktjhjyfvqajgffkf.supabase.co/categorias')
+      .get('https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/categorias')
       .subscribe((data: any) => (this.categorias = data));
     this.http
-      .get('https://raxnktjhjyfvqajgffkf.supabase.co/talles')
+      .get('https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/talles')
       .subscribe((data: any) => (this.talles = data));
     this.http
-      .get('https://raxnktjhjyfvqajgffkf.supabase.co/colores')
+      .get('https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/colores')
       .subscribe((data: any) => (this.colores = data));
     this.http
       .get<{
         pendientes: number;
-      }>('https://raxnktjhjyfvqajgffkf.supabase.co/pedidos-pendientes/count')
+      }>('https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/pedidos-pendientes/count')
       .subscribe((res) => (this.pedidosPendientes = res.pendientes));
   }
 
@@ -168,7 +168,7 @@ export class AdminComponent implements OnInit {
 
   cargarProductos() {
     this.http
-      .get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/productos')
+      .get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/productos')
       .subscribe((productos) => {
         this.productos = productos.map((p: any) => ({
           ...p,
@@ -365,7 +365,7 @@ export class AdminComponent implements OnInit {
       formData.append('imagenes', this.imagenes[i]);
     }
 
-    const url = 'https://raxnktjhjyfvqajgffkf.supabase.co/productos';
+    const url = 'https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/productos';
 
     if (this.producto.id) {
       this.http.put(`${url}/${this.producto.id}`, formData).subscribe(() => {
@@ -402,7 +402,7 @@ export class AdminComponent implements OnInit {
     }).then((res) => {
       if (res.isConfirmed) {
         this.http
-          .put(`https://raxnktjhjyfvqajgffkf.supabase.co/productos/${p.id}/desactivar`, {})
+          .put(`https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/productos/${p.id}/desactivar`, {})
           .subscribe(() => {
             Swal.fire('Producto desactivado', '', 'success');
             this.cargarProductos();
@@ -421,7 +421,7 @@ export class AdminComponent implements OnInit {
     }).then((res) => {
       if (res.isConfirmed) {
         this.http
-          .put(`https://raxnktjhjyfvqajgffkf.supabase.co/productos/${p.id}/activar`, {})
+          .put(`https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/productos/${p.id}/activar`, {})
           .subscribe(() => {
             Swal.fire('Producto activado', '', 'success');
             this.cargarProductos();
@@ -443,7 +443,7 @@ export class AdminComponent implements OnInit {
       producto.destacado = !producto.destacado;
       this.cdr.detectChanges();
       this.http
-        .put(`https://raxnktjhjyfvqajgffkf.supabase.co/productos/${producto.id}/destacar`, {
+        .put(`https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/productos/${producto.id}/destacar`, {
           destacado: producto.destacado,
         })
         .subscribe(() => {
@@ -458,11 +458,13 @@ export class AdminComponent implements OnInit {
   }
 
   cargarVentas() {
-    this.http.get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/ventas').subscribe((data) => {
-      this.ventas = data;
-      console.log('VENTAS:', data); // 👈 CLAVE
-      this.ventasOriginal = data;
-    });
+    this.http
+      .get<any[]>('https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1/ventas')
+      .subscribe((data) => {
+        this.ventas = data;
+        console.log('VENTAS:', data); // 👈 CLAVE
+        this.ventasOriginal = data;
+      });
   }
 
   resetFiltros() {

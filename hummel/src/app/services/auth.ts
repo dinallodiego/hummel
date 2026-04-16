@@ -4,7 +4,7 @@ import { Observable, map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'https://raxnktjhjyfvqajgffkf.supabase.co';
+  private apiUrl = 'https://raxnktjhjyfvqajgffkf.supabase.co/rest/v1';
 
   constructor(private http: HttpClient) {}
 
