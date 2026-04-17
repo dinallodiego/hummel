@@ -22,7 +22,7 @@ export class LoginComponent {
     private router: Router,
   ) {}
 
-  login() {
+  async login() {
     if (!this.email || !this.password) {
       Swal.fire({ icon: 'warning', title: 'Faltan datos', text: 'Ingresá email y contraseña' });
       return;
@@ -30,36 +30,33 @@ export class LoginComponent {
 
     this.loading = true;
 
-    this.auth.login(this.email, this.password).subscribe({
-      next: (ok) => {
-        this.loading = false;
+    try {
+      const ok = await this.auth.login(this.email, this.password);
 
-        if (ok) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Bienvenido al panel',
-            text: 'Acceso concedido',
-            showConfirmButton: false,
-            timer: 1200,
-          }).then(() => {
-            this.router.navigate(['/admin']);
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Acceso denegado',
-            text: 'Email o contraseña incorrectos',
-          });
-        }
-      },
-      error: () => {
-        this.loading = false;
+      if (ok) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Bienvenido al panel',
+          text: 'Acceso concedido',
+          showConfirmButton: false,
+          timer: 1200,
+        });
+        this.router.navigate(['/admin']);
+      } else {
         Swal.fire({
           icon: 'error',
-          title: 'Error',
-          text: 'No se pudo iniciar sesión. Revisá el servidor.',
+          title: 'Acceso denegado',
+          text: 'Email o contraseña incorrectos',
         });
-      },
-    });
+      }
+    } catch {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo iniciar sesión. Revisá tu conexión.',
+      });
+    } finally {
+      this.loading = false;
+    }
   }
 }
