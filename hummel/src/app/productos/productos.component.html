@@ -242,7 +242,7 @@
           <li
             class="page-item page-arrow"
             [class.disabled]="paginaActual === 1"
-            (click)="paginaActual > 1 && (paginaActual = paginaActual - 1)"
+            (click)="paginaActual > 1 && (paginaActual = paginaActual - 1); scrollToTop()"
           >
             ‹
           </li>
@@ -250,14 +250,14 @@
             *ngFor="let p of paginasArr"
             class="page-item"
             [class.active]="paginaActual === p"
-            (click)="paginaActual = p"
+            (click)="paginaActual = p; scrollToTop()"
           >
             {{ p }}
           </li>
           <li
             class="page-item page-arrow"
             [class.disabled]="paginaActual === totalPaginas"
-            (click)="paginaActual < totalPaginas && (paginaActual = paginaActual + 1)"
+            (click)="paginaActual < totalPaginas && (paginaActual = paginaActual + 1); scrollToTop()"
           >
             ›
           </li>

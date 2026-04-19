@@ -165,6 +165,13 @@ export class ProductosComponent implements OnInit {
       });
   }
 
+  scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
+
   get productosPaginados() {
     const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
     return this.productosFiltrados.slice(inicio, inicio + this.itemsPorPagina);

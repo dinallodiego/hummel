@@ -20,9 +20,10 @@ body {
 .swal-popup {
   border-radius: 18px !important;
   padding: 25px !important;
-  width: 100%;
-  max-width: 420px;
-  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 420px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
 }
 
 @media (max-width: 480px) {
@@ -48,11 +49,25 @@ body {
 
 .swal-input {
   width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
   border-radius: 10px !important;
   border: 1px solid #ddd !important;
-  padding: 10px !important;
+  padding: 10px 14px !important;
   font-size: 14px !important;
   margin-top: 10px;
+  display: block !important;
+}
+
+/* Mensaje de validación del input no desborda */
+.swal2-validation-message {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  margin: 8px 0 0 0 !important;
+  padding: 8px 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  word-break: break-word !important;
 }
 
 .swal2-actions {

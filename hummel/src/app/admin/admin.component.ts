@@ -442,7 +442,11 @@ export class AdminComponent implements OnInit {
           .insert(urlsNuevas.map((url) => ({ producto_id: productoId, url })));
       }
 
-      Swal.fire({
+      // Apagar overlay ANTES del Swal de éxito
+      this.guardando = false;
+      this.cdr.detectChanges();
+
+      await Swal.fire({
         icon: 'success',
         title: this.producto.id ? 'Producto actualizado' : 'Producto creado',
         showConfirmButton: false,
@@ -454,9 +458,9 @@ export class AdminComponent implements OnInit {
       document.getElementById('cerrarModalProducto')?.click();
     } catch (err: any) {
       console.error('Error guardando producto:', err);
-      Swal.fire('Error', err.message || 'No se pudo guardar el producto', 'error');
-    } finally {
       this.guardando = false;
+      this.cdr.detectChanges();
+      Swal.fire('Error', err.message || 'No se pudo guardar el producto', 'error');
     }
   }
 
