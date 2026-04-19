@@ -776,3 +776,25 @@ nav a.active {
     content: 'Fecha';
   }
 }
+
+/* ====== OVERLAY CARGA ADMIN ====== */
+.procesando-overlay-admin {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(3px);
+}
+
+.procesando-box-admin {
+  background: #fff;
+  border-radius: 20px;
+  padding: 40px 50px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  max-width: 320px;
+  width: 90%;
+}

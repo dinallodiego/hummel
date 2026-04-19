@@ -170,7 +170,7 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 rounded-3">
               <li *ngFor="let opcion of ['Relevancia', 'Menor Precio', 'Mayor Precio']">
-                <button class="dropdown-item" (click)="ordenActual = opcion">{{ opcion }}</button>
+                <button class="dropdown-item" (click)="ordenActual = opcion; paginaActual = 1">{{ opcion }}</button>
               </li>
             </ul>
           </div>
@@ -237,13 +237,29 @@
         <i class="bi bi-search fs-1 text-muted"></i>
         <p class="mt-3">No encontramos productos que coincidan con tus filtros.</p>
       </div>
-      <nav
-        class="mt-5 d-flex justify-content-center"
-        *ngIf="productosFiltrados.length > itemsPorPagina"
-      >
+      <nav class="mt-5 d-flex justify-content-center" *ngIf="totalPaginas > 1">
         <ul class="pagination-modern shadow-sm p-2 bg-white rounded-pill">
-          <li class="page-item" (click)="paginaActual = 1" [class.active]="paginaActual === 1">
-            1
+          <li
+            class="page-item page-arrow"
+            [class.disabled]="paginaActual === 1"
+            (click)="paginaActual > 1 && (paginaActual = paginaActual - 1)"
+          >
+            ‹
+          </li>
+          <li
+            *ngFor="let p of paginasArr"
+            class="page-item"
+            [class.active]="paginaActual === p"
+            (click)="paginaActual = p"
+          >
+            {{ p }}
+          </li>
+          <li
+            class="page-item page-arrow"
+            [class.disabled]="paginaActual === totalPaginas"
+            (click)="paginaActual < totalPaginas && (paginaActual = paginaActual + 1)"
+          >
+            ›
           </li>
         </ul>
       </nav>
@@ -330,6 +346,13 @@
       (click)="limpiarFiltros()"
     >
       Limpiar todos los filtros
+    </button>
+
+    <button
+      class="btn btn-dark w-100 rounded-pill fw-bold mt-3 py-3"
+      (click)="aplicarFiltrosMobile()"
+    >
+      APLICAR FILTROS
     </button>
   </div>
 </div>

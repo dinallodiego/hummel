@@ -129,6 +129,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         precio: precioBase,
         precio_final: precioFinal,
         categoria: p.categorias?.nombre || '',
+        genero: p.generos?.nombre || '',
         talles: tallesFiltrados,
         colores: coloresCompletos,
       };
@@ -165,14 +166,24 @@ export class HomeComponent implements OnInit, OnDestroy {
     return this.destacados.slice(inicio, inicio + this.itemsPorPaginaDestacados);
   }
 
+  get totalPaginasDestacados() {
+    return Math.ceil(this.destacados.length / this.itemsPorPaginaDestacados) || 1;
+  }
+
+  get paginasDestacadosArr() {
+    return Array.from({ length: this.totalPaginasDestacados });
+  }
+
+  setDestacadosPagina(index: number) {
+    this.paginaActualDestacados = index;
+  }
+
   nextDestacados() {
-    const total = Math.ceil(this.destacados.length / this.itemsPorPaginaDestacados);
-    this.paginaActualDestacados = (this.paginaActualDestacados + 1) % total;
+    this.paginaActualDestacados = (this.paginaActualDestacados + 1) % this.totalPaginasDestacados;
   }
 
   prevDestacados() {
-    const total = Math.ceil(this.destacados.length / this.itemsPorPaginaDestacados);
-    this.paginaActualDestacados = (this.paginaActualDestacados - 1 + total) % total;
+    this.paginaActualDestacados = (this.paginaActualDestacados - 1 + this.totalPaginasDestacados) % this.totalPaginasDestacados;
   }
 
   abrirDetalle(prod: any) {

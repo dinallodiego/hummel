@@ -31,9 +31,6 @@
   <div *ngIf="destacados.length > 0" class="position-relative">
     <h2 class="section-title text-center mb-4">PRODUCTOS DESTACADOS</h2>
 
-    <button *ngIf="destacados.length > 3" class="arrow left" (click)="prevDestacados()">‹</button>
-    <button *ngIf="destacados.length > 3" class="arrow right" (click)="nextDestacados()">›</button>
-
     <div class="row g-4 justify-content-center">
       @for (prod of destacadosPaginados; track prod.id) {
         <div class="col-lg-4 col-md-6 col-10">
@@ -79,6 +76,16 @@
             </div>
           </div>
         </div>
+      }
+    </div>
+
+    <div class="destacados-pagination" *ngIf="totalPaginasDestacados > 1">
+      @for (p of paginasDestacadosArr; track $index) {
+        <button
+          class="dest-dot"
+          [class.active]="$index === paginaActualDestacados"
+          (click)="setDestacadosPagina($index)"
+        ></button>
       }
     </div>
   </div>
@@ -157,7 +164,7 @@
             <button type="button" class="btn-close float-end" data-bs-dismiss="modal"></button>
 
             <!-- CAMBIO: se muestra genero Y categoria en el modal -->
-            <p class="text-muted small mb-1">
+            <p class="text-muted small mb-0 text-uppercase fw-semibold">
               {{ productoSeleccionado.genero }} • {{ productoSeleccionado.categoria }}
             </p>
             <h2 class="fw-black mb-2">{{ productoSeleccionado.nombre }}</h2>

@@ -1,4 +1,14 @@
 <div class="admin-layout">
+
+  <!-- OVERLAY CARGA: guardar/editar producto -->
+  <div *ngIf="guardando" class="procesando-overlay-admin">
+    <div class="procesando-box-admin">
+      <div class="spinner-border text-dark mb-3" role="status" style="width:3rem;height:3rem;"></div>
+      <h5 class="fw-bold mb-1">Guardando producto...</h5>
+      <p class="text-muted small m-0">Subiendo imágenes y guardando datos.<br>Por favor no cierres la página.</p>
+    </div>
+  </div>
+
   <aside class="sidebar">
     <div>
       <div class="logo">HUMMEL</div>

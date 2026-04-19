@@ -172,6 +172,10 @@ export class ProductosComponent implements OnInit {
     return Math.ceil(this.productosFiltrados.length / this.itemsPorPagina) || 1;
   }
 
+  get paginasArr(): number[] {
+    return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
+  }
+
   abrirDetalle(item: any) {
     this.productoSeleccionado = item;
     this.talleElegido = '';
@@ -258,7 +262,7 @@ export class ProductosComponent implements OnInit {
     this.paginaActual = 1;
   }
 
-  // CAMBIO: limpiarFiltros también cierra el offcanvas mobile si está abierto
+  // CAMBIO: limpiarFiltros también cierra el offcanvas mobile y colapsa acordiones
   limpiarFiltros() {
     this.filtroGenero = 'Todos';
     this.filtroCategoria = 'Todos';
@@ -267,7 +271,27 @@ export class ProductosComponent implements OnInit {
     this.soloDestacados = false;
     this.paginaActual = 1;
 
+    // Cerrar todos los acordiones en desktop
+    const accordionBodies = document.querySelectorAll('#filtrosAccordion .accordion-collapse');
+    accordionBodies.forEach((el: any) => {
+      el.classList.remove('show');
+    });
+    const accordionBtns = document.querySelectorAll('#filtrosAccordion .accordion-button');
+    accordionBtns.forEach((btn: any) => {
+      btn.classList.add('collapsed');
+    });
+
     // Cerrar offcanvas mobile si está abierto
+    const offcanvasEl = document.getElementById('filtrosMobile');
+    if (offcanvasEl) {
+      const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+      if (offcanvas) offcanvas.hide();
+    }
+  }
+
+  // CAMBIO: cerrar offcanvas mobile al aplicar filtros
+  aplicarFiltrosMobile() {
+    this.paginaActual = 1;
     const offcanvasEl = document.getElementById('filtrosMobile');
     if (offcanvasEl) {
       const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
