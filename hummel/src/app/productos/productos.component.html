@@ -64,7 +64,7 @@
                 data-bs-toggle="collapse"
                 data-bs-target="#categoriaGlobal"
               >
-                TIPO PRODUCTO
+                CATEGORIA
               </button>
             </h2>
             <div id="categoriaGlobal" class="accordion-collapse collapse">
@@ -157,7 +157,7 @@
         style="top: 70px; z-index: 100"
       >
         <h1 class="catalogo-title m-0 fw-black text-dark">
-          {{ filtroGenero }} ({{ productosFiltrados.length }})
+          Roxbel
         </h1>
 
         <div class="d-flex align-items-center gap-3">
@@ -271,7 +271,7 @@
     </div>
 
     <div class="mb-4">
-      <p class="fw-bold mb-2">TIPO PRODUCTO</p>
+      <p class="fw-bold mb-2">CATEGORIA</p>
       <div
         *ngFor="let c of ['Todos', 'Indumentaria', 'Calzado', 'Accesorio']"
         class="filter-pill"
@@ -300,7 +300,7 @@
             type="number"
             class="form-control form-control-sm rounded-pill"
             [(ngModel)]="precioMax"
-            placeholder="200000"
+            placeholder="Sin límite"
           />
         </div>
       </div>
