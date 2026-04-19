@@ -80,6 +80,13 @@
     </div>
 
     <div class="destacados-pagination" *ngIf="totalPaginasDestacados > 1">
+      <button
+        class="dest-arrow"
+        [class.disabled]="paginaActualDestacados === 0"
+        (click)="paginaActualDestacados > 0 && setDestacadosPagina(paginaActualDestacados - 1)"
+        aria-label="Anterior"
+      >&#8249;</button>
+
       @for (p of paginasDestacadosArr; track $index) {
         <button
           class="dest-dot"
@@ -87,6 +94,13 @@
           (click)="setDestacadosPagina($index)"
         ></button>
       }
+
+      <button
+        class="dest-arrow"
+        [class.disabled]="paginaActualDestacados === totalPaginasDestacados - 1"
+        (click)="paginaActualDestacados < totalPaginasDestacados - 1 && setDestacadosPagina(paginaActualDestacados + 1)"
+        aria-label="Siguiente"
+      >&#8250;</button>
     </div>
   </div>
 </section>

@@ -293,7 +293,7 @@ export class AdminComponent implements OnInit {
     return false;
   }
 
-  confirmarGuardado() {
+  async confirmarGuardado() {
     const textoAccion = this.producto.id ? 'actualizar' : 'crear';
 
     if (
@@ -339,19 +339,21 @@ export class AdminComponent implements OnInit {
       }
     }
 
-    Swal.fire({
+    const result = await Swal.fire({
       title: `¿Confirmás ${textoAccion} este producto?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, guardar',
       cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) this.guardarProducto();
     });
+
+    if (!result.isConfirmed) return;
+    await this.guardarProducto();
   }
 
   async guardarProducto() {
     this.guardando = true;
+    this.cdr.detectChanges();
 
     try {
       // 1. Subir imágenes nuevas al Storage

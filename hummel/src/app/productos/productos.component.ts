@@ -94,7 +94,9 @@ export class ProductosComponent implements OnInit {
       const precioBase = Number(p.precio);
       const valorDesc = Number(p.descuento_valor || 0);
       let precioFinal = precioBase;
-      if (p.tiene_descuento && p.tipo_descuento === 'simple') {
+      if (p.tiene_descuento && valorDesc > 0) {
+        // Precalcular precio_final para ambos tipos (simple y cantidad)
+        // El CarritoService decide si aplicarlo según la cantidad comprada
         precioFinal = precioBase - (precioBase * valorDesc) / 100;
       }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CarritoService } from '../services/carrito';
@@ -37,6 +37,7 @@ export class FinalizarCompraComponent implements OnInit {
   constructor(
     private carritoService: CarritoService,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -113,6 +114,7 @@ export class FinalizarCompraComponent implements OnInit {
 
     // CAMBIO: activar pantalla de carga
     this.procesando = true;
+    this.cdr.detectChanges();
 
     try {
       // 1. Subir comprobante al Storage
@@ -226,7 +228,10 @@ export class FinalizarCompraComponent implements OnInit {
   }
 
   actualizarTotal() {
-    this.total = this.carrito.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+    this.total = this.carrito.reduce(
+      (acc, p) => acc + this.carritoService.getSubtotalItem(p),
+      0,
+    );
   }
 
   cancelarCompra() {
