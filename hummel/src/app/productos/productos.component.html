@@ -1,16 +1,17 @@
 <section class="container-fluid px-2 px-lg-5 my-5">
   <div class="row">
     <aside class="col-lg-2">
+      <!-- MOBILE: botón filtrar -->
       <div class="d-lg-none mb-3 d-flex gap-2">
         <button
           class="btn btn-dark w-100 rounded-pill fw-bold py-2"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#filtrosMobile"
+          type="button"
+          (click)="abrirFiltrosMobile()"
         >
           FILTRAR
         </button>
         <button
-          *ngIf="filtroGenero !== 'Todos' || filtroCategoria !== 'Todos' || soloDestacados"
+          *ngIf="filtroGenero !== 'Todos' || filtroCategoria !== 'Todos' || soloDestacados || precioMin > 0 || precioMax < precioMaxGlobal"
           (click)="limpiarFiltros()"
           class="btn btn-outline-danger rounded-pill px-3 fw-bold"
         >
@@ -18,13 +19,14 @@
         </button>
       </div>
 
+      <!-- DESKTOP filtros -->
       <div class="sticky-top d-none d-lg-block filtros-pro" style="top: 110px">
         <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
           <h5 class="fw-black m-0">FILTRAR</h5>
           <button
             class="btn-limpiar-filtros"
             (click)="limpiarFiltros()"
-            *ngIf="filtroGenero !== 'Todos' || filtroCategoria !== 'Todos' || soloDestacados"
+            *ngIf="filtroGenero !== 'Todos' || filtroCategoria !== 'Todos' || soloDestacados || precioMin > 0 || precioMax < precioMaxGlobal"
           >
             LIMPIAR
           </button>
@@ -47,7 +49,7 @@
                   *ngFor="let g of ['Todos', 'Hombre', 'Mujer', 'Unisex', 'Niño']"
                   class="filter-pill"
                   [class.active]="filtroGenero === g"
-                  (click)="filtroGenero = g"
+                  (click)="setFiltroGenero(g)"
                 >
                   {{ g }}
                 </div>
@@ -71,7 +73,7 @@
                   *ngFor="let c of ['Todos', 'Indumentaria', 'Calzado', 'Accesorio']"
                   class="filter-pill"
                   [class.active]="filtroCategoria === c"
-                  (click)="filtroCategoria = c"
+                  (click)="setFiltroCategoria(c)"
                 >
                   {{ c }}
                 </div>
@@ -111,6 +113,14 @@
                     />
                   </div>
                 </div>
+                <!-- CAMBIO: botón limpiar filtro de precio -->
+                <button
+                  *ngIf="precioMin > 0 || precioMax < precioMaxGlobal"
+                  class="btn-limpiar-filtros mt-2"
+                  (click)="limpiarFiltroPrecio()"
+                >
+                  Limpiar precio
+                </button>
               </div>
             </div>
           </div>
@@ -130,7 +140,7 @@
                 <div
                   class="filter-pill"
                   [class.active]="soloDestacados"
-                  (click)="soloDestacados = !soloDestacados"
+                  (click)="soloDestacados = !soloDestacados; paginaActual = 1"
                 >
                   ⭐ Solo destacados
                 </div>
@@ -140,6 +150,7 @@
         </div>
       </div>
     </aside>
+
     <div class="col-lg-10">
       <div
         class="d-flex justify-content-between align-items-center mb-5 border-bottom pb-3 px-2 bg-white sticky-top shadow-sm rounded-3 p-3"
@@ -176,6 +187,7 @@
       </div>
 
       <div class="row g-4 productos-row" *ngIf="productosFiltrados.length > 0">
+        <!-- CAMBIO: class destacado para borde dorado, imágenes tamaño fijo -->
         <div *ngFor="let item of productosPaginados" class="col-lg-4 col-md-6 col-6">
           <div
             class="nike-card-premium"
@@ -187,6 +199,7 @@
             </div>
 
             <div class="product-info-premium text-center">
+              <!-- CAMBIO: se muestra genero • categoria -->
               <p class="p-category text-uppercase">
                 {{ item.genero }} • {{ item.categoria_display }}
               </p>
@@ -238,6 +251,90 @@
   </div>
 </section>
 
+<!-- OFFCANVAS FILTROS MOBILE -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="filtrosMobile" #filtrosMobileRef>
+  <div class="offcanvas-header border-bottom">
+    <h5 class="fw-black m-0">FILTRAR</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="mb-4">
+      <p class="fw-bold mb-2">GÉNERO</p>
+      <div
+        *ngFor="let g of ['Todos', 'Hombre', 'Mujer', 'Unisex', 'Niño']"
+        class="filter-pill"
+        [class.active]="filtroGenero === g"
+        (click)="setFiltroGenero(g)"
+      >
+        {{ g }}
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <p class="fw-bold mb-2">TIPO PRODUCTO</p>
+      <div
+        *ngFor="let c of ['Todos', 'Indumentaria', 'Calzado', 'Accesorio']"
+        class="filter-pill"
+        [class.active]="filtroCategoria === c"
+        (click)="setFiltroCategoria(c)"
+      >
+        {{ c }}
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <p class="fw-bold mb-2">PRECIO</p>
+      <div class="d-flex gap-2">
+        <div class="w-50">
+          <label class="small text-muted">Mín</label>
+          <input
+            type="number"
+            class="form-control form-control-sm rounded-pill"
+            [(ngModel)]="precioMin"
+            placeholder="0"
+          />
+        </div>
+        <div class="w-50">
+          <label class="small text-muted">Máx</label>
+          <input
+            type="number"
+            class="form-control form-control-sm rounded-pill"
+            [(ngModel)]="precioMax"
+            placeholder="200000"
+          />
+        </div>
+      </div>
+      <button
+        *ngIf="precioMin > 0 || precioMax < precioMaxGlobal"
+        class="btn-limpiar-filtros mt-2"
+        (click)="limpiarFiltroPrecio()"
+      >
+        Limpiar precio
+      </button>
+    </div>
+
+    <div class="mb-4">
+      <p class="fw-bold mb-2">DESTACADOS</p>
+      <div
+        class="filter-pill"
+        [class.active]="soloDestacados"
+        (click)="soloDestacados = !soloDestacados; paginaActual = 1"
+      >
+        ⭐ Solo destacados
+      </div>
+    </div>
+
+    <button
+      *ngIf="filtroGenero !== 'Todos' || filtroCategoria !== 'Todos' || soloDestacados || precioMin > 0 || precioMax < precioMaxGlobal"
+      class="btn btn-outline-danger w-100 rounded-pill fw-bold mt-2"
+      (click)="limpiarFiltros()"
+    >
+      Limpiar todos los filtros
+    </button>
+  </div>
+</div>
+
+<!-- MODAL DETALLE -->
 <div class="modal fade" id="detailModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div
@@ -247,11 +344,17 @@
       <div class="modal-body p-0">
         <div class="row g-0">
           <div class="col-md-7 p-4 bg-light position-relative">
-            <div class="image-viewer text-center">
+            <!-- CAMBIO: flechas para navegar entre fotos + zoom igual que home -->
+            <div class="image-viewer text-center position-relative">
+              <button class="modal-arrow left" (click)="anteriorImagen()">‹</button>
               <img
                 [src]="productoSeleccionado.imagenes_list[imagenIndex]"
                 class="main-modal-img img-fluid rounded"
+                [class.zoom]="zoomActivo"
+                (click)="toggleZoom()"
+                style="cursor: zoom-in"
               />
+              <button class="modal-arrow right" (click)="siguienteImagen()">›</button>
             </div>
             <div class="thumbs d-flex gap-2 mt-3 justify-content-center">
               <img
@@ -266,8 +369,28 @@
 
           <div class="col-md-5 p-4 d-flex flex-column">
             <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal"></button>
-            <p class="text-muted small mb-0">{{ productoSeleccionado.categoria_display }}</p>
+
+            <!-- CAMBIO: genero + categoria bien formateados en el modal -->
+            <p class="text-muted small mb-0 text-uppercase fw-semibold">
+              {{ productoSeleccionado.genero }} • {{ productoSeleccionado.categoria_display }}
+            </p>
             <h2 class="fw-black">{{ productoSeleccionado.nombre }}</h2>
+
+            <!-- CAMBIO: descripcion agregada al modal -->
+            <p class="text-muted small mb-3" *ngIf="productoSeleccionado.descripcion">
+              {{
+                verMas
+                  ? productoSeleccionado.descripcion
+                  : (productoSeleccionado.descripcion | slice: 0 : 80)
+              }}
+              <span
+                *ngIf="productoSeleccionado.descripcion?.length > 80"
+                (click)="verMas = !verMas"
+                style="cursor: pointer; font-weight: bold"
+              >
+                {{ verMas ? ' Ver menos' : ' Ver más' }}
+              </span>
+            </p>
 
             <div class="mb-3">
               <span
@@ -285,7 +408,7 @@
               </span>
             </div>
 
-            <div class="mb-4" *ngIf="productoSeleccionado.categoria_display !== 'Accesorio'">
+            <div class="mb-4" *ngIf="productoSeleccionado.categoria_display?.toLowerCase() !== 'accesorio'">
               <p class="fw-bold mb-2">Seleccionar Talle</p>
               <div class="talle-grid-premium">
                 <button
@@ -315,7 +438,11 @@
               </div>
             </div>
 
-            <button class="btn btn-dark w-100 py-3 rounded-pill fw-bold mt-auto">
+            <!-- CAMBIO: se conecta (click) a agregarAlCarrito() -->
+            <button
+              class="btn btn-dark w-100 py-3 rounded-pill fw-bold mt-auto"
+              (click)="agregarAlCarrito()"
+            >
               AGREGAR AL CARRITO
             </button>
           </div>

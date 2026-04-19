@@ -5,8 +5,6 @@
       <h3>Pedidos</h3>
       <span>Gestión y control en tiempo real</span>
     </div>
-
-    <!-- 🔍 BUSCADOR EN VIVO -->
     <div class="buscador">
       <input
         type="text"
@@ -14,6 +12,15 @@
         (input)="aplicarFiltro()"
         placeholder="Buscar por DNI o ID..."
       />
+    </div>
+  </div>
+
+  <!-- CAMBIO: overlay de carga mientras se procesa un pedido -->
+  <div *ngIf="procesando" class="procesando-overlay">
+    <div class="procesando-box">
+      <div class="spinner-border text-dark mb-3" role="status"></div>
+      <p class="fw-bold m-0">Procesando pedido...</p>
+      <small class="text-muted">Por favor esperá</small>
     </div>
   </div>
 
@@ -28,7 +35,7 @@
     </button>
   </div>
 
-  <!-- ================= DESKTOP ================= -->
+  <!-- DESKTOP -->
   <div class="card-tabla d-none d-md-block">
     <table class="tabla">
       <thead>
@@ -45,11 +52,9 @@
           <th *ngIf="estadoSeleccionado === 'rechazado'">Revisión</th>
         </tr>
       </thead>
-
       <tbody>
         <tr *ngFor="let pedido of pedidosPaginados()">
           <td class="id">{{ pedido.id_pedido }}</td>
-
           <td>
             <div class="cliente">
               <strong>{{ pedido.nombre }}</strong>
@@ -57,18 +62,10 @@
               <span>{{ pedido.telefono }}</span>
             </div>
           </td>
-
-          <td class="total">
-            {{ pedido.total | currency: 'ARS' }}
-          </td>
-
+          <td class="total">{{ pedido.total | currency: 'ARS' }}</td>
           <td>
-            <span class="estado" [ngClass]="pedido.estado">
-              {{ pedido.estado }}
-            </span>
+            <span class="estado" [ngClass]="pedido.estado">{{ pedido.estado }}</span>
           </td>
-
-          <!-- PRODUCTOS -->
           <td>
             <div class="productos">
               <div *ngFor="let p of pedido.pedido_productos" class="producto">
@@ -77,56 +74,38 @@
               </div>
             </div>
           </td>
-
-          <!-- COMPROBANTE -->
           <td>
-            <button class="btn-descarga" (click)="descargarComprobante(pedido.comprobante)">
-              Descargar
-            </button>
+            <button class="btn-descarga" (click)="descargarComprobante(pedido.comprobante)">Descargar</button>
           </td>
-
-          <!-- ACCIONES -->
+          <!-- CAMBIO: [disabled]="procesando" en botones de acción -->
           <td *ngIf="pedido.estado === 'pendiente'">
             <div class="acciones">
-              <button class="aceptar" (click)="aceptarPedido(pedido)">Aceptar</button>
-              <button class="rechazar" (click)="rechazarPedido(pedido)">Rechazar</button>
+              <button class="aceptar" (click)="aceptarPedido(pedido)" [disabled]="procesando">Aceptar</button>
+              <button class="rechazar" (click)="rechazarPedido(pedido)" [disabled]="procesando">Rechazar</button>
             </div>
           </td>
-
           <td>
             <span class="envio-badge" [ngClass]="pedido.envio">
-              {{
-                pedido.envio?.toLowerCase() === 'domicilio'
-                  ? '🚚 Envío a domicilio - ' + pedido.direccion
-                  : '🏬 Retiro en local'
-              }}
+              {{ pedido.envio?.toLowerCase() === 'domicilio' ? '🚚 Envío a domicilio - ' + pedido.direccion : '🏬 Retiro en local' }}
             </span>
           </td>
-
           <td *ngIf="pedido.estado === 'rechazado'">
             <div class="rechazo-box">
-              <small class="text-danger"> Motivo: {{ pedido.mensaje || 'Sin especificar' }} </small>
-
-              <button class="btn-recuperar" (click)="aceptarPedido(pedido)">
-                Recuperar pedido
-              </button>
+              <small class="text-danger">Motivo: {{ pedido.mensaje || 'Sin especificar' }}</small>
+              <button class="btn-recuperar" (click)="aceptarPedido(pedido)" [disabled]="procesando">Recuperar pedido</button>
             </div>
           </td>
-
           <td *ngIf="pedido.estado === 'aceptado'">
             <div class="entregado-box">
               <span [ngClass]="pedido.entregado ? 'ok' : 'pendiente'">
                 {{ pedido.entregado ? '✔ Entregado' : '⏳ Pendiente' }}
               </span>
-
-              <!-- SOLO SI NO ESTÁ ENTREGADO -->
               <div *ngIf="!pedido.entregado" class="acciones-entrega">
-                <button class="btn-ok" (click)="marcarEntregado(pedido)">✔</button>
+                <button class="btn-ok" (click)="marcarEntregado(pedido)" [disabled]="procesando">✔</button>
               </div>
             </div>
           </td>
         </tr>
-
         <tr *ngIf="pedidosFiltrados.length === 0">
           <td colspan="7" class="no-data">No hay pedidos</td>
         </tr>
@@ -134,64 +113,45 @@
     </table>
   </div>
 
-  <!-- ================= MOBILE ================= -->
+  <!-- MOBILE -->
   <div class="mobile-list d-md-none">
     <div class="pedido-card" *ngFor="let pedido of pedidosPaginados()">
       <div class="card-header">
         <strong>#{{ pedido.id_pedido }}</strong>
-        <span class="estado" [ngClass]="pedido.estado">
-          {{ pedido.estado }}
-        </span>
+        <span class="estado" [ngClass]="pedido.estado">{{ pedido.estado }}</span>
       </div>
-
       <div class="card-body">
-        <p>
-          <b>{{ pedido.nombre }}</b>
-        </p>
+        <p><b>{{ pedido.nombre }}</b></p>
         <p>DNI: {{ pedido.dni }}</p>
         <p>{{ pedido.telefono }}</p>
         <p class="total">{{ pedido.total | currency: 'ARS' }}</p>
       </div>
-
       <div class="productos">
         <div *ngFor="let p of pedido.pedido_productos" class="producto">
           {{ p.nombre }} ({{ p.cantidad }})
         </div>
       </div>
-
-      <button class="btn-descarga" (click)="descargarComprobante(pedido.comprobante)">
-        Descargar comprobante
-      </button>
-
+      <button class="btn-descarga" (click)="descargarComprobante(pedido.comprobante)">Descargar comprobante</button>
       <p class="envio-badge" [ngClass]="pedido.envio">
-        {{
-          pedido.envio?.toLowerCase() === 'domicilio'
-            ? '🚚 Envío a domicilio - ' + pedido.direccion
-            : '🏬 Retiro en local'
-        }}
+        {{ pedido.envio?.toLowerCase() === 'domicilio' ? '🚚 Envío a domicilio - ' + pedido.direccion : '🏬 Retiro en local' }}
       </p>
-
       <div *ngIf="pedido.estado === 'rechazado'" class="rechazo-box-mobile">
         <p class="motivo">❌ Motivo: {{ pedido.mensaje || 'Sin especificar' }}</p>
-
-        <button class="btn-recuperar-mobile" (click)="aceptarPedido(pedido)">
-          Recuperar pedido
-        </button>
+        <!-- CAMBIO: [disabled]="procesando" -->
+        <button class="btn-recuperar-mobile" (click)="aceptarPedido(pedido)" [disabled]="procesando">Recuperar pedido</button>
       </div>
-
       <div *ngIf="pedido.estado === 'aceptado'" class="entregado-box-mobile">
         <span [ngClass]="pedido.entregado ? 'ok' : 'pendiente'">
           {{ pedido.entregado ? '✔ Entregado' : '⏳ Pendiente' }}
         </span>
-
         <div *ngIf="!pedido.entregado" class="acciones-mobile">
-          <button class="aceptar" (click)="marcarEntregado(pedido)">✔</button>
+          <button class="aceptar" (click)="marcarEntregado(pedido)" [disabled]="procesando">✔</button>
         </div>
       </div>
-
       <div *ngIf="pedido.estado === 'pendiente'" class="acciones-mobile">
-        <button class="aceptar" (click)="aceptarPedido(pedido)">Aceptar</button>
-        <button class="rechazar" (click)="rechazarPedido(pedido)">Rechazar</button>
+        <!-- CAMBIO: [disabled]="procesando" en ambos botones -->
+        <button class="aceptar" (click)="aceptarPedido(pedido)" [disabled]="procesando">Aceptar</button>
+        <button class="rechazar" (click)="rechazarPedido(pedido)" [disabled]="procesando">Rechazar</button>
       </div>
     </div>
   </div>

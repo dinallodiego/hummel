@@ -39,6 +39,8 @@ export class ProductosComponent implements OnInit {
   colorElegido: string = '';
   imagenIndex: number = 0;
   zoomActivo: boolean = false;
+  // CAMBIO: agregado verMas para descripcion en modal
+  verMas: boolean = false;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -123,6 +125,7 @@ export class ProductosComponent implements OnInit {
         ...p,
         precio_original: precioBase,
         precio_final: precioFinal,
+        // CAMBIO: categoria_display y categoria en minúsculas para comparación correcta
         categoria_display: p.categorias?.nombre || 'General',
         categoria: p.categorias?.nombre || '',
         genero: p.generos?.nombre || '',
@@ -133,7 +136,6 @@ export class ProductosComponent implements OnInit {
       };
     });
 
-    // Actualizar precio máximo global
     if (this.catalogoCompleto.length > 0) {
       this.precioMaxGlobal = Math.max(...this.catalogoCompleto.map((p) => p.precio_final));
       this.precioMax = this.precioMaxGlobal;
@@ -142,12 +144,14 @@ export class ProductosComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // CAMBIO: filtroCategoria compara ahora en lowercase para que funcione correctamente
   get productosFiltrados() {
     return this.catalogoCompleto
       .filter((p) => {
         const matchGen = this.filtroGenero === 'Todos' || p.genero === this.filtroGenero;
         const matchCat =
-          this.filtroCategoria === 'Todos' || p.categoria_display === this.filtroCategoria;
+          this.filtroCategoria === 'Todos' ||
+          p.categoria_display.toLowerCase() === this.filtroCategoria.toLowerCase();
         const matchPre = p.precio_final >= this.precioMin && p.precio_final <= this.precioMax;
         const matchDest = !this.soloDestacados || p.destacado;
         return matchGen && matchCat && matchPre && matchDest;
@@ -173,6 +177,8 @@ export class ProductosComponent implements OnInit {
     this.talleElegido = '';
     this.colorElegido = '';
     this.imagenIndex = 0;
+    this.zoomActivo = false;
+    this.verMas = false;
 
     const modalElement = document.getElementById('detailModal');
     if (modalElement) {
@@ -224,6 +230,7 @@ export class ProductosComponent implements OnInit {
     this.colorElegido = color;
   }
 
+  // CAMBIO: flechas y zoom en modal productos igual que home
   siguienteImagen() {
     const imgs = this.productoSeleccionado?.imagenes_list;
     if (!imgs) return;
@@ -236,6 +243,22 @@ export class ProductosComponent implements OnInit {
     this.imagenIndex = (this.imagenIndex - 1 + imgs.length) % imgs.length;
   }
 
+  toggleZoom() {
+    this.zoomActivo = !this.zoomActivo;
+  }
+
+  // CAMBIO: setFiltroGenero y setFiltroCategoria resetean pagina y cierran offcanvas mobile
+  setFiltroGenero(g: string) {
+    this.filtroGenero = g;
+    this.paginaActual = 1;
+  }
+
+  setFiltroCategoria(c: string) {
+    this.filtroCategoria = c;
+    this.paginaActual = 1;
+  }
+
+  // CAMBIO: limpiarFiltros también cierra el offcanvas mobile si está abierto
   limpiarFiltros() {
     this.filtroGenero = 'Todos';
     this.filtroCategoria = 'Todos';
@@ -243,5 +266,28 @@ export class ProductosComponent implements OnInit {
     this.precioMax = this.precioMaxGlobal;
     this.soloDestacados = false;
     this.paginaActual = 1;
+
+    // Cerrar offcanvas mobile si está abierto
+    const offcanvasEl = document.getElementById('filtrosMobile');
+    if (offcanvasEl) {
+      const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+      if (offcanvas) offcanvas.hide();
+    }
+  }
+
+  // CAMBIO: limpiar solo el filtro de precio
+  limpiarFiltroPrecio() {
+    this.precioMin = 0;
+    this.precioMax = this.precioMaxGlobal;
+    this.paginaActual = 1;
+  }
+
+  // CAMBIO: método para abrir offcanvas mobile correctamente
+  abrirFiltrosMobile() {
+    const offcanvasEl = document.getElementById('filtrosMobile');
+    if (offcanvasEl) {
+      const offcanvas = new bootstrap.Offcanvas(offcanvasEl);
+      offcanvas.show();
+    }
   }
 }

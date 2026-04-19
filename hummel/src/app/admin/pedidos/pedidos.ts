@@ -24,6 +24,7 @@ export class PedidosComponent implements OnInit {
   itemsPorPagina = 3;
   totalPaginas = 1;
 
+  procesando = false; // CAMBIO: bloquea botones mientras se procesa
   @Output() cambios = new EventEmitter<void>();
 
   swalBase = {
@@ -108,6 +109,10 @@ export class PedidosComponent implements OnInit {
 
     if (!res.isConfirmed) return;
 
+    // CAMBIO: activar indicador de carga
+    this.procesando = true;
+    this.cdr.detectChanges();
+
     const { error } = await supabase
       .from('pedidos')
       .update({ estado: 'aceptado' })
@@ -134,6 +139,7 @@ export class PedidosComponent implements OnInit {
     });
 
     setTimeout(() => window.open(link, '_blank'), 300);
+    this.procesando = false;
     this.cambios.emit();
   }
 
@@ -155,6 +161,10 @@ export class PedidosComponent implements OnInit {
     if (!inputResult.isConfirmed) return;
 
     const motivo = inputResult.value.trim();
+
+    // CAMBIO: activar indicador de carga
+    this.procesando = true;
+    this.cdr.detectChanges();
 
     const { error } = await supabase
       .from('pedidos')
@@ -183,6 +193,7 @@ export class PedidosComponent implements OnInit {
     });
 
     setTimeout(() => window.open(link, '_blank'), 300);
+    this.procesando = false;
     this.cambios.emit();
   }
 
@@ -196,6 +207,10 @@ export class PedidosComponent implements OnInit {
 
     if (!res.isConfirmed) return;
 
+    // CAMBIO: activar indicador de carga
+    this.procesando = true;
+    this.cdr.detectChanges();
+
     const { error } = await supabase
       .from('pedidos')
       .update({ entregado: true })
@@ -207,6 +222,7 @@ export class PedidosComponent implements OnInit {
     }
 
     pedido.entregado = true;
+    this.procesando = false;
     this.cdr.detectChanges();
 
     Swal.fire({

@@ -334,3 +334,28 @@
     width: 100%;
   }
 }
+
+/* ===== CAMBIO: overlay de carga al procesar pedidos ===== */
+.procesando-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.procesando-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px 48px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid #eee;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

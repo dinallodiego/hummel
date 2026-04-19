@@ -69,6 +69,29 @@ export class AdminComponent implements OnInit {
     ]);
   }
 
+  // CAMBIO: método centralizado para cambiar vista y refrescar datos
+  async cambiarVista(nueva: string) {
+    this.vista = nueva;
+    // Refrescar datos relevantes según la sección seleccionada
+    if (nueva === 'productos') {
+      await this.cargarProductos();
+    } else if (nueva === 'ventas') {
+      await this.cargarVentas();
+    } else if (nueva === 'pedidos') {
+      await this.cargarPedidosPendientes();
+    } else if (nueva === 'dashboard') {
+      await Promise.all([this.cargarProductos(), this.cargarVentas(), this.cargarPedidosPendientes()]);
+    }
+    this.cdr.detectChanges();
+  }
+
+  // CAMBIO: cuando pedidos emite cambios, refrescar ventas y contadores
+  async onCambiosPedidos() {
+    await Promise.all([this.cargarVentas(), this.cargarPedidosPendientes()]);
+    this.cdr.detectChanges();
+  }
+
+
   async cargarGeneros() {
     const { data } = await supabase.from('generos').select('*').eq('disponible', true);
     this.generos = data || [];

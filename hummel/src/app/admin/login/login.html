@@ -12,7 +12,23 @@
       <h2>Iniciar sesión</h2>
 
       <input type="email" placeholder="Email" [(ngModel)]="email" />
-      <input type="password" placeholder="Contraseña" [(ngModel)]="password" />
+
+      <!-- CAMBIO: campo contraseña con ojito para ver/ocultar -->
+      <div class="password-field">
+        <input
+          [type]="mostrarPassword ? 'text' : 'password'"
+          placeholder="Contraseña"
+          [(ngModel)]="password"
+        />
+        <button
+          type="button"
+          class="toggle-password"
+          (click)="mostrarPassword = !mostrarPassword"
+          tabindex="-1"
+        >
+          <i [class]="mostrarPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+        </button>
+      </div>
 
       <button (click)="login()" [disabled]="loading">
         {{ loading ? 'Ingresando...' : 'Entrar al panel' }}

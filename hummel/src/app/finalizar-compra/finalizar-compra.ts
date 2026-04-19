@@ -31,6 +31,8 @@ export class FinalizarCompraComponent implements OnInit {
   };
 
   comprobante: File | null = null;
+  // CAMBIO: estado de carga para bloquear el botón mientras se procesa
+  procesando = false;
 
   constructor(
     private carritoService: CarritoService,
@@ -109,6 +111,9 @@ export class FinalizarCompraComponent implements OnInit {
 
     if (!result.isConfirmed) return;
 
+    // CAMBIO: activar pantalla de carga
+    this.procesando = true;
+
     try {
       // 1. Subir comprobante al Storage
       const ext = this.comprobante.name.split('.').pop();
@@ -164,6 +169,8 @@ export class FinalizarCompraComponent implements OnInit {
       if (prodError) throw prodError;
 
       // 5. Éxito
+      this.procesando = false;
+
       await Swal.fire({
         title: '✅ Compra confirmada',
         html: `
@@ -187,6 +194,7 @@ export class FinalizarCompraComponent implements OnInit {
       this.router.navigate(['/productos']);
     } catch (err: any) {
       console.error('Error al confirmar compra:', err);
+      this.procesando = false;
       Swal.fire('Error', err.message || 'No se pudo completar la compra', 'error');
     }
   }

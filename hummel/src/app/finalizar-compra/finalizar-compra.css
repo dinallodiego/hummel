@@ -210,3 +210,30 @@
     transform: translateY(0);
   }
 }
+
+/* ===== CAMBIO: overlay de carga al confirmar compra ===== */
+.procesando-overlay-compra {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.procesando-box-compra {
+  background: #fff;
+  border-radius: 20px;
+  padding: 48px 56px;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid #eee;
+  max-width: 340px;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}

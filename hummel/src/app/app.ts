@@ -1,9 +1,10 @@
-import { Component, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, AfterViewInit, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet, RouterModule } from '@angular/router';
+import { Router, RouterOutlet, RouterModule, NavigationEnd } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { CarritoService } from '../app/services/carrito';
+import { filter } from 'rxjs/operators';
 
 declare var bootstrap: any;
 
@@ -14,7 +15,7 @@ declare var bootstrap: any;
   templateUrl: './app.html',
   styleUrls: ['./app.css'],
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements AfterViewInit, OnInit {
   apiUrl = 'https://raxnktjhjyfvqajgffkf.supabase.co';
   menuAbierto = false;
   swalBase = {
@@ -58,11 +59,16 @@ export class AppComponent implements AfterViewInit {
 
   ngOnInit() {
     this.verificarYMostrarBienvenida();
+
+    // CAMBIO: scroll al top en cada navegación de ruta
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      });
   }
 
   private verificarYMostrarBienvenida() {
-    // sessionStorage persiste mientras la pestaña esté abierta.
-    // Al cerrar el sitio y volver a entrar, se reinicia.
     const haVistoBienvenida = sessionStorage.getItem('bienvenida_visto');
 
     if (!haVistoBienvenida) {
@@ -70,6 +76,7 @@ export class AppComponent implements AfterViewInit {
       sessionStorage.setItem('bienvenida_visto', 'true');
     }
   }
+
   private ejecutarModalBienvenida() {
     this.reproducirSonidoBienvenida();
 
@@ -128,8 +135,6 @@ export class AppComponent implements AfterViewInit {
 
     if (playPromise !== undefined) {
       playPromise.catch((error) => {
-        // Auto-play fue preventido.
-        // Podemos intentar sonar cuando el usuario haga su primer click en la pantalla
         console.log('Esperando interacción para sonido...');
         document.addEventListener(
           'click',
@@ -137,7 +142,7 @@ export class AppComponent implements AfterViewInit {
             audio.play();
           },
           { once: true },
-        ); // 'once' hace que se ejecute una sola vez
+        );
       });
     }
   }
@@ -157,7 +162,6 @@ export class AppComponent implements AfterViewInit {
     const item = carrito.find((i) => i.uuid === uuid);
     if (!item) return;
 
-    // Si es restar y está en 1, eso implicaría eliminar
     if (operacion === 'restar' && Number(item.cantidad) === 1) {
       await this.confirmarQuitarItem(item);
       return;
@@ -174,9 +178,6 @@ export class AppComponent implements AfterViewInit {
     await this.confirmarQuitarItem(item);
   }
 
-  /**
-   * Confirma quitar un item. Si es el último, confirma vaciar carrito.
-   */
   private async confirmarQuitarItem(item: any) {
     const carrito = this.carritoService.getCarrito();
     const esUltimo = carrito.length === 1;

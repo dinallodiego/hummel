@@ -16,6 +16,8 @@ export class LoginComponent {
   email = '';
   password = '';
   loading = false;
+  // CAMBIO: propiedad para mostrar/ocultar contraseña
+  mostrarPassword = false;
 
   constructor(
     private auth: AuthService,
