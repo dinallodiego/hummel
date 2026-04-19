@@ -154,7 +154,9 @@
     <div *ngIf="vista === 'ventas'">
       <div class="ventas-header">
         <div class="filtros-ventas">
+          <label>Desde:</label>
           <input type="date" [(ngModel)]="fechaDesde" />
+          <label>Hasta:</label>
           <input type="date" [(ngModel)]="fechaHasta" />
 
           <button class="btn btn-dark" (click)="filtrarVentas()">Filtrar</button>
